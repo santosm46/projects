@@ -1,16 +1,19 @@
-package cookieClickerSim;
+package cookiegame;
+// import cookieclickersim.Game;
+
+import common.ShortNum;
 
 public class Building {
     private Game game = null;
     private int amount = 0;
     private boolean locked = true; //unlocks when cookies baked reaches the building price
-    private double initialPrice;
-    private int initialCpS;
+    private long initialPrice;
+    private long initialCpS;
     private String name;
 
     private final double PRICE_INCREASE_RATE = 1.15;
 
-    public Building(String name, Game game, double initialPrice, int initialCpS) {
+    public Building(String name, Game game, long initialPrice, long initialCpS) {
         this.name = name;
         this.game = game;
         this.initialPrice = initialPrice;
@@ -21,8 +24,8 @@ public class Building {
         return this.name;
     }
 
-    public double getPrice() {
-        return this.initialPrice * Math.pow(this.PRICE_INCREASE_RATE, this.getAmount());
+    public long getPrice() {
+        return (long) (this.initialPrice) * (long) (Math.pow(this.PRICE_INCREASE_RATE, this.getAmount()));
     }
 
     public boolean isLocked() {
@@ -30,7 +33,7 @@ public class Building {
     }
 
     public boolean unlock() {
-        if(this.game.getCookiesBaked() >= this.getPrice() && this.isLocked()) {
+        if(this.game.bank.getCookiesBaked() >= this.getPrice() && this.isLocked()) {
             this.locked = false;
             return true;
         }
@@ -40,9 +43,13 @@ public class Building {
     public int getAmount() {
         return this.amount;
     }
+    
+    public long getCostBenefit() {
+    	return this.getPrice() / (this.initialCpS);
+    }
 
-    public int getCpS() {
-        return this.initialCpS * this.getAmount();
+    public long getCpS() {
+        return this.initialCpS * (long)(this.getAmount());
     }
 
     public boolean changeAmountBy(int increase) {
@@ -58,20 +65,24 @@ public class Building {
 
     public boolean buyBuilding() {
         // returns True if it bought, and False otherwise
-        if(this.getPrice() > game.getCookiesInBank()) { // checks if has enough money
+        if(this.getPrice() > game.bank.getCookiesInBank()) { // checks if has enough money
             return false;
         }
         if(this.isLocked()) {
             return false;
         }
         
-        this.game.changeCookiesInBankBy(-this.getPrice());
+        this.game.bank.changeCookiesInBankBy(-this.getPrice());
         this.changeAmountBy(1);
         
         return true;
     }
 
     public String getInfo() {
-        return "[" + this.getName() + "] price: " + this.getPrice() + " amount: " + this.getAmount();
+        return  "Name: " + this.getName() + 
+        		" | price: " + ShortNum.format(this.getPrice()) + 
+        		" | CpS: " + ShortNum.format(this.initialCpS) + 
+//        		" | CB: " + this.getRelativeCB() + 
+        		" | amount: " + this.getAmount();
     }
 }
