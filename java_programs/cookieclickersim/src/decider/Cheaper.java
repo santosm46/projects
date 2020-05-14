@@ -14,16 +14,12 @@ public class Cheaper extends Decider {
 	}
 
 	public Choice decide() {
-		ArrayList<Building> buildings = this.game.buildings.GetBuildings();
-		if(buildings.size() == 0) {
+		
+		if(!this.game.buildings.hasBuildings()) {
 			return new Exit("These isn't buildings");
 		}
-		this.chosen = buildings.get(0);
-		for(Building i : buildings) {
-			if(i.getPrice() < this.chosen.getPrice()) {
-				this.chosen = i;
-			}
-		}
+		
+		this.findCheapest();
 		
 		if(this.game.bank.canBuy(this.chosen)) {
 			return new Buy(this.chosen);
@@ -33,5 +29,17 @@ public class Cheaper extends Decider {
 			return new Wait(timetobuy);
 		}
 		
+	}
+	
+	private void findCheapest() {
+		ArrayList<Building> buildings = this.game.buildings.GetBuildings();
+		
+		this.chosen = buildings.get(0);
+		
+		for(Building i : buildings) {
+			if(i.getPrice() < this.chosen.getPrice()) {
+				this.chosen = i;
+			}
+		}
 	}
 }

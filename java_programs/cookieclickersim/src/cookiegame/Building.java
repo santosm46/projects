@@ -65,7 +65,7 @@ public class Building {
 
     public boolean buyBuilding() {
         // returns True if it bought, and False otherwise
-        if(this.getPrice() > game.bank.getCookiesInBank()) { // checks if has enough money
+        if(game.bank.canBuy(this)) { // checks if has enough money
             return false;
         }
         if(this.isLocked()) {
@@ -74,6 +74,21 @@ public class Building {
         
         this.game.bank.changeCookiesInBankBy(-this.getPrice());
         this.changeAmountBy(1);
+        
+        return true;
+    }
+    
+    public boolean sellBuilding() {
+        // returns True if it bought, and False otherwise
+        if(this.getAmount() < 1) { // checks if has buildings
+            return false;
+        }
+        if(this.isLocked()) {
+            return false;
+        }
+        
+        this.game.bank.changeCookiesInBankBy((long)(this.getPrice() / 4.6));
+        this.changeAmountBy(-1);
         
         return true;
     }

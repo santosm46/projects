@@ -44,6 +44,10 @@ public class Game {
     	return game;
     }
     
+    public String getMethodName() {
+    	return this.decider.getMethodName();
+    }
+    
     private void setDeciderMethod(Decider decider) {
     	this.decider = decider;
     }
@@ -80,7 +84,6 @@ public class Game {
     }
     
     public boolean waitTime(long seconds) {
-//    	Debug.out("tentando avancar " + seconds + "s");
     	if(this.time.advanceTime(seconds)) {
     		this.bank.changeCookiesInBankBy(seconds * this.buildings.getTotalCpS());
     		return true;
@@ -90,14 +93,15 @@ public class Game {
     	}
     }
     
-    public void printStatus() {
+    public void printStatus(boolean printBuildings) {
     	System.out.println("\n========== [" + this.decider.getMethodName() + " method] ==========");
     	System.out.println("Cookies baked: " + ShortNum.format(this.bank.getCookiesBaked()));
     	System.out.println("Cookies in bank: " + ShortNum.format(this.bank.getCookiesInBank()));
     	System.out.println("Production: " + ShortNum.format(this.buildings.getTotalCpS()) + " cps");
     	this.time.printTimeStatus();
-    	this.buildings.printBuildings();
-    	System.out.println("\n\n\n\n\n");
+    	if(printBuildings)
+    		this.buildings.printBuildings();
+    	System.out.println("\n\n\n");
     	
     }
 }

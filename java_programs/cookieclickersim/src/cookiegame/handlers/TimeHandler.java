@@ -2,7 +2,6 @@ package cookiegame.handlers;
 import java.util.Date;
 // import cookieclickersim.Game;
 
-import common.Debug;
 import cookiegame.Building;
 import cookiegame.Game;
 
@@ -37,7 +36,7 @@ public class TimeHandler {
     }
     
     public long timeToBuy(Building b) {
-    	long cookiesNeeded = b.getPrice() - this.game.bank.getCookiesInBank();
+    	long cookiesNeeded = Math.max(0, b.getPrice() - this.game.bank.getCookiesInBank());
     	long timetowait = (long) Math.ceil((float)cookiesNeeded / (float)this.game.buildings.getTotalCpS());
 
     	return timetowait;

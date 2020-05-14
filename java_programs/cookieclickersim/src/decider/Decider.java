@@ -22,6 +22,9 @@ public abstract class Decider {
 		else if(deciderMethodName.equals(CostBenefit.methodType)) {
 			return new CostBenefit(game);
 		}
+		else if(deciderMethodName.equals(BuySellCB.methodType)) {
+			return new BuySellCB(game);
+		}
 		else {
 			System.out.println("Unknown decider method name: " + deciderMethodName);
 			return null;

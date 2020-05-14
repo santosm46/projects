@@ -36,11 +36,11 @@ public class ShortNum {
 	
 	public static void test() {
 		System.out.println(ShortNum.format(1000000L) + " = 1 mi");
-    	System.out.println(ShortNum.format(1237770L) + "1,238 mi");
-    	System.out.println(ShortNum.format(1237700000L) + "1,237 bi");
-    	System.out.println(ShortNum.format(123700000000L) + "123,7 bi");
-    	System.out.println(ShortNum.format(123000000670000L) + "123 tri");
-    	System.out.println(ShortNum.format(123020000000500000L) + "123,02 quad");
-    	System.out.println(ShortNum.format(1230200000005000000L) + "1230200000005000000L");
+    	System.out.println(ShortNum.format(1237770L) + " = 1,238 mi");
+    	System.out.println(ShortNum.format(1237700000L) + " = 1,237 bi");
+    	System.out.println(ShortNum.format(123700000000L) + " = 123,7 bi");
+    	System.out.println(ShortNum.format(123000000670000L) + " = 123 tri");
+    	System.out.println(ShortNum.format(123020000000500000L) + " = 123,02 quad");
+    	System.out.println(ShortNum.format(1230200000005000000L) + " = 1230200000005000000L");
 	}
 }

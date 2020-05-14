@@ -19,6 +19,10 @@ public class BuildingHandler {
     	return this.unlockedBuildings;
     }
 	
+	public boolean hasBuildings() {
+		return this.unlockedBuildings.size() > 0;
+	}
+	
 	public void unlockBuildings() {
         for(Building i : this.allBuildings) {
             if(i.unlock()) { // if unlock successfully then add to unlockedBuildings array
