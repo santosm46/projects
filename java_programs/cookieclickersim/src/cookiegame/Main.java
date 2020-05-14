@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
 
     	Game[] games = {
-    		Game.newGame(cookiesInBank, hours, BuySellCB.methodType),
+    		Game.newGame(cookiesInBank, hours, Cheaper.methodType),
     		Game.newGame(cookiesInBank, hours, CostBenefit.methodType)
     	};
     	

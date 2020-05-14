@@ -32,6 +32,36 @@ public class BankHandler {
         return true;
     }
 	
+	public boolean buyBuilding(Building building) {
+        // returns True if it bought, and False otherwise
+        if(!this.canBuy(building)) { // checks if has enough money
+            return false;
+        }
+        if(building.isLocked()) {
+            return false;
+        }
+        
+        this.changeCookiesInBankBy(-building.getPrice());
+        building.changeAmountBy(1);
+        
+        return true;
+    }
+    
+    public boolean sellBuilding(Building building) {
+        // returns True if it bought, and False otherwise
+        if(building.getAmount() < 1) { // checks if has buildings
+            return false;
+        }
+        if(building.isLocked()) {
+            return false;
+        }
+        
+        this.changeCookiesInBankBy((long)(building.getPrice() / 4.6));
+        building.changeAmountBy(-1);
+        
+        return true;
+    }
+	
 	public boolean canBuy(Building b) {
 		return this.getCookiesInBank() >= b.getPrice();
 	}

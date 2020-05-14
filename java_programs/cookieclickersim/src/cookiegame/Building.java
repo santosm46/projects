@@ -63,36 +63,6 @@ public class Building {
         }
     }
 
-    public boolean buyBuilding() {
-        // returns True if it bought, and False otherwise
-        if(game.bank.canBuy(this)) { // checks if has enough money
-            return false;
-        }
-        if(this.isLocked()) {
-            return false;
-        }
-        
-        this.game.bank.changeCookiesInBankBy(-this.getPrice());
-        this.changeAmountBy(1);
-        
-        return true;
-    }
-    
-    public boolean sellBuilding() {
-        // returns True if it bought, and False otherwise
-        if(this.getAmount() < 1) { // checks if has buildings
-            return false;
-        }
-        if(this.isLocked()) {
-            return false;
-        }
-        
-        this.game.bank.changeCookiesInBankBy((long)(this.getPrice() / 4.6));
-        this.changeAmountBy(-1);
-        
-        return true;
-    }
-
     public String getInfo() {
         return  "Name: " + this.getName() + 
         		" | price: " + ShortNum.format(this.getPrice()) + 

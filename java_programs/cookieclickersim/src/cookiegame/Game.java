@@ -1,5 +1,6 @@
 package cookiegame;
 
+import common.Debug;
 import common.ShortNum;
 import cookiegame.handlers.*;
 import decider.*;
@@ -57,8 +58,9 @@ public class Game {
     		this.choice = decider.decide();
     		
     		if(choice instanceof Buy) {
-    			if(!this.buyBuilding(((Buy) choice).getChosen()))
+    			if(!this.bank.buyBuilding(((Buy) choice).getChosen())) {
     				break;
+    			}
     		} else if(choice instanceof Wait) {
     			if(!this.waitTime(((Wait) choice).getWaitingTime())) {
     				// wait the remaining time
@@ -75,14 +77,6 @@ public class Game {
     	}
     }
 
-    
-    /**
-     * Behaviors: Buy, Sell, Wait, Exit
-     */
-    public boolean buyBuilding(Building building) {
-    	return building.buyBuilding();
-    }
-    
     public boolean waitTime(long seconds) {
     	if(this.time.advanceTime(seconds)) {
     		this.bank.changeCookiesInBankBy(seconds * this.buildings.getTotalCpS());
