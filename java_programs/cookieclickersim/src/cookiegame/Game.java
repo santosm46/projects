@@ -1,18 +1,18 @@
 package cookiegame;
 
-import common.Debug;
+//import common.Debug;
 import common.ShortNum;
 import cookiegame.handlers.*;
 import decider.*;
-import decider.choice.*;
 
 public class Game {
 	public TimeHandler time;
     public BankHandler bank;
     public BuildingHandler buildings;
+    public boolean succeededBuying = true;
     
     private Decider decider;
-    private Choice choice;
+    private Building chosen;
 
     private Game(int hoursLeft) {
     	this.buildings = new BuildingHandler(this);
@@ -55,25 +55,21 @@ public class Game {
     
     public void loop() {
     	while(true) {
-    		this.choice = decider.decide();
+    		this.chosen = decider.whatToBuy();
     		
-    		if(choice instanceof Buy) {
-    			if(!this.bank.buyBuilding(((Buy) choice).getChosen())) {
-    				break;
-    			}
-    		} else if(choice instanceof Wait) {
-    			if(!this.waitTime(((Wait) choice).getWaitingTime())) {
-    				// wait the remaining time
-    				this.waitTime(this.time.getRemainingSeconds());
-    				break;
-    			}
-    		} else if(choice instanceof Exit) {
-    			((Exit) this.choice).printExitMessage();
-    			break;
-    		} else {
-    			System.out.println("Unknown class type of choice: " + this.choice.getClass());
+    		if(chosen == null) {
+    			// if null is returned, it couldn't buy or wait to buy any building
+    			// so just wait the remaining time
+    			this.waitTime(this.time.getRemainingSeconds());
     			break;
     		}
+    		
+			if(!this.bank.canBuy(chosen)) {
+				// if can't buy, then wait to get more money
+				this.waitTime(this.time.timeToBuy(chosen));
+			}
+			
+			this.succeededBuying = this.bank.buyBuilding(chosen);
     	}
     }
 
@@ -81,8 +77,7 @@ public class Game {
     	if(this.time.advanceTime(seconds)) {
     		this.bank.changeCookiesInBankBy(seconds * this.buildings.getTotalCpS());
     		return true;
-    	}
-    	else {
+    	} else {
     		return false;
     	}
     }
@@ -99,6 +94,3 @@ public class Game {
     	
     }
 }
-
-
-//

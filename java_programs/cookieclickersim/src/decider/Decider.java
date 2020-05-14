@@ -2,7 +2,6 @@ package decider;
 
 import cookiegame.Building;
 import cookiegame.Game;
-import decider.choice.Choice;
 
 public abstract class Decider {
 	protected Game game;
@@ -32,5 +31,5 @@ public abstract class Decider {
 		return this.methodName;
 	}
 	
-	public abstract Choice decide();
+	public abstract Building whatToBuy();
 }
