@@ -90,7 +90,7 @@ public class Game {
     	this.time.printTimeStatus();
     	if(printBuildings)
     		this.buildings.printBuildings();
-    	System.out.println("\n\n\n");
+    	System.out.println("\n");
     	
     }
 }

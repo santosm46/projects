@@ -66,6 +66,10 @@ public class BankHandler {
 		return this.getCookiesInBank() >= b.getPrice();
 	}
 	
+	public long cookiesNeededToBuy(Building b) {
+		return Math.max(0, b.getPrice() - this.getCookiesInBank());
+	}
+	
 	private void increaseCookiesBakedBy(long change) {
         this.cookiesBaked += change;
         this.game.buildings.unlockBuildings();

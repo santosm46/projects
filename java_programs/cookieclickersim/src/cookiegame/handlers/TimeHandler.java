@@ -36,7 +36,7 @@ public class TimeHandler {
     }
     
     public long timeToBuy(Building b) {
-    	long cookiesNeeded = Math.max(0, b.getPrice() - this.game.bank.getCookiesInBank());
+    	long cookiesNeeded = this.game.bank.cookiesNeededToBuy(b);
     	long timetowait = (long) Math.ceil((float)cookiesNeeded / (float)this.game.buildings.getTotalCpS());
 
     	return timetowait;

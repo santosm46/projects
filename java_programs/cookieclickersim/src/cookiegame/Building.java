@@ -55,7 +55,6 @@ public class Building {
     public boolean changeAmountBy(int increase) {
         if(this.amount + increase >= 0) {
             this.amount += increase;
-            // this.price *= this.PRICE_INCREASE_RATE;
             return true;
         }
         else {
@@ -67,7 +66,6 @@ public class Building {
         return  "Name: " + this.getName() + 
         		" | price: " + ShortNum.format(this.getPrice()) + 
         		" | CpS: " + ShortNum.format(this.initialCpS) + 
-//        		" | CB: " + this.getRelativeCB() + 
         		" | amount: " + this.getAmount();
     }
 }
