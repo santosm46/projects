@@ -15,8 +15,10 @@ function createClient(game) {
     const state = {
         observers: []
     }
+    state.id = 'c' + Math.floor(random(1000, 9999));
 
     function inputFromClient(command) {
+        // debuga('client f:inputFromClient mandando input pro server', command);
         server.inputToServer(command);
     }
 
@@ -24,6 +26,7 @@ function createClient(game) {
     input.subscribe(inputFromClient);
 
     function createServerConnection(self) {
+        // só pode ser chamado após setupClient
         return game.server.receiveConnection({ 
             instance: self, 
             id: state.id
@@ -31,11 +34,17 @@ function createClient(game) {
     }
 
     function getUpdatedState() {
-        return drawer.gameState;
+        // debuga('client -> server.state',server);
+        return server.game.state;
     }
 
     function receiveQuadState(command) {
         drawer.gameState = command.game.state;
+    }
+
+    function getClientCell() {
+        let clientCell = getUpdatedState().cells[state.id];
+        return clientCell;
     }
 
     // because can only connect to server when creation of this object is complete
@@ -44,16 +53,21 @@ function createClient(game) {
         input.setClient(self);
     }
 
-    state.id = 'player1';
+    function getClientId() {
+        return state.id;
+    }
+
+    
     return {
         drawer,
         input,
-        state,
+        getClientId,
         // subscribe,
         receiveQuadState,
         createServerConnection,
         setupClient,
-        getUpdatedState
+        getUpdatedState,
+        getClientCell
     };
 }
 

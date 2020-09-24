@@ -19,7 +19,7 @@ function createActions() {
             // if(command.key != 'w') return;
 
             const movement = command.movement;
-            const cell = game.state.cells[cellId];
+            const cell = game.state.cells[command.cellId];
             const vel = createVector(movement.x, movement.y);
             vel.limit(3);
             cell.x += vel.x;

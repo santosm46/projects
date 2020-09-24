@@ -6,7 +6,7 @@ function createCellHandler() {
     function createCell(command) {//chunks, movement) {
         let cell = {};
 
-        const cellId = command.cellId || 'r' + Math.floor(random(10, 99)); //command.cellId
+        const cellId = command.cellId || 'r' + Math.floor(random(1000, 9999)); //command.cellId
         const x = command.x || Math.floor(random(width));
         const y = command.y || Math.floor(random(height));
         const raio = command.raio || Math.floor(random(10, 60));

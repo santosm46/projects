@@ -1,5 +1,4 @@
 function createDrawer() {
-    let gameState;
 
     // function stateFromServer(command) {
     //     if (command.type === 'draw') {
@@ -8,8 +7,23 @@ function createDrawer() {
     // }
 
 
-    function drawGameState(state) {
-        state.chunks.drawGridChunks();
+    function drawGameState(client) {
+        let state = client.getUpdatedState();
+        // debuga('drawer -> state', state);
+        // debuga('drawer -> client', client);
+        drawGridChunks(state.chunks);
+    }
+
+    function drawGridChunks(chunks) {
+        for (let j = 0; j <= chunks.cols; j++) {
+            line(j * chunks.size, 0,
+                j * chunks.size, height);
+        }
+
+        for (let i = 0; i <= chunks.rows; i++) {
+            line(0, i * chunks.size,
+                width, i * chunks.size);
+        }
     }
 
     function drawCell(cell) {
@@ -17,31 +31,37 @@ function createDrawer() {
         circle(cell.x, cell.y, cell.raio);
     }
 
-    function drawCells(state) {
-        const celulas = state.cells;
+    function drawCells(client) {
+        const celulas = client.getUpdatedState().cells;
 
         for(cellId in celulas) {
             drawCell(celulas[cellId]);
         }
     }
 
+    function drawRangeArea(client) {
+        // debugm('chamando drawRangeArea');
+        let state = client.getUpdatedState();
+        let chunkSize = state.chunks.size;
+        let cell = client.getClientCell();
+
+        let tam = chunkSize * 3;
+        let chunkX = Math.floor(cell.x / chunkSize) - 1;
+        let chunkY = Math.floor(cell.y / chunkSize) - 1;
+    
+        fill(0, 200, 50, 150);
+        rect(chunkX * chunkSize,
+            chunkY * chunkSize,
+            tam, tam);
+    }
+
     return {
-        gameState,
         drawGameState,
-        drawCells
+        drawCells,
+        drawRangeArea
     }
 
 }
 
 
 
-// function vizinhos(cell) {
-//     let tam = chunks.size * 3;
-//     let chunkX = Math.floor(cell.x / chunks.size) - 1;
-//     let chunkY = Math.floor(cell.y / chunks.size) - 1;
-
-//     fill(0, 200, 50, 150);
-//     rect(chunkX * chunks.size,
-//         chunkY * chunks.size,
-//         tam, tam);
-// }

@@ -16,7 +16,7 @@ function keyAndMouse() {
         let command = {};
         let updatedState = client.getUpdatedState();
         // debugm('client.state.id', client.state.id);
-        let cell = updatedState.cells[client.state.id];
+        let cell = updatedState.cells[client.getClientId()];
 
         // debugm('valor de cell', cell);
 
@@ -27,7 +27,8 @@ function keyAndMouse() {
         command.inputType = nicknamesTable[key];
         command.movement = vel;
         command.key = key;
-        command.cellId = client.state.id;
+        // debuga('mandando id cliente', client..getClientId());
+        command.cellId = client.getClientId();
 
         // debugm(`KeyAndMouse -> foi pressionado ${command.key}`);
 

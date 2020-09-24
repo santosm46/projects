@@ -19,18 +19,6 @@ function createChunks() {
 
     chunks.chunk = a;
 
-    chunks.drawGridChunks = function () {
-        for (let j = 0; j <= this.cols; j++) {
-            line(j * this.size, 0,
-                j * this.size, height);
-        }
-
-        for (let i = 0; i <= this.rows; i++) {
-            line(0, i * this.size,
-                width, i * this.size);
-        }
-    }
-
     return chunks;
 }
 

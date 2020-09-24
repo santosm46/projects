@@ -22,11 +22,15 @@ function setup() {
     // });
 }
 
-function debugm(msg, obg=null, func='') {
+function debugm(msg, obg=null) {
     let msgf;
-    if(func != '') msgf = 'at func ' + func + ' '
-    print(func + msg);
-    if(obg != null) print(obg);
+    print(msg);
+    if(obg !== null) print(obg);
+}
+
+function debuga(msg, obg) {
+    print(msg);
+    print(obg);
 }
 
 function draw() {
@@ -43,8 +47,12 @@ function draw() {
 
     game.tickClock();
 
-    client.drawer.drawGameState(game.state);
-    client.drawer.drawCells(game.state);
+    client.drawer.drawGameState(client);
+    // debugm('antes de chamar drawRangeArea');
+    // fill(0, 200, 50);
+    // rect(mouseX, mouseY, 30, 30);
+    client.drawer.drawRangeArea(client);
+    client.drawer.drawCells(client);
 
 
     // player.vizinhos();

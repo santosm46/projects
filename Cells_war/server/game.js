@@ -35,7 +35,7 @@ function createGame() {
         server.setup(game);
         cellHandler.setup(game);
         this.actions = createActions();
-        for(let i=0; i<30; i++) {
+        for(let i=0; i<10; i++) {
             game.createCell({});
         }
         // cellHandler.createCells({game:game, numCells: 10}); //50, chunks, randomMovement);
