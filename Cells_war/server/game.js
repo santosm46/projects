@@ -1,42 +1,38 @@
 function createState() {
-    return {
-        cells: {},
-        energyOrbs: {}
-    };
+    const state = {};
+    const chunks = createChunks();
+
+    state.chunks = chunks;
+    state.cells = {};
+    state.energyOrbs = {};
+
+    return state;
 }
 
 
 function createGame() {
-
-    const state = createState();
-    const chunks = createChunks();
     let actions = null;
 
-    state.chunks = chunks;
-
+    const state = createState();
     const server = createServerNetwork();
-    
     const cellHandler = createCellHandler();
-
-
     
     function tickClock() {
-        server.sendQuadState();
+        this.server.sendQuadState();
+        this.server.updateLocalChunks();
     }
 
     function createCell(command) {
-        let cell = game.cellHandler.createCell(command);
-        game.state.cells[cell.id] = cell;
+        let cell = this.cellHandler.createCell(command);
+        this.state.cells[cell.id] = cell;
     }
-    // function callCreateCells(game) {
-
-    // }
-    function setupGame(game) {
-        server.setup(game);
-        cellHandler.setup(game);
+    
+    function setup() {
+        this.server.setup(this);
+        this.cellHandler.setup(this);
         this.actions = createActions();
         for(let i=0; i<10; i++) {
-            game.createCell({});
+            this.createCell({});
         }
         // cellHandler.createCells({game:game, numCells: 10}); //50, chunks, randomMovement);
     }
@@ -46,8 +42,7 @@ function createGame() {
         server,
         tickClock,
         state,
-        chunks,
-        setupGame,
+        setup,
         createCell
     };
 }

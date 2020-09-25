@@ -9,9 +9,15 @@ function createDrawer() {
 
     function drawGameState(client) {
         let state = client.getUpdatedState();
-        // debuga('drawer -> state', state);
-        // debuga('drawer -> client', client);
+
+        // if(state == null) {
+        //     debugm('nothing to draw...');
+        //     return;
+        // }
+        
         drawGridChunks(state.chunks);
+        drawRangeArea(client);
+        drawCells(client);
     }
 
     function drawGridChunks(chunks) {

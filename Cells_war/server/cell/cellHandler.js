@@ -21,6 +21,7 @@ function createCellHandler() {
             g: Math.floor(random(255)),
             b: Math.floor(random(255))
         };
+        cell.chunk = this.game.cellHandler.getChunkPos(cell, this.game.state.chunks);
         // debugm(command.game);
         // command.game.state.cells[cellId] = cell;
         return cell;
@@ -38,10 +39,10 @@ function createCellHandler() {
         }
     }
 
-    function getChunkPos(cell) {
+    function getChunkPos(cell, chunks) {
         return {
-            x: Math.floor(cell.x / cell.chunks.size),
-            y: Math.floor(cell.y / cell.chunks.size)
+            x: Math.floor(cell.x / chunks.size),
+            y: Math.floor(cell.y / chunks.size)
         };
     }
 

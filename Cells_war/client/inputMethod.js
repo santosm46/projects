@@ -10,9 +10,10 @@ function keyAndMouse() {
     };
 
     // function will be triggered by input
-    function createInput(client) {
-        // if(key != 'w') {return null};
-        
+    function readInput(client) {
+        if(nicknamesTable[key] != 'move') {return null};
+        if(keyIsPressed == false) {return null};
+
         let command = {};
         let updatedState = client.getUpdatedState();
         // debugm('client.state.id', client.state.id);
@@ -36,7 +37,7 @@ function keyAndMouse() {
 
     }
 
-    return {createInput};
+    return {readInput};
 }
 
 
