@@ -1,14 +1,11 @@
 function createDrawer() {
 
-    // function stateFromServer(command) {
-    //     if (command.type === 'draw') {
-    //         gameState = command.state;
-    //     }
-    // }
-
-
     function drawGameState(client) {
+        debugNull(client, `drawer.js: drawGameState received null client`);
+        // debuga(`drawer.js: client`, client);
+
         let state = client.getUpdatedState();
+        debugNull(state, `drawer.js: drawGameState received null state`);
 
         // if(state == null) {
         //     debugm('nothing to draw...');
@@ -34,7 +31,7 @@ function createDrawer() {
 
     function drawCell(cell) {
         fill(cell.cor.r, cell.cor.g, cell.cor.b);
-        circle(cell.x, cell.y, cell.raio);
+        circle(cell.x, cell.y, cell.raio * 2);
     }
 
     function drawCells(client) {
@@ -46,7 +43,6 @@ function createDrawer() {
     }
 
     function drawRangeArea(client) {
-        // debugm('chamando drawRangeArea');
         let state = client.getUpdatedState();
         let chunkSize = state.chunks.size;
         let cell = client.getClientCell();

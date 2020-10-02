@@ -10,11 +10,12 @@ function createInputListener(inputMethodToUse, clientRef) {
         if (client) {
             const command = inputMethod.readInput(client);
             if (command) {
+                // notifying client of new input
                 notifyAll(command);
             }
         } else {
             console.error(`client of inputListener is not set! Set the client with setClient`);
-            throw "Undefined inputListener.client";
+            // throw "Undefined inputListener.client";
         }
     };
 
@@ -23,8 +24,6 @@ function createInputListener(inputMethodToUse, clientRef) {
     }
 
     function notifyAll(command) {
-        // debugm(`notificando ${state.observers.length} observers`);
-        // debuga('observers ---->> ' + observers.length, observers);
         if (observers.length === 0) return;
 
         for (let observerFunction of observers) {

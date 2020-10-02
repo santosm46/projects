@@ -1,3 +1,5 @@
+const numberOfBots = 0;
+
 function createState() {
     const state = {};
     const chunks = createChunks();
@@ -19,7 +21,7 @@ function createGame() {
     
     function tickClock() {
         this.server.sendQuadState();
-        this.server.updateLocalChunks();
+        // this.server.updateLocalChunks();
     }
 
     function createCell(command) {
@@ -31,7 +33,7 @@ function createGame() {
         this.server.setup(this);
         this.cellHandler.setup(this);
         this.actions = createActions();
-        for(let i=0; i<10; i++) {
+        for(let i=0; i<numberOfBots; i++) {
             this.createCell({});
         }
         // cellHandler.createCells({game:game, numCells: 10}); //50, chunks, randomMovement);

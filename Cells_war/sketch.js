@@ -3,18 +3,21 @@ let game; // para conexões. temporário
 let client;
 let drawer;
 let inputListener;
+// let randomInput;
+const numClientesBot = 20;
+const botClients = {};
 
 // generic observers with no parameter to their function
 let observers = [];
 
 function setup() {
-    createCanvas(1500, 1200); // width, height
+    createCanvas(1500, 1000); // width, height
 
     game = createGame(); // temporário 
     game.setup();
     client = createClient(game); // cliente faz conexão com servidor
     // debuga('client aaaaaa ' + (client == null), client);
-    inputListener = createInputListener(keyAndMouse, client);
+    inputListener = createInputListener(keyAndMouseIM, client);
 
     client.setup({
         // server: game.server,
@@ -26,20 +29,31 @@ function setup() {
 
     
     inputListener.setup();
+
+    for(let i = 0; i<numClientesBot; i++) {
+        const c = createClient(game); // cliente faz conexão com servidor
+        const randomInput = createInputListener(randomIM, c);
+        randomInput.setup();
+
+        // randomInput.setClient(c);
+        c.setup({inputListener:randomInput});
+
+        botClients[i] = {c, randomInput};
+    }
+    
+    
+    
+    
+    
+    
+    
+    // drawer = createDrawer();
 }
 
 
 function draw() {
 
-
     background(220);
-
-    // if (keyIsPressed && keyIsDown(87)){
-    // if (keyIsPressed){ 
-    // // if (keyIsDown(87)) { 
-    //     // w is pressed
-    //     client.input.onNewInput();
-    // }
 
     game.tickClock();
 
@@ -67,12 +81,20 @@ function notifyAll(command) {
 // usefull functions
 
 function debugm(msg, obg=null) {
+    // return;
     let msgf;
     print(msg);
     if(obg !== null) print(obg);
 }
 
 function debuga(msg, obg) {
+    // return;
     print(msg);
     print(obg);
+}
+
+function debugNull(value, message) {
+    if(value == null) {
+        console.error(message);
+    }
 }

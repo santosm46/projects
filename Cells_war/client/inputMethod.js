@@ -2,17 +2,16 @@
 //     return () => { };
 // }
 
+const nicknamesTable = {
+    w: 'move',
+};
 
-function keyAndMouse() {
-
-    const nicknamesTable = {
-        w: 'move',
-    };
+function keyAndMouseIM() {
 
     // function will be triggered by input
     function readInput(client) {
         if(nicknamesTable[key] != 'move') {return null};
-        if(keyIsPressed == false) {return null};
+        if(keyIsPressed === false) {return null};
 
         let command = {};
         let updatedState = client.getUpdatedState();
@@ -41,18 +40,32 @@ function keyAndMouse() {
 }
 
 
-function randomMovement(cell) {
-    let mover = {};
+function randomIM() {
 
-    mover.cell = cell;
-    mover.vel = 2;
+    function readInput(client) {
+        let command = {};
+        let updatedState = client.getUpdatedState();
+        // debugm('client.state.id', client.state.id);
 
+        // debugm('valor de cell', cell);
+        const maxVel = 5;
 
-    mover.move = function () {
-        this.cell.x += random(-this.vel, this.vel);
-        this.cell.y += random(-this.vel, this.vel);
-    };
+        const rx = random(-maxVel, maxVel);
+        const ry = random(-maxVel, maxVel);
 
-    return mover;
+        let vel = {
+            x: rx,
+            y: ry
+        };
+        command.inputType = nicknamesTable['w'];
+        command.movement = vel;
+        command.key = key;
+        // debuga('mandando id cliente', client..getClientId());
+        command.cellId = client.getClientId();
+
+        return command;
+    }
+
+    return {readInput};
 }
 
