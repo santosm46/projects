@@ -4,7 +4,7 @@ let client;
 let drawer;
 let inputListener;
 // let randomInput;
-const numClientesBot = 20;
+const numClientesBot = 2;
 const botClients = {};
 
 // generic observers with no parameter to their function
@@ -98,3 +98,4 @@ function debugNull(value, message) {
         console.error(message);
     }
 }
+

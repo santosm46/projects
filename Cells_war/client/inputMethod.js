@@ -4,6 +4,7 @@
 
 const nicknamesTable = {
     w: 'move',
+    W: 'move',
 };
 
 function keyAndMouseIM() {
@@ -24,9 +25,17 @@ function keyAndMouseIM() {
             x: mouseX - cell.x,
             y: mouseY - cell.y
         };
-        command.inputType = nicknamesTable[key];
+
+        if(mouseIsPressed) {
+            command.inputType = 'shot';
+        }
+        else {
+            command.inputType = nicknamesTable[key];
+        }
+        
         command.movement = vel;
         command.key = key;
+        
         // debuga('mandando id cliente', client..getClientId());
         command.cellId = client.getClientId();
 

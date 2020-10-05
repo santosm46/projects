@@ -9,13 +9,15 @@ function createCellHandler() {
         const cellId = command.cellId || 'r' + Math.floor(random(1000, 9999)); //command.cellId
         const x = command.x || Math.floor(random(width));
         const y = command.y || Math.floor(random(height));
-        const raio = command.raio || Math.floor(random(10, 60));
+        const radius = command.radius || Math.floor(random(10, 60));
+        const mass = PI * radius * radius;
 
         // attributes
         cell.id = cellId;
         cell.x = x;
         cell.y = y;
-        cell.raio = raio;
+        cell.mass = mass;
+        cell.radius = radius;
         cell.cor = command.cor || {
             r: Math.floor(random(255)),
             g: Math.floor(random(255)),

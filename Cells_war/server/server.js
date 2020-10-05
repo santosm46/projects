@@ -110,7 +110,7 @@ function createServerNetwork() {
     }
 
     function inputToServer(command) {
-        debugm(`received input ${command.key} from client ${command.cellId}`);
+        // debugm(`received input ${command.key} from client ${command.cellId}`);
         // an observer can be created to actions observe input to server
         this.game.actions.reactToInput(command);
     }

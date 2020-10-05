@@ -17,6 +17,10 @@ function createDrawer() {
         drawCells(client);
     }
 
+    function calcCellDiameter(cell) {
+        return cell.radius * 2;
+    }
+
     function drawGridChunks(chunks) {
         for (let j = 0; j <= chunks.cols; j++) {
             line(j * chunks.size, 0,
@@ -31,7 +35,7 @@ function createDrawer() {
 
     function drawCell(cell) {
         fill(cell.cor.r, cell.cor.g, cell.cor.b);
-        circle(cell.x, cell.y, cell.raio * 2);
+        circle(cell.x, cell.y, calcCellDiameter(cell));
     }
 
     function drawCells(client) {

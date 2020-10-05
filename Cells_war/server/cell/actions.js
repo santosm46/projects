@@ -21,15 +21,16 @@ function createActions() {
     function newPosition(cell, movement) {
         const field = getFieldSize();
         // debuga('actions.js field',field);
+        const radius = cell.radius;
 
         let x = cell.x + movement.x;
         let y = cell.y + movement.y;
 
-        x = x-cell.raio < 0 ? cell.raio : x;
-        x = x+cell.raio > field.x ? field.x - cell.raio : x;
+        x = x-radius < 0 ? radius : x;
+        x = x+radius > field.x ? field.x - radius : x;
 
-        y = y-cell.raio < 0 ? cell.raio : y;
-        y = y+cell.raio > field.y ? field.y - cell.raio : y;
+        y = y-radius < 0 ? radius : y;
+        y = y+radius > field.y ? field.y - radius : y;
 
         return {x, y};
     }
@@ -46,6 +47,11 @@ function createActions() {
             cell.y = newPos.y;
             // debugm('moving...');
         },
+        shot: function(command) {
+            const movement = createVector(command.movement.x, command.movement.y);
+            const cell = game.state.cells[command.cellId];
+            movement.setMag();
+        }
         // down: function (cell) {
         //     debugm('moving down');
         // },
