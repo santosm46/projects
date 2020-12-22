@@ -1,9 +1,7 @@
 #file -- game.py --
-from inspect import currentframe
-from beauty_print import print_debug, print_error, print_header, print_saves
+from beauty_print import *
 from common import *
-import json
-
+from save_manager import save_to_file
 
 class Game:
 
@@ -30,7 +28,6 @@ class Game:
             clear()
             self.player_handler.print_player(self.state["turn_of"])
             self.player_handler.player_move()
-        # print_debug("while loop de start() fechou", fname=__name__)
 
     def setup(self, player_handler):
         self.set_player_handler(player_handler)
@@ -44,13 +41,11 @@ class Game:
 
         self.state["turn_of"] = next_player["id"]
 
-    # def load(self, state):
     def stop(self):
         self.game_ruinning = False
 
     def save(self):
-        print_saves(self.state)
-        save_game_to_file(self.state)
+        save_to_file(self.state)
 
     def number_of_players(self) -> int:
         return len(self.state["players"])
@@ -59,6 +54,12 @@ class Game:
         if(self.number_of_players() == 0):
             return True
         return False
+    
+    def get_players_list(self) -> list:
+        players_list = []
+        for key in self.state["players"].keys():
+            players_list.append(self.state["players"][key]["name"])
+        return players_list
 
     def current_player(self) -> dict:
         k = self.state["turn_of"]

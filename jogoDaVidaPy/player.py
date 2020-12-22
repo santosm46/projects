@@ -73,11 +73,69 @@ class PlayerHandler:
             created_players += 1
             print_sucess(f"Jogador {name} criado!\n")
         print_sucess(f"Foram criados {created_players} jogadores")
+    
+    def remove_player(self, id) -> bool:
+        try:
+            player = self.game.state["players"].pop(id)
+            self.game.state["out_of_match"][id] = player
+            self.game.save()
+        except:
+            print_error(f"player.py: id:{id} não é str ou deu outro erro em remove_player()")
+            return False
+        return True
         
+        
+
+    def remove_players(self):
+        players = self.game.get_players_list()
+        if(len(players) == 0):
+            return
+        
+        clear()
+        # created_players = 0
+
+        print_header("Remoção de jogadores da partida")
+        print_warning("\tobs: Aperte ENTER para sair\n")
+        idx = 0
+        for i in range(len(players)):
+            print_normal(f"\t{i+1}) {players[i]}")
+
+        while(True):
+            if(len(players) == 0):
+                break
+
+            while(True):
+                idx = input_question("N° do jogador: ")
+                if(len(idx) == 0):
+                    return
+                if(self.valid_player_idx(idx)):
+                    break
+
+            idx = int(idx) - 1
+            player = self.get_player_by_idx(idx)
+            name = player["name"]
+            
+            if self.remove_player(str(player["id"])):
+                print_sucess(f"Jogador/a {name} fora da partida!")
+            else:
+                print_error("Erro ao remover o jogador de idx " + str(idx+1))
+            
+
     def create_players_mock(self):
         self.create_player('Anny Beatriz')
         self.create_player('Marcelo')
         self.create_player('Andréia')
+    
+    def valid_player_idx(self, idx):
+        if(not is_integer(idx)):
+            print_error("Número inválido! Digite um número! (ENTER para continuar")
+            return False
+        idx = int(idx)
+        num_players = self.game.number_of_players()
+        if(idx < 1 or idx > num_players):
+            print_error(f"Digite um número entre 1 e {num_players}")
+            return False
+        return True
 
     def get_player_by_idx(self, idx):
         keys = self.game.state["players"].keys()
