@@ -59,19 +59,63 @@ class PlayerHandler:
         
         print_normal(f"   vida {hp} [{hearts}]", end='')
         print_normal("\n")
+    
+    def print_players_list(self, players):
+        for i in range(len(players)):
+            print_normal(f"\t{i+1}) {players[i]}")
+
+    def add_player_on_match(self, idx):
+        players_oom_id_list = self.game.get_players_oom_id_list()
+
+        if(len(players_oom_id_list) == 0):
+            clear()
+            return
+        
+        if(not self.valid_player_idx(idx, len(players_oom_id_list))):
+            return
+
+        idx = int(idx) - 1
+        # player = self.get_player_oom_by_idx(idx)
+        id_oom = str(players_oom_id_list[idx])
+        player_oom = self.game.state["out_of_match"][str(id_oom)]
+        name = player_oom["name"]
+        
+        if self.remove_player_oom(id_oom):
+            clear()
+            print_sucess(f"Jogador/a {name} inserido na partida!\n")
+        else:
+            clear()
+            print_error(f"Erro ao adicionar o jogador de idx {idx+1}\n")
+        
+        
 
     def create_players(self):
         clear()
         created_players = 0
-        print_header("\tCriação de jogadores\n")
-        print_warning("\t\tobs: Aperte ENTER para sair\n")
+        
         while(True):
-            name = input_question("Nome do jogador: ")
+            print_header("\tCriação ou adicionar jogadores fora da partida\n")
+            print_warning("\t\tobs: Aperte ENTER para sair\n")
+            players_oom = self.game.get_players_oom_list()
+            # print_debug(f"player. {players_oom}")
+            print_header("Fora da partida: ")
+            self.print_players_list(players_oom)
+            # print_debug(f"player. players_oom de novo {players_oom}")
+
+
+            print_normal("\nNome do jogador para criá-lo")
+            name = input_question("  ou o N° de alguém para adicionar na partida: ")
             if(len(name) == 0):
                 break
-            self.create_player(name)
-            created_players += 1
-            print_sucess(f"Jogador {name} criado!\n")
+            if(is_integer(name)):
+                self.add_player_on_match(name)
+            else:
+                clear()
+                self.create_player(name)
+                created_players += 1
+                print_sucess(f"Jogador {name} criado!\n")
+        
+        self.game.save()
         print_sucess(f"Foram criados {created_players} jogadores")
     
     def remove_player(self, id) -> bool:
@@ -84,26 +128,69 @@ class PlayerHandler:
             return False
         return True
         
-        
-
-    def remove_players(self):
-        players = self.game.get_players_list()
-        if(len(players) == 0):
-            return
-        
+    def remove_player_oom(self, id) -> bool:
+        try:
+            player = self.game.state["out_of_match"].pop(id)
+            self.game.state["players"][id] = player
+            self.game.save()
+        except:
+            print_error(f"player.py: id:{id} não é str ou deu outro erro em remove_player()")
+            return False
+        return True
+    
+    def delete_players(self):
         clear()
-        # created_players = 0
-
-        print_header("Remoção de jogadores da partida")
-        print_warning("\tobs: Aperte ENTER para sair\n")
-        idx = 0
-        for i in range(len(players)):
-            print_normal(f"\t{i+1}) {players[i]}")
 
         while(True):
+            players_oom = self.game.get_players_oom_list()
+            print_header("Deletar jogadores [Só é possível deletar jogadores fora da partida]")
+            if(len(players_oom) == 0):
+                print_error("Não há jogadores fora da partida! Pressione ENTER")
+                input("")
+                return
+            
+            print_warning("\t\tobs: Aperte ENTER para sair\n")
+            # print_debug(f"player. {players_oom}")
+            print_header("Fora da partida: ")
+            self.print_players_list(players_oom)
+
+            players_oom_id_list = self.game.get_players_oom_id_list()
+
+            while True:
+                idx = input_question("\nN° do jogador para remover: ")
+                if(len(idx) == 0):
+                    return
+                
+                if(self.valid_player_idx(idx, len(players_oom_id_list))):
+                    break
+            idx = int(idx)-1
+
+            id_oom = str(players_oom_id_list[idx])
+            player_oom = self.game.state["out_of_match"][id_oom]
+            name = player_oom["name"]
+
+            resp = input_question(f"Tem certeza que quer deletar o jogador \"{name}\"? (S/N): ").upper()
+            if(resp == "S"):
+                self.game.state["out_of_match"].pop(id_oom)
+                self.game.save()
+                print_sucess(f"Jogador {name} deletado!\n")
+            clear()
+                
+                
+
+    def remove_players(self):
+        idx = 0
+        clear()
+        
+        while(True):
+            players = self.game.get_players_list()
             if(len(players) == 0):
                 break
-
+            
+            print_header("Remoção de jogadores da partida")
+            print_warning("\tobs: Aperte ENTER para sair\n")
+            self.print_players_list(players)
+            
             while(True):
                 idx = input_question("N° do jogador: ")
                 if(len(idx) == 0):
@@ -116,8 +203,10 @@ class PlayerHandler:
             name = player["name"]
             
             if self.remove_player(str(player["id"])):
-                print_sucess(f"Jogador/a {name} fora da partida!")
+                clear()
+                print_sucess(f"Jogador/a \"{name}\" fora da partida!\n")
             else:
+                clear()
                 print_error("Erro ao remover o jogador de idx " + str(idx+1))
             
 
@@ -126,12 +215,13 @@ class PlayerHandler:
         self.create_player('Marcelo')
         self.create_player('Andréia')
     
-    def valid_player_idx(self, idx):
+    def valid_player_idx(self, idx, num_players=None):
         if(not is_integer(idx)):
-            print_error("Número inválido! Digite um número! (ENTER para continuar")
+            print_error("Número inválido! Digite um número!")
             return False
         idx = int(idx)
-        num_players = self.game.number_of_players()
+        if(num_players is None):
+            num_players = self.game.number_of_players()
         if(idx < 1 or idx > num_players):
             print_error(f"Digite um número entre 1 e {num_players}")
             return False

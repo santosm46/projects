@@ -18,7 +18,8 @@ def start_game(save):
     
         print_normal(f"\t{prim_opt.CONTINUE}) Continuar partida")
         print_normal(f"\t{prim_opt.ADD_PLAYER}) Adicionar jogadores na partida")
-        print_normal(f"\t{prim_opt.REM_PLAYER}) Remover jogadores da partida")
+        print_normal(f"\t{prim_opt.REM_PLAYER}) Remover jogador da partida")
+        print_normal(f"\t{prim_opt.DEL_PLAYER}) Deletar jogador fora da partida")
         print_normal(f"\t{prim_opt.SAVE_EXIT}) Salvar e voltar para menu inicial")
 
         option = input_question("\nOpção: ").upper()
@@ -29,6 +30,8 @@ def start_game(save):
             game.player_handler.create_players()
         elif(option == prim_opt.REM_PLAYER):
             game.player_handler.remove_players()
+        elif(option == prim_opt.DEL_PLAYER):
+            game.player_handler.delete_players()
         elif(option == prim_opt.SAVE_EXIT):
             game.save()
             game.stop()

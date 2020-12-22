@@ -60,6 +60,22 @@ class Game:
         for key in self.state["players"].keys():
             players_list.append(self.state["players"][key]["name"])
         return players_list
+    
+    def get_players_list(self) -> list:
+        players_list = []
+        for key in self.state["players"].keys():
+            players_list.append(self.state["players"][key]["name"])
+        return players_list
+    
+    # oom = out of match
+    def get_players_oom_list(self) -> list:
+        players_list = []
+        for key in self.state["out_of_match"].keys():
+            players_list.append(self.state["out_of_match"][key]["name"])
+        return players_list
+    
+    def get_players_oom_id_list(self) -> list:
+        return list(self.state["out_of_match"].keys())
 
     def current_player(self) -> dict:
         k = self.state["turn_of"]

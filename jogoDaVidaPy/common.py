@@ -15,6 +15,7 @@ class prim_opt:
     CONTINUE = 'C'
     ADD_PLAYER = 'A'
     REM_PLAYER = 'R'
+    DEL_PLAYER = 'D'
 
     DELETE = 'D'
     LOAD = 'L'
