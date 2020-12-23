@@ -5,6 +5,7 @@ from player import PlayerHandler
 from save_manager import *
 
 def start_game(save):
+    # print_debug(f"main. {save}")
     save_name = save["save_name"]
 
     game = Game(save)
@@ -59,9 +60,10 @@ def run():
             create_new_save()
         elif(option == prim_opt.LOAD):
             save = load_save()
-            start_game(save)
+            if save is not None:
+                start_game(save)
         elif(option == prim_opt.DELETE):
-            input("main.py fazer deletar jogo")
+            delete_save()
         elif(option == prim_opt.EXIT):
             print_sucess("Fechando jogo...")
             break # ou return

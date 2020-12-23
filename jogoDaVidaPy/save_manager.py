@@ -66,7 +66,7 @@ def create_new_save():
 
     save_to_file(save, game_id)
 
-    print_sucess(f"Partida \"{game_name}\" criado! Aperte ENTER para começar.\n")
+    print_sucess(f"Partida \"{game_name}\" criado! Aperte ENTER para continuar.\n")
     cont = input("")
 
 def load_save(save_id=None):
@@ -88,6 +88,11 @@ def load_save(save_id=None):
         save_loaded = data["saves"][save_id].copy()
         return save_loaded
     
+    if(len(data["saves"]) == 0):
+        print_warning("Não há partidas! Aperte ENTER para voltar e crie uma.")
+        input("")
+        return None
+
     saves_id = list(data["saves"].keys())
 
     clear()
@@ -107,9 +112,53 @@ def load_save(save_id=None):
             break
 
     choice = data["saves"][saves_id[int(option)-1]]
-    choice_name = choice["save_name"]
     choice_id = choice["save_id"]
     # print_normal(f"Você escolheu \"{choice_name}\", pressione ENTER para começar")
     save_loaded = data["saves"][str(choice_id)].copy()
     # cont = input("")
     return save_loaded
+
+
+def delete_save():
+    data = get_saves()
+    
+    clear()
+
+    while True:
+        if(len(data["saves"]) == 0):
+            print_warning("Não há partidas salvas! Aperte ENTER para voltar.")
+            input("")
+            return
+        
+        print_header("Partidas")
+        for key in data["saves"].keys():
+            save_name = data["saves"][key]["save_name"]
+            save_id = data["saves"][key]["save_id"]
+            print_normal(f"    {save_id}) {save_name}")
+
+
+        game_id = input_question(f"\nCódigo da partida que quer {bcolors.FAIL}Deletar{bcolors.OKBLUE} (ENTER para cancelar): ")
+
+        if(len(game_id) == 0):
+            return
+        
+        try:
+            save = data["saves"][game_id]
+        except:
+            clear()
+            print_error(f"Id {game_id} inválido, digite um valor válido.\n")
+            continue
+
+        save_name = save["save_name"]
+        save_id = str(save["save_id"])
+
+        sure = input_question(f"\nTem certeza que quer deletar a partida \"{save_name}\"? (S/N): ").upper()
+        
+        clear()
+        if(sure == 'S'):
+            data["saves"].pop(save_id)
+            save_all(data)
+            print_sucess(f"Partida \"{save_name}\" deletada!\n")
+
+        else:
+            print_normal("Deleção cancelada!\n")

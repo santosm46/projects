@@ -15,26 +15,35 @@ class Game:
         clear()
 
         if(self.has_no_players_in_game()):
-            print_error("Não há jogadores na partida, pressione ENTER para criar alguns no menu de partida")
+            print_error("Não há jogadores na partida, pressione ENTER para voltar e criar alguns no menu de partida.")
             a = input("")
             return
-
-        if(self.state["turn_of"] is None):
+        turn = self.turn_of()
+        # self.get_players_id_list() # fix
+        # print_debug(f"turn={turn} tipo do turn: {type(turn)}. ids em jogo={self.get_players_id_list()}", fname=__name__, fline=get_linenumber(), pause=True)
+        if(turn is None or str(turn) not in self.get_players_id_list()):
             self.state["turn_of"] = self.player_handler.get_player_by_idx(0)["id"]
 
         self.game_ruinning = True
 
         while self.game_ruinning:
             clear()
-            self.player_handler.print_player(self.state["turn_of"])
+            self.player_handler.print_player(self.turn_of())
             self.player_handler.player_move()
 
     def setup(self, player_handler):
         self.set_player_handler(player_handler)
         self.player_handler.setup(self)
+    
+    def turn_of(self) -> str:
+        return str(self.state["turn_of"])
 
     def pass_turn(self):
         num_players = self.number_of_players()
+        if(num_players == 0):
+            self.state["turn_of"] = None
+            self.save()
+            return
         player_idx = self.player_handler.get_player_idx()
         next_player_idx = (int(player_idx)+1) % num_players
         next_player = self.player_handler.get_player_by_idx(next_player_idx)
@@ -61,12 +70,6 @@ class Game:
             players_list.append(self.state["players"][key]["name"])
         return players_list
     
-    def get_players_list(self) -> list:
-        players_list = []
-        for key in self.state["players"].keys():
-            players_list.append(self.state["players"][key]["name"])
-        return players_list
-    
     # oom = out of match
     def get_players_oom_list(self) -> list:
         players_list = []
@@ -74,17 +77,24 @@ class Game:
             players_list.append(self.state["out_of_match"][key]["name"])
         return players_list
     
+    def get_players_id_list(self) -> list:
+        id_list = list(self.state["players"].keys())
+        id_list_str = []
+        for i in id_list:
+            id_list_str.append(str(i))
+        return id_list_str
+
     def get_players_oom_id_list(self) -> list:
         return list(self.state["out_of_match"].keys())
 
     def current_player(self) -> dict:
-        k = self.state["turn_of"]
+        k = self.turn_of()
         return self.state["players"][str(k)]
 
     
-    def generate_id(self) -> int:
+    def generate_id(self) -> str:
         self.state["last_id"] += 1
-        return self.state["last_id"]
+        return str(self.state["last_id"])
     
     # apenas chama a função da player_handler de mesmo nome
     def get_player_by_idx(self, idx):

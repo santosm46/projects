@@ -40,7 +40,7 @@ class PlayerHandler:
     def create_player(self, name):
         new_id = self.game.generate_id()
         
-        self.game.state["players"][new_id] = {
+        self.get_players()[new_id] = {
             "id": new_id,
             "name": name,
             "hp": MAX_HP,
@@ -48,7 +48,8 @@ class PlayerHandler:
         }
     
     def print_player(self, player_id):
-        player = self.game.state["players"][str(player_id)]
+        # print_debug(f"\n\nplayer_id={player_id}", fline=get_linenumber(),fname=__name__, pause=True)
+        player = self.get_players()[str(player_id)]
         name = player["name"]
         hp = player["hp"]
         max_hp = player["max_hp"]
@@ -77,7 +78,7 @@ class PlayerHandler:
         idx = int(idx) - 1
         # player = self.get_player_oom_by_idx(idx)
         id_oom = str(players_oom_id_list[idx])
-        player_oom = self.game.state["out_of_match"][str(id_oom)]
+        player_oom = self.get_players_oom()[str(id_oom)]
         name = player_oom["name"]
         
         if self.remove_player_oom(id_oom):
@@ -97,10 +98,8 @@ class PlayerHandler:
             print_header("\tCriação ou adicionar jogadores fora da partida\n")
             print_warning("\t\tobs: Aperte ENTER para sair\n")
             players_oom = self.game.get_players_oom_list()
-            # print_debug(f"player. {players_oom}")
             print_header("Fora da partida: ")
             self.print_players_list(players_oom)
-            # print_debug(f"player. players_oom de novo {players_oom}")
 
 
             print_normal("\nNome do jogador para criá-lo")
@@ -120,8 +119,11 @@ class PlayerHandler:
     
     def remove_player(self, id) -> bool:
         try:
-            player = self.game.state["players"].pop(id)
-            self.game.state["out_of_match"][id] = player
+            turn_of = self.game.turn_of()
+            if(id == turn_of):
+                self.game.pass_turn()
+            player = self.get_players().pop(id)
+            self.get_players_oom()[id] = player
             self.game.save()
         except:
             print_error(f"player.py: id:{id} não é str ou deu outro erro em remove_player()")
@@ -130,8 +132,8 @@ class PlayerHandler:
         
     def remove_player_oom(self, id) -> bool:
         try:
-            player = self.game.state["out_of_match"].pop(id)
-            self.game.state["players"][id] = player
+            player = self.get_players_oom().pop(id)
+            self.get_players()[id] = player
             self.game.save()
         except:
             print_error(f"player.py: id:{id} não é str ou deu outro erro em remove_player()")
@@ -150,7 +152,6 @@ class PlayerHandler:
                 return
             
             print_warning("\t\tobs: Aperte ENTER para sair\n")
-            # print_debug(f"player. {players_oom}")
             print_header("Fora da partida: ")
             self.print_players_list(players_oom)
 
@@ -166,12 +167,12 @@ class PlayerHandler:
             idx = int(idx)-1
 
             id_oom = str(players_oom_id_list[idx])
-            player_oom = self.game.state["out_of_match"][id_oom]
+            player_oom = self.get_players_oom()[id_oom]
             name = player_oom["name"]
 
             resp = input_question(f"Tem certeza que quer deletar o jogador \"{name}\"? (S/N): ").upper()
             if(resp == "S"):
-                self.game.state["out_of_match"].pop(id_oom)
+                self.get_players_oom().pop(id_oom)
                 self.game.save()
                 print_sucess(f"Jogador {name} deletado!\n")
             clear()
@@ -185,7 +186,9 @@ class PlayerHandler:
         while(True):
             players = self.game.get_players_list()
             if(len(players) == 0):
-                break
+                print_warning("Não há jogadores para remover da partida! \nAperte ENTER para voltar e insira jogadores na partida.")
+                input("")
+                return
             
             print_header("Remoção de jogadores da partida")
             print_warning("\tobs: Aperte ENTER para sair\n")
@@ -228,17 +231,23 @@ class PlayerHandler:
         return True
 
     def get_player_by_idx(self, idx):
-        keys = self.game.state["players"].keys()
+        keys = self.get_players().keys()
         key = list(keys)[idx]
-        return self.game.state["players"][str(key)]
+        return self.get_players()[str(key)]
     
     def get_player_idx(self) -> int:
         player_id = str(self.game.current_player()["id"])
-        keys = self.game.state["players"].keys()
+        keys = self.get_players().keys()
         keys_list = list(keys)
         num_players = self.game.number_of_players()
         for idx in range(num_players):
             if(str(keys_list[idx]) == player_id):
                 return idx
         return None
-        
+    
+    def get_players(self):
+        return self.game.state["players"]
+    
+    def get_players_oom(self):
+        return self.game.state["out_of_match"]
+    
