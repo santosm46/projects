@@ -40,5 +40,24 @@ def is_integer(n):
     
     return float(n).is_integer()
 
+def str_to_file_format(text: str) -> str:
+    import unicodedata 
 
+    text = text.strip()
+    text = " ".join(text.split()).replace(" ","_")
+    text = unicodedata.normalize('NFD', text)
+    text = text.encode('ascii', 'ignore').decode("utf-8")
+    text = f"{text}.txt"
+
+    return text
+
+def get_saves_list() -> list:
+
+    def valid_file(name):
+        return ".txt" in name and len(name) > 4 and name[-4:] == ".txt"
+
+    saves_names : list = os.listdir("./saves")
+    saves_names = list(filter(valid_file, saves_names))
+    
+    return(saves_names)
 

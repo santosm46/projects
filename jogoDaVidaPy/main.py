@@ -1,21 +1,23 @@
 from common import *
 from beauty_print import *
-from game import Game
-from player import PlayerHandler
-from save_manager import *
+
+from Instanciator import Instanciator
+from SaveManager import SaveManager
+from GameManager import GameManager
+
 
 def start_game(save):
-    # print_debug(f"main. {save}")
-    save_name = save["save_name"]
+    factory : Instanciator = Instanciator()
 
-    game = Game(save)
-    game.setup(PlayerHandler())
+    game : GameManager = factory.get_instance("GameManager")
+    
+    game.setup(save)
     # game.start()
 
     while(True):
         clear()
 
-        print_header(f"Menu da partida: {save_name} \nJogadores: {game.get_players_list()} \n")
+        print_header(f"Menu da partida: {game.save_name} \nJogadores: {game.get_players_list()} \n")
     
         print_normal(f"\t{prim_opt.CONTINUE}) Continuar partida")
         print_normal(f"\t{prim_opt.ADD_PLAYER}) Adicionar jogadores na partida")
@@ -42,34 +44,57 @@ def start_game(save):
             cont = input("")
 
 
+def create_new_game():
+    factory : Instanciator = Instanciator()
+    save_manager : SaveManager = factory.get_instance("SaveManager")
+    save_manager.create_new_save()
+
+def continue_game():
+    factory : Instanciator = Instanciator()
+    save_manager : SaveManager = factory.get_instance("SaveManager")
+    save = save_manager.load_save()
+    if save is not None:
+        start_game(save)
+
+def delete_game():
+    factory : Instanciator = Instanciator()
+    save_manager : SaveManager = factory.get_instance("SaveManager")
+    save_manager.delete_save()
+
+def exit_game():
+    print_sucess("Fechando jogo...")
+
 def run():
+
+    # exceção do SaveManager, que não usa o factory, pois são funções genéricas
+    # só para ler e salvar os saves
+    options = {
+        prim_opt.CREATE: create_new_game,
+        prim_opt.LOAD: continue_game,
+        prim_opt.DELETE: delete_game,
+        prim_opt.EXIT: exit_game,
+    }
+
     clear()
 
     while(True):
         clear()
         print_header("Menu inicial\n")
         print_normal(f"\t{prim_opt.CREATE}) Criar novo jogo")
-        print_normal(f"\t{prim_opt.LOAD}) Carregar um jogo")
+        print_normal(f"\t{prim_opt.LOAD}) Continuar um jogo")
         print_normal(f"\t{prim_opt.DELETE}) Deletar um jogo")
 
         print_normal(f"\n\t{prim_opt.EXIT}) Fechar jogo")
 
         option = input_question("Opção: ").upper()
 
-        if(option == prim_opt.CREATE):
-            create_new_save()
-        elif(option == prim_opt.LOAD):
-            save = load_save()
-            if save is not None:
-                start_game(save)
-        elif(option == prim_opt.DELETE):
-            delete_save()
-        elif(option == prim_opt.EXIT):
-            print_sucess("Fechando jogo...")
-            break # ou return
-        else:
+        try:
+            options[option]()
+        except:
             print_error(f"Opção ({option}) inválida! pressione ENTER")
-            cont = input("")
+            input("")
+        if(option == prim_opt.EXIT):
+            break
 
 
 

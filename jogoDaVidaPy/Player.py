@@ -1,11 +1,12 @@
 #file -- player.py --
 from beauty_print import *
 from common import *
+from Thing import Thing
 
-class PlayerHandler:
+class Player(Thing):
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def setup(self, game):
         self.game = game

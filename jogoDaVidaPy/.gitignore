@@ -1,4 +1,7 @@
 __pycache__
 sav.json
-saves.txt
-tests.py
+*.txt
+debug.py
+outros
+saves
+*.pyc
