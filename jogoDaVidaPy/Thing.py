@@ -1,6 +1,9 @@
 # from Instanciator import Instanciator
 # from GameManager import GameManager
 
+# from Event import Event
+
+
 class Thing:
     def __init__(self):
         pass
@@ -17,15 +20,14 @@ class Thing:
             print(f"Erro! Função {name} não existe nessa classe {self.__class__}")
     
     # every class will implement their own method new_concrete_thing()
-    # def new_concrete_thing(self, id: str = None):
-    #     factory : Instanciator = self.factory
-    #     game_manager : GameManager = factory.get_instance("GameManager")
+    def new_concrete_thing(self):
+        game_manager = self.factory.get_instance("GameManager")
 
-    #     if id is None:
-    #         id = game_manager.generate_id()
-    #     return {
-    #         "id": id
-    #     }
+        _id = game_manager.generate_id()
+        return {
+            "id": _id
+        }
+
     
     # small package with basic information of a thing, to help find it in the data structure
     def reference(self, id: str, category: str = None):
@@ -37,7 +39,10 @@ class Thing:
         }
     
     def set_factory(self, factory):
-        self.factory = factory
+        # self.factory : Instanciator = factory
+        self.factory  = factory
+        # if(self.get_category() != "Event"):
+        self.event = factory.get_instance("Event")
 
     def get_concrete_thing(self, id: str):
         data = self.factory.get_instance("DataStructure")

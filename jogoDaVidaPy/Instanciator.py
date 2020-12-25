@@ -1,6 +1,6 @@
 from beauty_print import print_debug
 
-from Thing import Thing
+# from Thing import Thing
 
 from GameManager import GameManager
 from Player import Player
@@ -11,8 +11,12 @@ from SaveManager import SaveManager
 from DataStructure import DataStructure
 from PlayerIM import PlayerIM
 from PlayerOOM import PlayerOOM
+from Board import Board
+from RandomName import RandomName
+from DiceRandom import DiceRandom
+from DiceRollOrRandom import DiceRollOrRandom
 
-class Instanciator(Thing):
+class Instanciator:
 
     classes = {
         "GameManager": GameManager,
@@ -24,6 +28,10 @@ class Instanciator(Thing):
         "DataStructure": DataStructure,
         "PlayerIM": PlayerIM,
         "PlayerOOM": PlayerOOM,
+        "Board": Board,
+        "RandomName": RandomName,
+        "DiceRandom": DiceRandom,
+        "DiceRollOrRandom": DiceRollOrRandom
     }
 
     instances = {}

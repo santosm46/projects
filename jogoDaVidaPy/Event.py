@@ -24,9 +24,12 @@ class Event(Thing):
     # É preciso dar setup após pegar instância
     def setup(self):
         # get events pointer of concrete_things of Event
+        pass
+    
+    def set_factory(self, factory):
+        self.factory = factory
         data_structure : DataStructure = self.factory.get_instance("DataStructure")
         self.events = data_structure.get_data()[self.get_category()]["concrete_things"]
-        
 
     # new_concrete_thing
     def subscribe(self, event_name: str, interested: dict, function_name: str):

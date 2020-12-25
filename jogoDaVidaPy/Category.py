@@ -61,6 +61,12 @@ tree = {
         "Event": {},
         "Category": {},
         "SaveManager": {},
+        "Board": {},
+        "Dice": {
+            "DiceRandom": {
+                "DiceRollOrRandom": {},
+            }
+        },
     },
     "Instanciator": {},
 }

@@ -1,4 +1,3 @@
-from os import error
 from common import DEBUG_ENABLED
 from Thing import Thing
 from Category import Category

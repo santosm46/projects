@@ -75,7 +75,8 @@ class SaveManager(Thing):
             "last_id": 1,
             "turn_of": None,
             "last_save_date": current_datetime,
-            "creation_date": current_datetime
+            "creation_date": current_datetime,
+            "game_version": GAME_VERSION,
         }
         # salvando save_metadata na estrutura de dados
         save.data[self.get_category()]["concrete_things"]["1"] = save_metadata
@@ -134,40 +135,35 @@ class SaveManager(Thing):
         
         clear()
 
+        saves_names = get_saves_list()
+
         while True:
-            if(len(data["saves"]) == 0):
+            if(len(saves_names) == 0):
                 print_warning("Não há partidas salvas! Aperte ENTER para voltar.")
                 input("")
                 return
             
             print_header("Partidas")
-            for key in data["saves"].keys():
-                save_name = data["saves"][key]["save_name"]
-                save_id = data["saves"][key]["save_id"]
-                print_normal(f"    {save_id}) {save_name}")
+            for idx in range(len(saves_names)):
+                print_normal(f"    {idx+1}) {saves_names[idx]}")
 
+            while True:
+                idx = input_question(f"\nN° da partida que quer {bcolors.FAIL}Deletar{bcolors.OKBLUE} (ENTER para voltar): ")
 
-            game_id = input_question(f"\nCódigo da partida que quer {bcolors.FAIL}Deletar{bcolors.OKBLUE} (ENTER para cancelar): ")
+                if(len(idx) == 0):
+                    # print_normal("Deleção cancelada!\n")
+                    return
+                
+                if(self.valid_save_value(idx, len(saves_names))):
+                    break
 
-            if(len(game_id) == 0):
-                return
-            
-            try:
-                save = data["saves"][game_id]
-            except:
-                clear()
-                print_error(f"Id {game_id} inválido, digite um valor válido.\n")
-                continue
-
-            save_name = save["save_name"]
-            save_id = str(save["save_id"])
+            save_name = saves_names[int(idx)-1]
 
             sure = input_question(f"\nTem certeza que quer deletar a partida \"{save_name}\"? (S/N): ").upper()
             
             clear()
             if(sure == 'S'):
-                data["saves"].pop(save_id)
-                self.save_all(data)
+                os.system(f"rm {SAVES_PATH}{save_name}")
                 print_sucess(f"Partida \"{save_name}\" deletada!\n")
 
             else:

@@ -66,15 +66,6 @@ def exit_game():
 
 def run():
 
-    # exceção do SaveManager, que não usa o factory, pois são funções genéricas
-    # só para ler e salvar os saves
-    options = {
-        prim_opt.CREATE: create_new_game,
-        prim_opt.LOAD: continue_game,
-        prim_opt.DELETE: delete_game,
-        prim_opt.EXIT: exit_game,
-    }
-
     clear()
 
     while(True):

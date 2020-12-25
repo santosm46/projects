@@ -2,10 +2,10 @@
 from DataStructure import DataStructure
 from beauty_print import *
 from common import *
-from Thing import Thing
+from Person import Person
 # from GameManager import GameManager
 
-class Player(Thing):
+class Player(Person):
 
     def __init__(self):
         super().__init__()
@@ -17,7 +17,8 @@ class Player(Thing):
 
         # self.im.setup(game)
 
-
+    def new_concrete_thing(self):
+        return super().new_concrete_thing()
 
     
     def print_player(self, player_id):
@@ -37,8 +38,12 @@ class Player(Thing):
     def print_players_list(self, players=None):
         if players is None:
             players = self.get_players_list()
+        # print_debug(f"tipo players = {type(players)}")
         for i in range(len(players)):
             print_normal(f"\t{i+1}) {players[i]}")
+        # try:
+        # except:
+        #     debug_error(f"players must be a list, it is {type(players)}", fname=__name__, fline=get_linenumber())
 
     def get_players_list(self) -> list:
         players_list = []
@@ -178,8 +183,8 @@ class Player(Thing):
         return self.get_dict_list()["concrete_things"]
     
     # fix
-    # def get_players_oom(self):
-    #     return self.game.state["out_of_match"]
+    def get_players_oom(self):
+        return self.game.player_oom.get_players()
     
     def get_players_id_list(self) -> list:
         id_list = list(self.get_players().keys())

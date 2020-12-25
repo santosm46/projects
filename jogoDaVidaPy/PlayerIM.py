@@ -2,7 +2,7 @@ from beauty_print import *
 from common import *
 from Player import Player
 from DataStructure import DataStructure
-
+import random
 
 class PlayerIM(Player):
 
@@ -16,6 +16,7 @@ class PlayerIM(Player):
         while(player_id == self.game.turn_of()):
             print_normal(f"\nEscolha uma opção")
             print_normal(f"\t{prim_opt.PASS_TURN}) Passar vez")
+            print_normal(f"\t{prim_opt.ROLL_DICE}) Jogar dado")
             print_normal(f"\n")
             # print_normal(f"\t{prim_opt.SAVE}) Salvar")
             # print_normal(f"\t{prim_opt.EXIT}) Sair")
@@ -26,6 +27,8 @@ class PlayerIM(Player):
                 print_normal("Passando vez...  ENTER para confirmar ou outra coisa para cancelar\n")
                 if len(input("")) == 0:
                     break
+            if(option == prim_opt.ROLL_DICE):
+                self.roll_dice_for(player_id)
             elif(option == prim_opt.SAVE_EXIT):
                 print_sucess("Salvando e saindo...")
                 self.game.stop()
@@ -36,19 +39,25 @@ class PlayerIM(Player):
                 cont = input("")
         self.game.pass_turn()
 
+    def roll_dice_for(self, _id: str):
+        player = self.get_concrete_thing(_id)
+        dice = self.factory.get_instance(player["dice_method"])
+        result = dice.roll_dice()
+        print_sucess(f"O valor do dado deu: {result}")
+        input("")
+
     # new_concrete_thing
     def create_player(self, name):
         data : DataStructure = self.factory.get_instance("DataStructure")
-        new_id = self.game.generate_id()
 
-        concrete_player = {
-            "id": new_id,
-            "name": name,
-            "hp": MAX_HP,
-            "max_hp": MAX_HP
-        }
+        concrete_player = self.new_concrete_thing()
+        print(concrete_player)
 
-        data.keep_concrete_thing(new_id, concrete_player, self.get_category())
+        concrete_player["name"] = name
+        concrete_player["dice_method"] = "DiceRollOrRandom"
+
+
+        data.keep_concrete_thing(concrete_player["id"], concrete_player, self.get_category())
     
 
     def create_players(self):
