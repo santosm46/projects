@@ -12,7 +12,7 @@ def start_game(save):
     game : GameManager = factory.get_instance("GameManager")
     
     game.setup(save)
-    # game.start()
+    # fix tal dar setup() em DataStructure e Category
 
     while(True):
         clear()
@@ -30,11 +30,11 @@ def start_game(save):
         if(option == prim_opt.CONTINUE):
             game.start()
         elif(option == prim_opt.ADD_PLAYER):
-            game.player_handler.create_players()
+            game.player_im.create_players()
         elif(option == prim_opt.REM_PLAYER):
-            game.player_handler.remove_players()
+            game.player_im.remove_players()
         elif(option == prim_opt.DEL_PLAYER):
-            game.player_handler.delete_players()
+            game.player_oom.delete_players()
         elif(option == prim_opt.SAVE_EXIT):
             game.save()
             game.stop()
@@ -86,15 +86,22 @@ def run():
 
         print_normal(f"\n\t{prim_opt.EXIT}) Fechar jogo")
 
+
         option = input_question("Opção: ").upper()
 
-        try:
-            options[option]()
-        except:
+        if(option == prim_opt.CREATE): 
+            create_new_game()
+        elif(option == prim_opt.LOAD):
+            continue_game()
+        elif(option == prim_opt.DELETE): 
+            delete_game()
+        elif(option == prim_opt.EXIT):
+            exit_game()
+            break
+        else:
             print_error(f"Opção ({option}) inválida! pressione ENTER")
             input("")
-        if(option == prim_opt.EXIT):
-            break
+        
 
 
 

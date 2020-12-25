@@ -1,7 +1,9 @@
 #file -- player.py --
+from DataStructure import DataStructure
 from beauty_print import *
 from common import *
 from Thing import Thing
+# from GameManager import GameManager
 
 class Player(Thing):
 
@@ -9,44 +11,14 @@ class Player(Thing):
         super().__init__()
 
     def setup(self, game):
-        self.game = game
+        self.game  = game
+        # self.im : Player = self.factory.get_instance("PlayerIM")
+        # self.oom : Player = self.factory.get_instance("PlayerOOM")
 
-    def player_move(self):
-        player_id = self.game.current_player()["id"]
-        
-        while(player_id == self.game.state["turn_of"]):
-            print_normal(f"\nEscolha uma opção")
-            print_normal(f"\t{prim_opt.PASS_TURN}) Passar vez")
-            print_normal(f"\n")
-            # print_normal(f"\t{prim_opt.SAVE}) Salvar")
-            # print_normal(f"\t{prim_opt.EXIT}) Sair")
-            print_normal(f"\t{prim_opt.SAVE_EXIT}) Salvar e sair para menu da partida")
-            option = input_question("\nOpção: ").upper()
-
-            if(option == prim_opt.PASS_TURN):
-                print_normal("Passando vez...  ENTER para confirmar ou outra coisa para cancelar\n")
-                if len(input("")) == 0:
-                    break
-            elif(option == prim_opt.SAVE_EXIT):
-                print_sucess("Salvando e saindo...")
-                self.game.stop()
-                self.game.save()
-                return
-            else:
-                print_error(f"Opção ({option}) inválida! pressione ENTER")
-                cont = input("")
-        self.game.pass_turn()
+        # self.im.setup(game)
 
 
-    def create_player(self, name):
-        new_id = self.game.generate_id()
-        
-        self.get_players()[new_id] = {
-            "id": new_id,
-            "name": name,
-            "hp": MAX_HP,
-            "max_hp": MAX_HP
-        }
+
     
     def print_player(self, player_id):
         # print_debug(f"\n\nplayer_id={player_id}", fline=get_linenumber(),fname=__name__, pause=True)
@@ -62,9 +34,21 @@ class Player(Thing):
         print_normal(f"   vida {hp} [{hearts}]", end='')
         print_normal("\n")
     
-    def print_players_list(self, players):
+    def print_players_list(self, players=None):
+        if players is None:
+            players = self.get_players_list()
         for i in range(len(players)):
             print_normal(f"\t{i+1}) {players[i]}")
+
+    def get_players_list(self) -> list:
+        players_list = []
+        for key in self.get_players().keys():
+            # print_warning(f"key {key}")
+            # print_warning(self.get_players())
+            aa = self.get_players()[key]["name"]
+            # print(aa)
+            players_list.append(aa)
+        return players_list
 
     def add_player_on_match(self, idx):
         players_oom_id_list = self.game.get_players_oom_id_list()
@@ -91,46 +75,22 @@ class Player(Thing):
         
         
 
-    def create_players(self):
-        clear()
-        created_players = 0
-        
-        while(True):
-            print_header("\tCriação ou adicionar jogadores fora da partida\n")
-            print_warning("\t\tobs: Aperte ENTER para sair\n")
-            players_oom = self.game.get_players_oom_list()
-            print_header("Fora da partida: ")
-            self.print_players_list(players_oom)
-
-
-            print_normal("\nNome do jogador para criá-lo")
-            name = input_question("  ou o N° de alguém para adicionar na partida: ")
-            if(len(name) == 0):
-                break
-            if(is_integer(name)):
-                self.add_player_on_match(name)
-            else:
-                clear()
-                self.create_player(name)
-                created_players += 1
-                print_sucess(f"Jogador {name} criado!\n")
-        
-        self.game.save()
-        print_sucess(f"Foram criados {created_players} jogadores")
     
-    def remove_player(self, id) -> bool:
+    # remove player from match and put it on OOM list
+    def remove_player(self, _id) -> bool:
         try:
             turn_of = self.game.turn_of()
-            if(id == turn_of):
+            if(_id == turn_of):
                 self.game.pass_turn()
-            player = self.get_players().pop(id)
-            self.get_players_oom()[id] = player
+            player = self.get_players().pop(_id)
+            self.get_players_oom()[_id] = player
             self.game.save()
         except:
-            print_error(f"player.py: id:{id} não é str ou deu outro erro em remove_player()")
+            print_error(f"player.py: _id:{_id} não é str ou deu outro erro em remove_player()")
             return False
         return True
-        
+    
+    # put player on match
     def remove_player_oom(self, id) -> bool:
         try:
             player = self.get_players_oom().pop(id)
@@ -141,42 +101,7 @@ class Player(Thing):
             return False
         return True
     
-    def delete_players(self):
-        clear()
-
-        while(True):
-            players_oom = self.game.get_players_oom_list()
-            print_header("Deletar jogadores [Só é possível deletar jogadores fora da partida]")
-            if(len(players_oom) == 0):
-                print_error("Não há jogadores fora da partida! Pressione ENTER")
-                input("")
-                return
-            
-            print_warning("\t\tobs: Aperte ENTER para sair\n")
-            print_header("Fora da partida: ")
-            self.print_players_list(players_oom)
-
-            players_oom_id_list = self.game.get_players_oom_id_list()
-
-            while True:
-                idx = input_question("\nN° do jogador para remover: ")
-                if(len(idx) == 0):
-                    return
-                
-                if(self.valid_player_idx(idx, len(players_oom_id_list))):
-                    break
-            idx = int(idx)-1
-
-            id_oom = str(players_oom_id_list[idx])
-            player_oom = self.get_players_oom()[id_oom]
-            name = player_oom["name"]
-
-            resp = input_question(f"Tem certeza que quer deletar o jogador \"{name}\"? (S/N): ").upper()
-            if(resp == "S"):
-                self.get_players_oom().pop(id_oom)
-                self.game.save()
-                print_sucess(f"Jogador {name} deletado!\n")
-            clear()
+    
                 
                 
 
@@ -219,13 +144,16 @@ class Player(Thing):
         self.create_player('Marcelo')
         self.create_player('Andréia')
     
+    def number_of_players(self) -> int:
+        return len(self.get_players())
+
     def valid_player_idx(self, idx, num_players=None):
         if(not is_integer(idx)):
             print_error("Número inválido! Digite um número!")
             return False
         idx = int(idx)
         if(num_players is None):
-            num_players = self.game.number_of_players()
+            num_players = self.number_of_players()
         if(idx < 1 or idx > num_players):
             print_error(f"Digite um número entre 1 e {num_players}")
             return False
@@ -237,18 +165,26 @@ class Player(Thing):
         return self.get_players()[str(key)]
     
     def get_player_idx(self) -> int:
-        player_id = str(self.game.current_player()["id"])
+        player_id = str(self.game.turn_of())
         keys = self.get_players().keys()
         keys_list = list(keys)
-        num_players = self.game.number_of_players()
+        num_players = self.number_of_players()
         for idx in range(num_players):
             if(str(keys_list[idx]) == player_id):
                 return idx
         return None
     
     def get_players(self):
-        return self.game.state["players"]
+        return self.get_dict_list()["concrete_things"]
     
-    def get_players_oom(self):
-        return self.game.state["out_of_match"]
+    # fix
+    # def get_players_oom(self):
+    #     return self.game.state["out_of_match"]
+    
+    def get_players_id_list(self) -> list:
+        id_list = list(self.get_players().keys())
+        id_list_str = []
+        for i in id_list:
+            id_list_str.append(str(i))
+        return id_list_str
     

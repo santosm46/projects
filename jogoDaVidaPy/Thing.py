@@ -44,4 +44,9 @@ class Thing:
         concrete_thing = data.get_concrete_thing(id, self.get_category())
         return concrete_thing
     
+    def get_dict_list(self):
+        data = self.factory.get_instance("DataStructure")
+        # print(data)
+        return data.data[self.get_category()]
+    
     

@@ -9,7 +9,8 @@ from Tester import Tester
 from Category import Category
 from SaveManager import SaveManager
 from DataStructure import DataStructure
-
+from PlayerIM import PlayerIM
+from PlayerOOM import PlayerOOM
 
 class Instanciator(Thing):
 
@@ -21,6 +22,8 @@ class Instanciator(Thing):
         "Category": Category,
         "SaveManager": SaveManager,
         "DataStructure": DataStructure,
+        "PlayerIM": PlayerIM,
+        "PlayerOOM": PlayerOOM,
     }
 
     instances = {}

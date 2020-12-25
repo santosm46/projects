@@ -5,7 +5,10 @@ tree = {
     "DataStructure": {
         "Entity": {
             "Person": {
-                "Player": {},
+                "Player": {
+                    "PlayerIM": {},
+                    "PlayerOOM": {},
+                },
                 "Npc": {
                     "Citizen": {
                         "Medic": {},

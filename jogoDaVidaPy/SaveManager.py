@@ -45,7 +45,10 @@ class SaveManager(Thing):
 
     def create_new_save(self):
         def valid_file_name(file_name):
-            # implement
+            if(str_to_file_format(file_name) in get_saves_list()):
+                print_error(f"Arquivo {file_name} já existe! Digite outra coisa")
+                return False
+            # implement more
             return True
         
         # criar e salvar uma nova estrutura
@@ -99,7 +102,6 @@ class SaveManager(Thing):
         saves_list = get_saves_list()
         # get_save_by_filename
 
-        # data = self.get_saves()
         if(save_filename is not None):
             return self.get_save_by_filename(save_filename)
         
@@ -111,7 +113,7 @@ class SaveManager(Thing):
         clear()
 
         print_header("Partidas")
-        for idx in range(saves_list):
+        for idx in range(len(saves_list)):
             print_normal(f"    {idx+1}) {saves_list[idx]}")
 
 
@@ -129,7 +131,6 @@ class SaveManager(Thing):
 
 
     def delete_save(self):
-        data = self.get_saves()
         
         clear()
 
