@@ -4,6 +4,9 @@
 # from Event import Event
 
 
+from beauty_print import print_debug
+
+
 class Thing:
     def __init__(self):
         pass
@@ -13,6 +16,7 @@ class Thing:
     
     def run_func(self, name: str, *args, **kwargs):
         do = f"{name}"
+        # print_debug(f"finally running func() {name} of {self.get_category()}",__name__)
         if hasattr(self, do) and callable(getattr(self, do)):
             func = getattr(self, do)
             func(*args, **kwargs)
@@ -51,7 +55,8 @@ class Thing:
     
     def get_dict_list(self):
         data = self.factory.get_instance("DataStructure")
-        # print(data)
-        return data.data[self.get_category()]
+        dict_list = data.data[self.get_category()]
+        # print(dict_list)
+        return dict_list
     
     

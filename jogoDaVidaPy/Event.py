@@ -16,6 +16,7 @@ event_debug = {
 
 all_events = [
     "entity_moved_to_coord",
+    "building_board_print",
 ]
 
 
@@ -28,12 +29,10 @@ class Event(Thing):
     # É preciso dar setup após pegar instância
     def setup(self):
         # get events pointer of concrete_things of Event
-        pass
-    
-    def set_factory(self, factory):
-        self.factory = factory
         data_structure : DataStructure = self.factory.get_instance("DataStructure")
-        self.events = data_structure.get_data()[self.get_category()]["concrete_things"]
+        self.events = data_structure.data[self.get_category()]["concrete_things"]
+    
+        
 
     # new_concrete_thing
     def subscribe(self, event_name: str, interested: dict, function_name: str):
@@ -72,13 +71,12 @@ class Event(Thing):
             return False
     
 
-    def notify(self, event_name: str, event_causer: dict, additional = None):
+    def notify(self, event_name: str, event_causer: dict = None, additional = None):
         if(event_name not in self.events):
             # debug_error(f"There aren't listeners for event {event_name}", fname=__name__, enabled=DEBUG_ENABLED)
             return False
         
         for category, interesteds in self.events[event_name].items():
-            # print_debug(f"category {category}")
             self.notify_category(event_name, event_causer, category, additional)
         
         return True
@@ -99,6 +97,7 @@ class Event(Thing):
     def run_function_list(self, event_causer: dict, category: str, function_list: list, _id: str, additional = None):
         func_debug = None
         for function_name in function_list:
+            # print_debug(f"Running function {function_name} of {category} id {_id}",__name__)
             try:    
                 func_debug = function_name
                 category_inst : Thing = self.factory.get_instance(category)

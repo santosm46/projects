@@ -23,7 +23,7 @@ def print_debug(message, fname=None, fline=None, enabled=True, pause=False, end=
     meta=""
     if enabled:
         if fname is not None:
-            meta = meta + f" file {fname}.py" # file name
+            meta = meta + f" {fname}.py" # file name
         if fline is not None:
             meta = meta + f":{fline}" # file line
         print(f"{bcolors.WARNING}Debug{meta}: {bcolors.ENDC}{message}{bcolors.ENDC}", end=end)

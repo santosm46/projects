@@ -1,5 +1,5 @@
-from common import DEBUG_ENABLED, get_linenumber
-from beauty_print import debug_error, print_normal, bcolors
+from common import DEBUG_ENABLED, get_linenumber, replacer
+from beauty_print import debug_error, print_debug, print_header, print_normal, bcolors
 from Thing import Thing
 from Event import Event
 # from PlayerIM import PlayerIM
@@ -9,8 +9,7 @@ import math
 class spot_type:
     FREE = '⬜'
     BUILDING = '⬛'
-    PLAYERS_MANY = ['👨‍👦','👨‍👩‍👦','👨‍👩‍👧‍👦']
-    PLAYERS = ['😎','🤡','👽','👨‍🦰','🧑‍','🤯','🥶','😷','😁','👻']
+
 
 board_chars = [
     "⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜",
@@ -90,12 +89,14 @@ class Board(Thing):
                 column = coord["column"] + j
                 if(row < 0 or column < 0):
                     continue
-                if(row > self.rows() or column > self.columns()):
+                if(row >= self.rows() or column >= self.columns()):
                     continue
-                distance = i + j
+                distance = abs(i) + abs(j)
                 if(distance > range_):
                     continue
-                if(board_chars[i][j] != spot_type.FREE):
+                # if(self.coord_to_alphanum(coord) == "E10"):
+                #     print_debug(f"board[{i}][{j}] = {board_chars[i][j]}",__name__)
+                if(board_chars[row][column] != spot_type.FREE):
                     continue
                 valid_spots.append(self.coord_to_alphanum({"row":row, "column":column}))
 
@@ -120,18 +121,39 @@ class Board(Thing):
 
     def columns(self):
         return len(board_chars[0])
+    
+    def board_copy(self):
+        copy = []
+        for i in board_chars:
+            copy.append(i)
+        return copy
 
     def print_board(self):
-        print_normal("Board.py: finge que o tabuleiro foi imprimido")
-        players = self.factory.get_instance("PlayerIM")
-        players_concr = players.get_dict_list()
-        pl_spots = {}
-        for key, player in players_concr.items():
-            if key not in pl_spots:
-                pl_spots[key] = 0
-            # pl_spots[key] += 1
-            # a = "oi"
-            # a.
+        # print_normal("Board.py: finge que o tabuleiro foi imprimido")
+        copy = self.board_copy()
+
+        a = """
+            {
+                "image":".",
+                "coord":...
+            }
+        """
+
+        entities = {}
+        entities["list"] = []
+
+        self.event.notify("building_board_print", self.reference("id_mock"), entities)
+
+        for entity in entities["list"]:
+            row = entity["coord"]["row"]
+            col = entity["coord"]["column"]
+            # print_debug(f"rc={row},{col} out={out}", fname=__name__)
+            copy[row] = replacer(copy[row], entity["image"], col)
+
+        print_header("\n       Tabuleiro\n")
+        for i in range(len(copy)):
+            print_normal(f"  {self.num_to_letter(i)} {copy[i]}")
+        print_normal("")
 
 
     def print_raw_board(self):

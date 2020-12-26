@@ -7,6 +7,7 @@ from common import *
 from SaveManager import SaveManager
 from DataStructure import DataStructure
 from Board import Board
+from Event import Event
 
 class GameManager(Thing):
     def __init__(self):
@@ -29,10 +30,28 @@ class GameManager(Thing):
         self.save_manager : SaveManager = self.factory.get_instance("SaveManager")
         # fix talvez tirar isso
         self.factory.get_instance("Category").setup(save)
+        event : Event = self.factory.get_instance("Event")
+        event.setup()
         # self.get_state() = save
         self.save_name = self.meta_data["save_name"]
-    
 
+        # to debug valid paths
+        # event.subscribe(
+        #     "building_board_print", 
+        #     self.reference("1"),
+        #     "on_building_board_print")
+        
+    def on_building_board_print(self, interested, event_causer, additional):
+        pass
+        # coord = self.board.alphanum_to_coord("E10")
+        # # print_debug(f"coord E10 = {coord}",__name__)
+        # valids = self.board.get_valid_spots_for_range(coord, 17)
+
+        # for i in valids:
+        #     additional["list"].append({
+        #         "image": '🍏',
+        #         "coord": self.board.alphanum_to_coord(i)
+        #     })
 
     def start(self):
         clear()

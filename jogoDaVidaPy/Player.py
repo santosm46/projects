@@ -6,6 +6,8 @@ from Person import Person
 # from GameManager import GameManager
 from Board import Board
 
+player_image = ['😎','🤡','👽','🤠','🧑‍','🤯','🥶','😷','😁','👻']
+
 class Player(Person):
 
     def __init__(self):
@@ -32,8 +34,9 @@ class Player(Person):
         coord = player["coord"]
         board : Board = self.factory.get_instance("Board")
         alphanum = board.coord_to_alphanum(coord)
+        image = self.get_image(player_id)
 
-        print_header(f"Jogador/a: {name}    Posição: {alphanum}")
+        print_header(f"Jogador/a: {image} {name}    Posição: {alphanum}")
 
         
         print_normal(f"   vida {hp} [{hearts}]", end='')
@@ -196,4 +199,8 @@ class Player(Person):
         for i in id_list:
             id_list_str.append(str(i))
         return id_list_str
+    
+    def get_image(self, _id):
+        size = len(player_image)
+        return player_image[int(_id) % size]
     

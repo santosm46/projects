@@ -12,6 +12,7 @@ def start_game(save):
     game : GameManager = factory.get_instance("GameManager")
     
     game.setup(save)
+    game.start()
     # fix tal dar setup() em DataStructure e Category
 
     while(True):

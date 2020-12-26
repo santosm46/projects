@@ -4,13 +4,14 @@ from common import *
 from Player import Player
 from DataStructure import DataStructure
 import random
-from Board import Board
+from Board import Board, spot_type
+
 
 class PlayerIM(Player):
 
     def __init__(self):
         super().__init__()
-    
+
 
     def player_move(self):
         player_id = self.game.turn_of()
@@ -63,6 +64,13 @@ class PlayerIM(Player):
 
 
         data.keep_concrete_thing(concrete_player["id"], concrete_player, self.get_category())
+
+        event : Event = self.factory.get_instance("Event")
+        input("")
+        event.subscribe(
+            "building_board_print", 
+            self.reference(concrete_player["id"]),
+            "on_building_board_print")
     
     def choose_spot_to_move(self, player, range_):
         board : Board = self.factory.get_instance("Board")
@@ -110,3 +118,22 @@ class PlayerIM(Player):
         
         self.game.save()
         print_sucess(f"Foram criados {created_players} jogadores")
+    
+    
+    
+    def on_building_board_print(self, interested, event_causer, additional):
+        # print_debug(f"sou {interested} e fui notificado de on_building_board_print",__name__)
+        try:
+            _id = interested["id"]
+            data : DataStructure = self.factory.get_instance("DataStructure")
+            this = data.get_concrete_thing(_id, interested["category"])
+            
+            additional["list"].append({
+                "image": self.get_image(_id),
+                "coord": this["coord"]
+            })
+        except:
+            debug_error(f"Error in on_building_board_print() of player ",fname=__name__, enabled=DEBUG_ENABLED)
+
+
+
