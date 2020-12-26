@@ -133,22 +133,23 @@ class Board(Thing):
         copy = self.board_copy()
 
         a = """
-            {
-                "image":".",
-                "coord":...
-            }
+            "Class": [
+                {"image":".", "coord":...},
+                {"image":".", "coord":...},
+                }
+            ]
         """
 
         entities = {}
-        entities = []
 
         self.event.notify("building_board_print", self.reference("id_mock"), entities)
 
-        for entity in entities:
-            row = entity["coord"]["row"]
-            col = entity["coord"]["column"]
-            # print_debug(f"rc={row},{col} out={out}", fname=__name__)
-            copy[row] = replacer(copy[row], entity["image"], col)
+        for category, entities in entities.items():
+            for entity in entities:
+                row = entity["coord"]["row"]
+                col = entity["coord"]["column"]
+                # print_debug(f"rc={row},{col} out={out}", fname=__name__)
+                copy[row] = replacer(copy[row], entity["image"], col)
 
         print_header("\n       Tabuleiro\n")
         self.print_column_numbers()

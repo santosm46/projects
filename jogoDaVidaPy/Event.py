@@ -21,7 +21,25 @@ all_events = [
 
 
 class Event(Thing):
+
+    # def has_event(self, event_name):
+    #     return event_name in self.events
     
+    # def has_category_on_event(self, category, event_name):
+    #     return self.has_event(event_name) and category in self.events[event_name]
+
+    # def has_id_on_category_of_event(self, _id, category, event_name):
+    #     return (self.has_category_on_event(category, event_name)
+    #         and _id in self.events[event_name][category]
+    #     )
+    
+    # def has_function_for_event_of_entity(self, function, event_name, reference: dict[str, str]):
+    #     category = reference["category"]
+    #     _id = reference["id"]
+    #     return (
+    #         self.has_id_on_category_of_event(_id, category, event_name)
+    #         and function in self.events[event_name][category][_id]
+    #     )
 
     def __init__(self):
         super().__init__()
@@ -41,26 +59,30 @@ class Event(Thing):
         self.events : dict = data_structure.data[self.get_category()]["concrete_things"]
 
 
-    # new_concrete_thing
-    def subscribe(self, event_name: str, interested: dict, function_name: str):
-        # interested -> {"id":"n",  "category":"Class_Name"}
+    # subscribe a function of an entity for an event
+    def subscribe(self, event_name: str, interested, function_name: str):
+        # interested -> {"id":"n",  "category":"ClassName"}
+        category = interested["category"]
+        _id = interested["id"]
+        try:
+            if(function_name in self.events[event_name][category][_id]):
+                # can subscribe the same function only once
+                return
+        except:
+            pass
         
         if(event_name not in self.events):
             self.events[event_name] = {}
         
-        category = interested["category"]
         if(category not in self.events[event_name]):
             self.events[event_name][category] = {}
         
-        _id = interested["id"]
-        size = len(self.events[event_name][category])
-        keys = self.events[event_name][category].keys()
-        if(_id not in list(keys)):
+        if(_id not in self.events[event_name][category]):
             self.events[event_name][category][_id] = []
         
         self.events[event_name][category][_id].append(function_name)
 
-
+    # unsubscribe all functions of an entity for an event
     def unsubscribe(self, event_name: str, interested: dict) -> bool:
         try:
             category = interested["category"]
@@ -70,12 +92,12 @@ class Event(Thing):
         except:
             return False
 
-
+    # unsubscribe a function of an entity for an event
     def unsubscribe_func(self, event_name: str, interested: dict, function_name: str) -> bool:
         try:
             category = interested["category"]
-            id = interested["id"]
-            self.events[event_name][category][id].remove(function_name)
+            _id = interested["id"]
+            self.events[event_name][category][_id].remove(function_name)
             return True
         except:
             return False

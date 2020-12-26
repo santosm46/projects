@@ -4,21 +4,24 @@ from Thing import Thing
 tree = {
     "DataStructure": {
         "Entity": {
-            "Person": {
-                "Player": {
-                    "PlayerIM": {},
-                    "PlayerOOM": {},
-                },
-                "Npc": {
-                    "Citizen": {
-                        "Medic": {},
+            "LivingBeing": {
+                "Person": {
+                    "Player": {
+                        "PlayerIM": {},
+                        "PlayerOOM": {},
                     },
-                    "Homeless": {},
-                    "Criminal": {
-                        "Dealer": {},
-                        "Robber": {},
-                    }
-                }
+                    "Npc": {
+                        "Citizen": {
+                            "Medic": {},
+                        },
+                        "Homeless": {},
+                        "Criminal": {
+                            "Dealer": {},
+                            "Robber": {},
+                        },
+                    },
+                },
+                "Animal":{},
             },
             "Object": {
                 "Food":{
@@ -31,15 +34,15 @@ tree = {
                         "Sniper": {},
                         "Shotgun": {},
                         "Pistol": {},
-                        "Machine_gun": {},
+                        "MachineGun": {},
                     },
-                    "White_gun": {
+                    "WhiteGun": {
                         "Sword": {},
                         "Knife": {},
                     },
                 },
             },
-            "Animal":{},
+            
         },
         "Building":{
             "Health": {

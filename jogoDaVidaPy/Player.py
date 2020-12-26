@@ -7,7 +7,9 @@ from Person import Person
 # from GameManager import GameManager
 from Board import Board
 
-player_image = ['😎','🤡','👽','🤠','🧑‍','🤯','🥶','😷','😁','👻']
+player_image = ['😎','🤡','👽','🤠','🧑‍','🤯','👻','😷','😁','👻']
+
+events_to_listen = {"building_board_print": "on_building_board_print"}
 
 class Player(Person):
 
@@ -16,13 +18,24 @@ class Player(Person):
 
     def setup(self, game):
         self.game  = game
+        # if("game_is_starting" not in event.events)
         # self.im : Player = self.factory.get_instance("PlayerIM")
         # self.oom : Player = self.factory.get_instance("PlayerOOM")
-
         # self.im.setup(game)
+
+        
+
+    # def on_game_is_starting(self):
+    #     # on game is starting, it need to subscribe all functions of players
+    #     event : Event = self.factory.gi("Event")
+    #     event.unsubscribe_func("game_is_starting")
+    #     event.unsubscribe("building_board_print", self.reference(_id, "PlayerIM"))
 
     def new_concrete_thing(self):
         return super().new_concrete_thing()
+    
+
+
 
     
     def print_player(self, player_id):
@@ -64,7 +77,7 @@ class Player(Person):
         return players_list
 
     def add_player_on_match(self, idx):
-        players_oom_id_list = self.game.get_players_oom_id_list()
+        players_oom_id_list = self.game.player_oom.get_players_id_list()
 
         if(len(players_oom_id_list) == 0):
             clear()
@@ -80,23 +93,16 @@ class Player(Person):
         name = player_oom["name"]
         print_debug(f"id_oom={id_oom}",__name__)
         if self.remove_player_oom(id_oom):
-            self.subscrive_funcs(id_oom)
             clear()
             print_sucess(f"Jogador/a {name} inserido na partida!\n")
         else:
             clear()
             print_error(f"Erro ao adicionar o jogador {name} de idx {idx+1}\n")
         
-    def subscrive_funcs(self, _id):
-        event : Event = self.factory.get_instance("Event")
-        event.subscribe(
-            "building_board_print", 
-            self.reference(_id, "PlayerIM"),
-            "on_building_board_print")        
 
-    def unsubscribe_funcs(self, _id):
-        event : Event = self.factory.get_instance("Event")
-        event.unsubscribe("building_board_print", self.reference(_id, "PlayerIM"))
+    # def unsubscribe_funcs(self, _id):
+    #     event : Event = self.factory.get_instance("Event")
+    #     event.unsubscribe("building_board_print", self.reference(_id, "PlayerIM"))
     
     # remove player from match and put it on OOM list
     def remove_player(self, _id) -> bool:
@@ -105,7 +111,6 @@ class Player(Person):
                 self.game.pass_turn()
             player = self.get_players().pop(_id)
             self.get_players_oom()[_id] = player
-            self.unsubscribe_funcs(_id)
             self.game.save()
         except:
             print_error(f"player.py: _id:{_id} não é str ou deu outro erro em remove_player()")
@@ -214,3 +219,6 @@ class Player(Person):
         size = len(player_image)
         return player_image[int(_id) % size]
     
+
+    
+

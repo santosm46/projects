@@ -51,6 +51,9 @@ class Instanciator:
         # print_debug(f"returning instance {self.instances[class_name]} of {class_name}", fname=__name__)
         
         return self.instances[class_name]
+    
+    def gi(self, class_name):
+        return self.get_instance(class_name)
 
 # For debug
 

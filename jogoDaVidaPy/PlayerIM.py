@@ -12,6 +12,24 @@ class PlayerIM(Player):
     def __init__(self):
         super().__init__()
 
+    def set_factory(self, factory):
+        super().set_factory(factory)
+    
+    def setup(self, game):
+        super().setup(game)
+        # dar subscribe em building_board_print,
+        # para quando o board for montar o seu print, o Player pegar
+        # todos os jogadores que estão em partida e inserir
+        # na lista da board de coisas para imprimir 
+
+        # não é necessário verificar se já deu subscribe pois o event já faz isso
+        event : Event = self.factory.get_instance("Event")
+        event.subscribe(
+            "building_board_print", 
+            self.reference("mock_id"),
+            "on_building_board_print")
+
+
 
     def player_move(self):
         player_id = self.game.turn_of()
@@ -54,19 +72,17 @@ class PlayerIM(Player):
     # new_concrete_thing
     def create_player(self, name):
         data : DataStructure = self.factory.get_instance("DataStructure")
-        board : Board = self.factory.get_instance("Board")
 
         concrete_player = self.new_concrete_thing()
         # debug_error(f"concrete_player = {concrete_player}",__name__)
 
         concrete_player["name"] = name
         concrete_player["dice_method"] = "DiceRollOrRandom"
-        concrete_player["coord"] = board.alphanum_to_coord("A1")
-
 
         data.keep_concrete_thing(concrete_player["id"], concrete_player, self.get_category())
 
-        self.subscrive_funcs(concrete_player["id"])
+        
+        
     
     def choose_spot_to_move(self, player, range_):
         board : Board = self.factory.get_instance("Board")
@@ -117,19 +133,34 @@ class PlayerIM(Player):
     
     
     
-    def on_building_board_print(self, interested, event_causer, additional):
-        # print_debug(f"sou {interested} e fui notificado de on_building_board_print",__name__)
-        try:
-            _id = interested["id"]
-            data : DataStructure = self.factory.get_instance("DataStructure")
-            this = data.get_concrete_thing(_id, interested["category"])
-            
-            additional.append({
-                "image": self.get_image(_id),
-                "coord": this["coord"]
+    def on_building_board_print(self, interested=None, event_causer=None, additional=None):
+    # print_debug(f"sou {interested} e fui notificado de on_building_board_print",__name__)
+        # pegar lista de id's dos jogadores IM
+        
+        players_im : dict = self.get_players()
+
+        # print_debug(f"os pl_im ",__name__)
+        # print_beauty_json(players_im)
+        # input("")
+        category = self.get_category()
+        if(category not in additional):
+            additional[category] = []
+
+        for player_id, player in players_im.items():
+            additional[category].append({
+                "image": self.get_image(player_id),
+                "coord": player["coord"]
             })
-        except:
-            debug_error(f"Error in on_building_board_print() of player ",fname=__name__, enabled=DEBUG_ENABLED)
 
-
+        # try:
+        #     _id = interested["id"]
+        #     data : DataStructure = self.factory.get_instance("DataStructure")
+        #     this = data.get_concrete_thing(_id, interested["category"])
+            
+        #     additional.append({
+        #         "image": self.get_image(_id),
+        #         "coord": this["coord"]
+        #     })
+        # except:
+        #     debug_error(f"Error in on_building_board_print() of player ",fname=__name__, enabled=DEBUG_ENABLED)
 

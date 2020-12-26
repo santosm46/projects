@@ -91,6 +91,8 @@ class GameManager(Thing):
 
         self.game_ruinning = True
 
+        self.factory.get_instance("Event").notify("game_is_starting")
+
         while self.game_ruinning:
             clear()
             self.board.print_board()
@@ -121,7 +123,7 @@ class GameManager(Thing):
     #     return self.player_im.get_players_id_list()
 
     # def get_players_oom_id_list(self) -> list:
-    #     return self.player_im.oom.get_players_id_list()
+    #     return self.player_oom.get_players_id_list()
 
     def current_player(self) -> dict:
         k = self.turn_of()

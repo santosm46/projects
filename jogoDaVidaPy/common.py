@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 from beauty_print import print_error
 
-MAX_HP = 10
+# MAX_HP = 10
 DEBUG_ENABLED = True
 FILE_NAME = "saves.txt"
 GAME_VERSION = "1.0.0"
