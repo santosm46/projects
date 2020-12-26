@@ -26,13 +26,20 @@ class Event(Thing):
     def __init__(self):
         super().__init__()
     
-    # É preciso dar setup após pegar instância
+    # É preciso dar setup após carregar data structure na main
     def setup(self):
+        self.update_events_data_ref()
         # get events pointer of concrete_things of Event
+        
+    def set_factory(self, factory):
+        self.factory = factory
+        self.update_events_data_ref()
+        
+    # update reference to data structure
+    def update_events_data_ref(self):
         data_structure : DataStructure = self.factory.get_instance("DataStructure")
         self.events = data_structure.data[self.get_category()]["concrete_things"]
-    
-        
+
 
     # new_concrete_thing
     def subscribe(self, event_name: str, interested: dict, function_name: str):
@@ -44,18 +51,18 @@ class Event(Thing):
         if(category not in self.events[event_name]):
             self.events[event_name][category] = {}
         
-        id = interested["id"]
-        if(id not in self.events[event_name][category]):
-            self.events[event_name][category][id] = []
+        _id = interested["id"]
+        if(_id not in self.events[event_name][category]):
+            self.events[event_name][category][_id] = []
         
-        self.events[event_name][category][id].append(function_name)
+        self.events[event_name][category][_id].append(function_name)
 
 
     def unsubscribe(self, event_name: str, interested: dict) -> bool:
         try:
             category = interested["category"]
-            id = interested["id"]
-            self.events[event_name][category][id].clear()
+            _id = interested["id"]
+            self.events[event_name][category][_id].clear()
             return True
         except:
             return False

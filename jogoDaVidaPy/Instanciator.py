@@ -15,7 +15,7 @@ from Board import Board
 from RandomName import RandomName
 from DiceRandom import DiceRandom
 from DiceRollOrRandom import DiceRollOrRandom
-
+ 
 class Instanciator:
 
     classes = {
@@ -44,7 +44,7 @@ class Instanciator:
 
         # If not instantiated, create a instance
         if(class_name not in self.instances):
-            self.instances[class_name] = self.classes[class_name]()
+            self.instances[class_name] = self.classes[class_name]() # instanciating class
             self.instances[class_name].set_factory(self)
             # print_debug(f"Creating new instance of {class_name}", fname=__name__)
 

@@ -66,20 +66,14 @@ class SaveManager(Thing):
 
         save.new_data_structure()
         
-        current_datetime = date_now()
+        
 
         # dados do save (seria criado por new_concrete_thing)
-        save_metadata = {
-            "save_name": game_name,
-            "save_filename": str_to_file_format(game_name),
-            "last_id": 1,
-            "turn_of": None,
-            "last_save_date": current_datetime,
-            "creation_date": current_datetime,
-            "game_version": GAME_VERSION,
-        }
+        game = self.factory.get_instance("GameManager")
+        save_metadata = game.new_concrete_thing(game_name)
+        save.keep_concrete_thing("1", save_metadata, game.get_category())
         # salvando save_metadata na estrutura de dados
-        save.data[self.get_category()]["concrete_things"]["1"] = save_metadata
+        # save.data[self.get_category()]["concrete_things"]["1"] = save_metadata
 
         self.save_to_file(save.data)
 

@@ -35,7 +35,8 @@ def date_now():
     return now.strftime("%d/%m/%Y - %H:%M:%S")
 
 def clear():
-    os.system("clear")
+    pass
+    # os.system("clear")
 
 def is_integer(n):
     try:

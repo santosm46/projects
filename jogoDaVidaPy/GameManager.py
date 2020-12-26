@@ -12,11 +12,10 @@ from Event import Event
 class GameManager(Thing):
     def __init__(self):
         super().__init__()
-        self.teste = "Default"
     
     def setup(self, save):
         # just for not needing to acess ["SaveManager"]["concrete_things"]["1"] every time
-        self.meta_data = save["SaveManager"]["concrete_things"]["1"]
+        # self.meta_data() = save
 
         self.board : Board = self.factory.get_instance("Board")
         self.state : DataStructure = self.factory.get_instance("DataStructure")
@@ -28,19 +27,38 @@ class GameManager(Thing):
         self.player_oom.setup(self)
 
         self.save_manager : SaveManager = self.factory.get_instance("SaveManager")
-        # fix talvez tirar isso
+        # Just to work with the category system used at the time
         self.factory.get_instance("Category").setup(save)
-        event : Event = self.factory.get_instance("Event")
-        event.setup()
+        self.factory.get_instance("Event").setup()
         # self.get_state() = save
-        self.save_name = self.meta_data["save_name"]
+        self.save_name = self.meta_data()["save_name"]
 
         # to debug valid paths
         # event.subscribe(
         #     "building_board_print", 
         #     self.reference("1"),
         #     "on_building_board_print")
+    
+    def meta_data(self):
+        data : DataStructure = self.factory.get_instance("DataStructure")
+        try:
+            # print_debug(data.data["SaveManager"]["concrete_things"], __name__)
+            return data.data["SaveManager"]["concrete_things"]["1"]
+        except:
+            # It gives exception when testing because data strucure wasn't assigned
+            # to game manager, so for testing porposes it creates a temporary data
+            # print_debug(f"deu expeption",__name__)
+            concrete = self.new_concrete_thing("game_mock_for_test")
+            # print_debug(concrete, __name__)
+            data.data["SaveManager"]["concrete_things"]["1"] = concrete
+            # data.keep_concrete_thing("1", concrete, self.get_category())
+            return data.data["SaveManager"]["concrete_things"]["1"]
+
+    def set_factory(self, factory):
+        super().set_factory(factory)
         
+
+
     def on_building_board_print(self, interested, event_causer, additional):
         pass
         # coord = self.board.alphanum_to_coord("E10")
@@ -89,7 +107,7 @@ class GameManager(Thing):
         return False
     
     def set_turn(self, new_turn: str):
-        self.meta_data["turn_of"] = new_turn
+        self.meta_data()["turn_of"] = new_turn
     
     def get_players_list(self) -> list:
         return self.player_im.get_players_list()
@@ -106,8 +124,8 @@ class GameManager(Thing):
 
     
     def generate_id(self) -> str:
-        self.meta_data["last_id"] += 1
-        return str(self.meta_data["last_id"])
+        self.meta_data()["last_id"] += 1
+        return str(self.meta_data()["last_id"])
     
     def get_state(self):
         return self.state.data
@@ -116,16 +134,28 @@ class GameManager(Thing):
     def pass_turn(self):
         num_players = self.number_of_players()
         if(num_players == 0):
-            self.meta_data["turn_of"] = None
+            self.meta_data()["turn_of"] = None
             self.save()
             return
         player_idx = self.player_im.get_player_idx()
         next_player_idx = (int(player_idx)+1) % num_players
         next_player = self.player_im.get_player_by_idx(next_player_idx)
 
-        self.meta_data["turn_of"] = next_player["id"]
+        self.meta_data()["turn_of"] = next_player["id"]
     
     def turn_of(self) -> str:
-        return self.meta_data["turn_of"]
+        return self.meta_data()["turn_of"]
     
-    
+    def new_concrete_thing(self, game_name):
+        current_datetime = date_now()
+
+        return {
+            "save_name": game_name,
+            "save_filename": str_to_file_format(game_name),
+            "last_id": 1,
+            "turn_of": None,
+            "last_save_date": current_datetime,
+            "creation_date": current_datetime,
+            "game_version": GAME_VERSION,
+        }
+

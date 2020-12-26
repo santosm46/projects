@@ -74,7 +74,7 @@ tree = {
 class Category(Thing):
 
 
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__()
         self.root = self.create_new_list()
     

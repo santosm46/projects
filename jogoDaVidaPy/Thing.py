@@ -1,15 +1,12 @@
-# from Instanciator import Instanciator
-# from GameManager import GameManager
-
-# from Event import Event
 
 
-from beauty_print import print_debug
+from beauty_print import debug_error, print_debug
 
 
 class Thing:
     def __init__(self):
         pass
+        
     
     def get_category(self) -> str:
         return type(self).__name__
@@ -21,7 +18,7 @@ class Thing:
             func = getattr(self, do)
             func(*args, **kwargs)
         else:
-            print(f"Erro! Função {name} não existe nessa classe {self.__class__}")
+            debug_error(f"Erro! Função {name} não existe nessa classe {self.get_category()}",__name__)
     
     # every class will implement their own method new_concrete_thing()
     def new_concrete_thing(self):
@@ -43,10 +40,9 @@ class Thing:
         }
     
     def set_factory(self, factory):
-        # self.factory : Instanciator = factory
         self.factory  = factory
-        # if(self.get_category() != "Event"):
-        self.event = factory.get_instance("Event")
+        if(self.get_category() != "Event"):
+            self.event = factory.get_instance("Event")
 
     def get_concrete_thing(self, id: str):
         data = self.factory.get_instance("DataStructure")

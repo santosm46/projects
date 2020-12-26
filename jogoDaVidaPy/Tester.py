@@ -16,17 +16,15 @@ class Tester(Thing):
         self.name = name
     
     def new_concrete_thing(self, name):
-        game_manager : GameManager = self.factory.get_instance("GameManager")
-        id = game_manager.generate_id()
+        concrete_thing = super().new_concrete_thing()
+
         data : DataStructure = self.factory.get_instance("DataStructure")
 
-        concrete_thing = {
-            "name": name,
-        }
+        concrete_thing["name"] = name
 
-        data.keep_concrete_thing(id, concrete_thing, self.get_category())
+        data.keep_concrete_thing(concrete_thing["id"], concrete_thing, self.get_category())
 
-        return id
+        return concrete_thing
 
 
     def gritar(self, interested, event_causer, additional=None):
