@@ -140,21 +140,25 @@ class Board(Thing):
         """
 
         entities = {}
-        entities["list"] = []
+        entities = []
 
         self.event.notify("building_board_print", self.reference("id_mock"), entities)
 
-        for entity in entities["list"]:
+        for entity in entities:
             row = entity["coord"]["row"]
             col = entity["coord"]["column"]
             # print_debug(f"rc={row},{col} out={out}", fname=__name__)
             copy[row] = replacer(copy[row], entity["image"], col)
 
         print_header("\n       Tabuleiro\n")
+        self.print_column_numbers()
         for i in range(len(copy)):
             print_normal(f"  {self.num_to_letter(i)} {copy[i]}")
         print_normal("")
 
+    def print_column_numbers(self):
+        # print_normal("            11111111")
+        print_normal("🖤   1 2 3 4 5 6 7 8 91011121314151617")
 
     def print_raw_board(self):
         for row in board_chars:

@@ -16,28 +16,25 @@ class GameManager(Thing):
     def setup(self, save):
         # just for not needing to acess ["SaveManager"]["concrete_things"]["1"] every time
         # self.meta_data() = save
-
-        self.board : Board = self.factory.get_instance("Board")
-        self.state : DataStructure = self.factory.get_instance("DataStructure")
+        
         self.state.setup(save)
-
-        self.player_im : PlayerIM = self.factory.get_instance("PlayerIM")
-        self.player_im.setup(self)
-        self.player_oom : PlayerOOM = self.factory.get_instance("PlayerOOM")
-        self.player_oom.setup(self)
-
-        self.save_manager : SaveManager = self.factory.get_instance("SaveManager")
+        
         # Just to work with the category system used at the time
         self.factory.get_instance("Category").setup(save)
-        self.factory.get_instance("Event").setup()
+        
         # self.get_state() = save
-        self.save_name = self.meta_data()["save_name"]
 
         # to debug valid paths
         # event.subscribe(
         #     "building_board_print", 
         #     self.reference("1"),
         #     "on_building_board_print")
+    
+    def get_save_name(self):
+        try:
+            return self.meta_data()["save_name"]
+        except:
+            return "Save name not loaded"
     
     def meta_data(self):
         data : DataStructure = self.factory.get_instance("DataStructure")
@@ -56,6 +53,14 @@ class GameManager(Thing):
 
     def set_factory(self, factory):
         super().set_factory(factory)
+        self.board : Board = self.factory.get_instance("Board")
+        self.state : DataStructure = self.factory.get_instance("DataStructure")
+        self.player_im : PlayerIM = self.factory.get_instance("PlayerIM")
+        self.player_im.setup(self)
+        self.player_oom : PlayerOOM = self.factory.get_instance("PlayerOOM")
+        self.player_oom.setup(self)
+        self.save_manager : SaveManager = self.factory.get_instance("SaveManager")
+        self.factory.get_instance("Event").setup()
         
 
 

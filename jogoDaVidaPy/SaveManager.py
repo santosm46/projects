@@ -71,7 +71,7 @@ class SaveManager(Thing):
         # dados do save (seria criado por new_concrete_thing)
         game = self.factory.get_instance("GameManager")
         save_metadata = game.new_concrete_thing(game_name)
-        save.keep_concrete_thing("1", save_metadata, game.get_category())
+        save.keep_concrete_thing("1", save_metadata, self.get_category())
         # salvando save_metadata na estrutura de dados
         # save.data[self.get_category()]["concrete_things"]["1"] = save_metadata
 

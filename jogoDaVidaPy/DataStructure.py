@@ -34,9 +34,6 @@ class DataStructure(Thing):
     def keep_concrete_thing(self, id: str, concrete_thing: dict, category: str):
         try:
             self.data[category]["concrete_things"][id] = concrete_thing
-            if(id == "1"):
-                conc = self.data[category]["concrete_things"][id]
-                print_debug(f"guardei, veja: {conc}",__name__)
         except:
             debug_error(f"self.data isn't instantiated or there isn't category {category}", fname=__name__, enabled=DEBUG_ENABLED)
 

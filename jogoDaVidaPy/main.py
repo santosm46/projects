@@ -18,7 +18,7 @@ def start_game(save):
     while(True):
         clear()
 
-        print_header(f"Menu da partida: {game.save_name} \nJogadores: {game.get_players_list()} \n")
+        print_header(f"Menu da partida: {game.get_save_name()} \nJogadores: {game.get_players_list()} \n")
     
         print_normal(f"\t{prim_opt.CONTINUE}) Continuar partida")
         print_normal(f"\t{prim_opt.ADD_PLAYER}) Adicionar jogadores na partida")

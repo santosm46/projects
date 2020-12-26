@@ -1,4 +1,5 @@
 #file -- player.py --
+from Event import Event
 from DataStructure import DataStructure
 from beauty_print import *
 from common import *
@@ -77,25 +78,34 @@ class Player(Person):
         id_oom = str(players_oom_id_list[idx])
         player_oom = self.get_players_oom()[str(id_oom)]
         name = player_oom["name"]
-        
+        print_debug(f"id_oom={id_oom}",__name__)
         if self.remove_player_oom(id_oom):
+            self.subscrive_funcs(id_oom)
             clear()
             print_sucess(f"Jogador/a {name} inserido na partida!\n")
         else:
             clear()
-            print_error(f"Erro ao adicionar o jogador de idx {idx+1}\n")
+            print_error(f"Erro ao adicionar o jogador {name} de idx {idx+1}\n")
         
-        
+    def subscrive_funcs(self, _id):
+        event : Event = self.factory.get_instance("Event")
+        event.subscribe(
+            "building_board_print", 
+            self.reference(_id, "PlayerIM"),
+            "on_building_board_print")        
 
+    def unsubscribe_funcs(self, _id):
+        event : Event = self.factory.get_instance("Event")
+        event.unsubscribe("building_board_print", self.reference(_id, "PlayerIM"))
     
     # remove player from match and put it on OOM list
     def remove_player(self, _id) -> bool:
         try:
-            turn_of = self.game.turn_of()
-            if(_id == turn_of):
+            if(_id == self.game.turn_of()):
                 self.game.pass_turn()
             player = self.get_players().pop(_id)
             self.get_players_oom()[_id] = player
+            self.unsubscribe_funcs(_id)
             self.game.save()
         except:
             print_error(f"player.py: _id:{_id} não é str ou deu outro erro em remove_player()")

@@ -1,7 +1,7 @@
 from common import DEBUG_ENABLED
 from Thing import Thing
 # from Instanciator import Instanciator
-from beauty_print import debug_error, print_debug
+from beauty_print import debug_error, print_debug, print_error, print_beauty_json
 from DataStructure import DataStructure
 
 event_debug = {
@@ -38,11 +38,12 @@ class Event(Thing):
     # update reference to data structure
     def update_events_data_ref(self):
         data_structure : DataStructure = self.factory.get_instance("DataStructure")
-        self.events = data_structure.data[self.get_category()]["concrete_things"]
+        self.events : dict = data_structure.data[self.get_category()]["concrete_things"]
 
 
     # new_concrete_thing
     def subscribe(self, event_name: str, interested: dict, function_name: str):
+        # interested -> {"id":"n",  "category":"Class_Name"}
         
         if(event_name not in self.events):
             self.events[event_name] = {}
@@ -52,7 +53,9 @@ class Event(Thing):
             self.events[event_name][category] = {}
         
         _id = interested["id"]
-        if(_id not in self.events[event_name][category]):
+        size = len(self.events[event_name][category])
+        keys = self.events[event_name][category].keys()
+        if(_id not in list(keys)):
             self.events[event_name][category][_id] = []
         
         self.events[event_name][category][_id].append(function_name)
@@ -104,11 +107,9 @@ class Event(Thing):
     def run_function_list(self, event_causer: dict, category: str, function_list: list, _id: str, additional = None):
         func_debug = None
         for function_name in function_list:
-            # print_debug(f"Running function {function_name} of {category} id {_id}",__name__)
             try:    
                 func_debug = function_name
                 category_inst : Thing = self.factory.get_instance(category)
-                # print_debug(f"peguei category_inst -> {category_inst}", fname=__name__)
                 if additional is None:
                     category_inst.run_func(function_name, category_inst.reference(_id), event_causer)
                 else:

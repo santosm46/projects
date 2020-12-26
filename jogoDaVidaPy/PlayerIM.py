@@ -57,6 +57,7 @@ class PlayerIM(Player):
         board : Board = self.factory.get_instance("Board")
 
         concrete_player = self.new_concrete_thing()
+        # debug_error(f"concrete_player = {concrete_player}",__name__)
 
         concrete_player["name"] = name
         concrete_player["dice_method"] = "DiceRollOrRandom"
@@ -65,12 +66,7 @@ class PlayerIM(Player):
 
         data.keep_concrete_thing(concrete_player["id"], concrete_player, self.get_category())
 
-        event : Event = self.factory.get_instance("Event")
-        input("")
-        event.subscribe(
-            "building_board_print", 
-            self.reference(concrete_player["id"]),
-            "on_building_board_print")
+        self.subscrive_funcs(concrete_player["id"])
     
     def choose_spot_to_move(self, player, range_):
         board : Board = self.factory.get_instance("Board")
@@ -128,7 +124,7 @@ class PlayerIM(Player):
             data : DataStructure = self.factory.get_instance("DataStructure")
             this = data.get_concrete_thing(_id, interested["category"])
             
-            additional["list"].append({
+            additional.append({
                 "image": self.get_image(_id),
                 "coord": this["coord"]
             })

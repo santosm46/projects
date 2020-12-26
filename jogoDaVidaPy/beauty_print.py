@@ -34,7 +34,7 @@ def debug_error(message, fname=None, fline=None, enabled=True, pause=False, end=
     meta=""
     if enabled:
         if fname is not None:
-            meta = meta + f" file {fname}.py" # file name
+            meta = meta + f" {fname}.py" # file name
         if fline is not None:
             meta = meta + f":{fline}" # file line
         print(f"{bcolors.WARNING}Debug{meta}: {bcolors.FAIL}{message}{bcolors.ENDC}", end=end)
@@ -55,7 +55,7 @@ def input_question(message):
     value = input("")
     return value
 
-def print_saves(saves):
+def print_beauty_json(saves):
     print(json.dumps(saves, indent=4))
     # print(json.dumps(saves["saves"]["1"], indent=4))
 
