@@ -131,7 +131,10 @@ class SaveManager(Thing):
         return self.get_save_by_filename(filename)
 
 
-    def delete_save(self):
+    def delete_save(self, save_filename=None):
+        if save_filename is not None:
+            os.system(f"rm {SAVES_PATH}{save_filename}")
+            return
         
         clear()
 

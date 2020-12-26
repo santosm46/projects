@@ -1,8 +1,10 @@
+from Event import Event
 from beauty_print import *
 from common import *
 from Player import Player
 from DataStructure import DataStructure
 import random
+from Board import Board
 
 class PlayerIM(Player):
 
@@ -29,6 +31,8 @@ class PlayerIM(Player):
                     break
             if(option == prim_opt.ROLL_DICE):
                 self.roll_dice_for(player_id)
+                
+                break
             elif(option == prim_opt.SAVE_EXIT):
                 print_sucess("Salvando e saindo...")
                 self.game.stop()
@@ -36,29 +40,49 @@ class PlayerIM(Player):
                 return
             else:
                 print_error(f"Opção ({option}) inválida! pressione ENTER")
-                cont = input("")
+                input("")
         self.game.pass_turn()
 
     def roll_dice_for(self, _id: str):
         player = self.get_concrete_thing(_id)
         dice = self.factory.get_instance(player["dice_method"])
         result = dice.roll_dice()
-        print_sucess(f"O valor do dado deu: {result}")
-        input("")
+        print_sucess(f"Resultado do dado: {result}")
+        self.choose_spot_to_move(player, result)
 
     # new_concrete_thing
     def create_player(self, name):
         data : DataStructure = self.factory.get_instance("DataStructure")
+        board : Board = self.factory.get_instance("Board")
 
         concrete_player = self.new_concrete_thing()
-        print(concrete_player)
 
         concrete_player["name"] = name
         concrete_player["dice_method"] = "DiceRollOrRandom"
+        concrete_player["coord"] = board.alphanum_to_coord("A1")
 
 
         data.keep_concrete_thing(concrete_player["id"], concrete_player, self.get_category())
     
+    def choose_spot_to_move(self, player, range_):
+        board : Board = self.factory.get_instance("Board")
+        valid_spots = board.get_valid_spots_for_range(player["coord"], range_)
+        if(len(valid_spots) == 0):
+            print_normal("Não há lugares para ir")
+            return
+        spot = None
+        print_number_list(valid_spots, title="\nCasas disponíveis", layed=True)
+        while True:
+            option = input_question("\nDigite a casa ou o valor correspondente: ").upper()
+            if option in valid_spots:
+                spot = option
+                break
+            if(valid_number(option, 1, len(valid_spots))):
+                spot = valid_spots[int(option)-1]
+                break
+        print_normal(f"Movendo para {spot}... ", end='')
+        board.move_entity_to(reference=self.reference(player["id"]), alphanum=spot)
+        input("[pressione ENTER para continuar] ")
 
     def create_players(self):
         clear()

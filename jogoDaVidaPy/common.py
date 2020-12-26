@@ -158,15 +158,16 @@ def procura():
     print(validos)
 
 
-def valid_number(value, size, minimum=1):
+def valid_number(value, min_val, max_val):
         if(not is_integer(value)):
             print_error("Digite um número")
             return False
         
         i = int(value)
-        if(i < minimum or i > size):
-            print_error(f"Digite um valor entre 1 e {size}")
+        if(i < min_val or i > max_val):
+            print_error(f"Digite um valor entre 1 e {max_val}")
             return False
         
         return True
 
+# def print_list()

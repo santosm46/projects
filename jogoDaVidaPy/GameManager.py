@@ -6,7 +6,7 @@ from beauty_print import *
 from common import *
 from SaveManager import SaveManager
 from DataStructure import DataStructure
-
+from Board import Board
 
 class GameManager(Thing):
     def __init__(self):
@@ -17,6 +17,7 @@ class GameManager(Thing):
         # just for not needing to acess ["SaveManager"]["concrete_things"]["1"] every time
         self.meta_data = save["SaveManager"]["concrete_things"]["1"]
 
+        self.board : Board = self.factory.get_instance("Board")
         self.state : DataStructure = self.factory.get_instance("DataStructure")
         self.state.setup(save)
 
@@ -50,6 +51,7 @@ class GameManager(Thing):
 
         while self.game_ruinning:
             clear()
+            self.board.print_board()
             self.player_im.print_player(self.turn_of())
             self.player_im.player_move()
 

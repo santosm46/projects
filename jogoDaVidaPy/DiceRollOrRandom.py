@@ -17,8 +17,7 @@ class DiceRollOrRandom(DiceRandom):
             result = input_question("Jogue o dado e digite o resultado (ENTER para valor aleatório): ")
             if(len(result) == 0):
                 return super().roll_dice(num_of_sides)
-            print(num_of_sides)
-            if(valid_number(value=result, size=num_of_sides)):
+            if(valid_number(result, 1, num_of_sides)):
                 break
         
         result = int(result)

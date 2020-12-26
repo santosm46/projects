@@ -4,6 +4,7 @@ from beauty_print import *
 from common import *
 from Person import Person
 # from GameManager import GameManager
+from Board import Board
 
 class Player(Person):
 
@@ -28,8 +29,11 @@ class Player(Person):
         hp = player["hp"]
         max_hp = player["max_hp"]
         hearts = "💜" * hp + "🖤" * (max_hp - hp)
-        
-        print_header(f"Jogador/a: {name}")
+        coord = player["coord"]
+        board : Board = self.factory.get_instance("Board")
+        alphanum = board.coord_to_alphanum(coord)
+
+        print_header(f"Jogador/a: {name}    Posição: {alphanum}")
 
         
         print_normal(f"   vida {hp} [{hearts}]", end='')

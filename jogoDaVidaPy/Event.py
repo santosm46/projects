@@ -14,6 +14,10 @@ event_debug = {
     }
 }
 
+all_events = [
+    "entity_moved_to_coord",
+]
+
 
 class Event(Thing):
     
@@ -70,7 +74,7 @@ class Event(Thing):
 
     def notify(self, event_name: str, event_causer: dict, additional = None):
         if(event_name not in self.events):
-            debug_error(f"There aren't listeners for event {event_name}", fname=__name__, enabled=DEBUG_ENABLED)
+            # debug_error(f"There aren't listeners for event {event_name}", fname=__name__, enabled=DEBUG_ENABLED)
             return False
         
         for category, interesteds in self.events[event_name].items():
