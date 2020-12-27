@@ -5,8 +5,8 @@ from beauty_print import debug_error, print_debug, print_error, print_beauty_jso
 from DataStructure import DataStructure
 
 event_debug = {
-    "player_was_robbed": {
-        "Robber": {
+    "entity_was_robbed": {
+        "Police": {
             "5": ["func1", "func2"],
             "7": ["func1"],
             "13": ["func1", "func2", "func3"],
@@ -18,6 +18,7 @@ all_events = [
     "entity_moved_to_coord",
     "building_board_print",
     "new_round",
+    "entity_choosing_spot"
 ]
 
 """

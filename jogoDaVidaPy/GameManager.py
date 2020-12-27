@@ -1,4 +1,5 @@
 #file -- game.py --
+from Player import Player
 from PlayerOOM import PlayerOOM
 from PlayerIM import PlayerIM
 from Thing import Thing
@@ -8,10 +9,13 @@ from SaveManager import SaveManager
 from DataStructure import DataStructure
 from Board import Board
 from Event import Event
+from Category import Category
+
 
 class GameManager(Thing):
     def __init__(self):
         super().__init__()
+        self.valid_spots_buffer = []
     
     def setup(self, save):
         # just for not needing to acess ["SaveManager"]["concrete_things"]["1"] every time
@@ -22,7 +26,8 @@ class GameManager(Thing):
         # Just to work with the category system used at the time
         self.factory.get_instance("Category").setup(save)
 
-        self.factory.get_instance("Event").setup()
+        event : Event = self.factory.get_instance("Event")
+        event.setup()
 
         self.player_im : PlayerIM = self.factory.get_instance("PlayerIM")
         self.player_im.setup(self)
@@ -31,11 +36,9 @@ class GameManager(Thing):
         
         # self.get_state() = save
 
-        # to debug valid paths
-        # event.subscribe(
-        #     "building_board_print", 
-        #     self.reference("1"),
-        #     "on_building_board_print")
+        # to show valid paths
+        event.subscribe("building_board_print", self.reference("1"), "on_building_board_print")
+        event.subscribe("entity_choosing_spot", self.reference("1"), "save_valid_spots_on_buffer")
     
     def get_save_name(self):
         try:
@@ -66,18 +69,31 @@ class GameManager(Thing):
         self.save_manager : SaveManager = self.factory.get_instance("SaveManager")
         
 
-
     def on_building_board_print(self, interested, event_causer, additional):
-        pass
-        # coord = self.board.alphanum_to_coord("E10")
-        # # print_debug(f"coord E10 = {coord}",__name__)
-        # valids = self.board.get_valid_spots_for_range(coord, 17)
+        if(len(self.valid_spots_buffer) == 0):
+            return
+        category = self.get_category()
+        if(category not in additional):
+            additional[category] = []
+        for i in self.valid_spots_buffer:
+            additional[category].append({
+                "image": '🍏',
+                "coord": self.board.alphanum_to_coord(i)
+            })
+        self.valid_spots_buffer = []
 
-        # for i in valids:
-        #     additional["list"].append({
-        #         "image": '🍏',
-        #         "coord": self.board.alphanum_to_coord(i)
-        #     })
+    def save_valid_spots_on_buffer(self, interested, player_ref, additional):
+        player_categ = player_ref["category"]
+        if(not self.is_player(player_categ)):
+            return
+        self.valid_spots_buffer = additional["spots"]
+        # player_class : Player = self.factory.gi(player_categ)
+        # player_id = player_ref["id"]
+        # player_concr = player_class.get_concrete_thing(player_id)
+
+    def is_player(self, category):
+        categ_mg : Category = self.factory.gi("Category")
+        return categ_mg.is_category_or_inside(category, "Player")
 
     def start(self):
         clear()
@@ -97,13 +113,16 @@ class GameManager(Thing):
         self.factory.get_instance("Event").notify("game_is_starting")
 
         while self.game_ruinning:
-            clear()
-            self.board.print_board()
+            self.print_game()
             self.player_im.print_player(self.turn_of())
             self.player_im.player_move()
 
     def stop(self):
         self.game_ruinning = False
+    
+    def print_game(self):
+        clear()
+        self.board.print_board()
 
     def save(self):
         self.save_manager.save_to_file(self.get_state())

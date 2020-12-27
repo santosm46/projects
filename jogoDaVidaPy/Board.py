@@ -4,7 +4,7 @@ from Thing import Thing
 from Event import Event
 # from PlayerIM import PlayerIM
 import math
-
+from common import MOCK_ID
 
 class spot_type:
     FREE = '⬜'
@@ -136,14 +136,14 @@ class Board(Thing):
             "Class": [
                 {"image":".", "coord":...},
                 {"image":".", "coord":...},
-                }
             ]
         """
 
         entities = {}
 
-        self.event.notify("building_board_print", self.reference("id_mock"), entities)
-
+        self.event.notify("building_board_print", self.reference(MOCK_ID), entities)
+        # Players will be the last to be printed
+        entities["PlayerIM"] = entities.pop("PlayerIM")
         # print_debug(f"isso foi o que recolhi: ",__name__)
         # print_beauty_json(entities)
 

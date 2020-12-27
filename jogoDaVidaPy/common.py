@@ -11,6 +11,7 @@ GAME_VERSION = "1.0.0"
 DATA_PATH = './data/'
 NAMES_FILE = 'names.txt'
 GOVERNMENT = "government"
+MOCK_ID = "mock_id"
 
 class prim_opt:
     PASS_TURN = 'P'

@@ -4,7 +4,7 @@ from common import *
 from Player import Player
 from DataStructure import DataStructure
 from Board import Board, spot_type
-
+from common import MOCK_ID
 
 class PlayerIM(Player):
 
@@ -28,9 +28,8 @@ class PlayerIM(Player):
         # na lista da board de coisas para imprimir 
         # não é necessário verificar se já deu subscribe pois o event já faz isso
         event : Event = self.factory.get_instance("Event")
-        event.subscribe(
-            "building_board_print", 
-            self.reference("mock_id"),
+        event.subscribe("building_board_print", 
+            self.reference(MOCK_ID),
             "on_building_board_print")
 
 
@@ -107,6 +106,7 @@ class PlayerIM(Player):
             self.reference(player["id"]), 
             {"spots":valid_spots, "buildings":buildings, "range":range_})
         spot = None
+        self.game.print_game()
         print_header("\nLugares disponíveis\n")
         print_normal(", ".join(buildings), end='')
         print_number_list(valid_spots, title="", layed=True)
