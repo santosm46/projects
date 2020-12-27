@@ -41,8 +41,13 @@ class Thing:
     
     def set_factory(self, factory):
         self.factory  = factory
+        self.fac  = factory
         if(self.get_category() != "Event"):
             self.event = factory.get_instance("Event")
+    
+    # Get instance of a class
+    def get(self, class_name):
+        return self.fac.gi(class_name)
 
     def get_concrete_thing(self, id: str):
         data = self.factory.get_instance("DataStructure")

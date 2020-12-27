@@ -1,7 +1,8 @@
 from common import DEBUG_ENABLED, get_linenumber, replacer
-from beauty_print import debug_error, print_beauty_json, print_debug, print_header, print_normal, bcolors
+from beauty_print import debug_error, print_beauty_json, print_debug, print_header, print_normal, bcolors, print_warning
 from Thing import Thing
 from Event import Event
+from Category import Category
 # from PlayerIM import PlayerIM
 import math
 from common import MOCK_ID
@@ -78,31 +79,40 @@ class Board(Thing):
         alpha = self.num_to_letter(row)
         return f"{alpha}{column}"
     
+    def valid_neighbors(self, coord):
+        valids = []
+        for (i, j) in [(-1,0), (0,1), (0,-1), (1,0)]: 
+            row = coord["row"] + i
+            column = coord["column"] + j
+            if(row < 0 or column < 0): continue
+            if(row >= self.rows() or column >= self.columns()): continue
+            if(board_chars[row][column] == spot_type.BUILDING): continue
+            # print(f"r,c = {row},{column}")
+            valids.append(self.coord_to_alphanum({"row":row, "column":column}))
+        return valids
+
+    def wasnt_visited(self, spot):
+        return spot not in self.spots_visited
+    
+    def find_next_valids(self, coord, distance, range_):
+        if(distance == range_):
+            return
+        near_valids = self.valid_neighbors(coord)
+        spots_to_look = list(filter(self.wasnt_visited, near_valids))
+        self.spots_visited = self.spots_visited + spots_to_look
+
+        for spot in spots_to_look:
+            spot_coord = self.alphanum_to_coord(spot)
+            # print(f"self.spots_visited -> {self.spots_visited}")
+            self.find_next_valids(spot_coord, distance+1, range_)
+        
 
     def get_valid_spots_for_range(self, coord, range_):
-        # range_ += 1
-        valid_spots = []
-
-        for i in range(-range_, range_+1):
-            for j in range(-range_, range_+1):
-                row = coord["row"] + i
-                column = coord["column"] + j
-                if(row < 0 or column < 0):
-                    continue
-                if(row >= self.rows() or column >= self.columns()):
-                    continue
-                distance = abs(i) + abs(j)
-                if(distance > range_):
-                    continue
-                # if(self.coord_to_alphanum(coord) == "E10"):
-                #     print_debug(f"board[{i}][{j}] = {board_chars[i][j]}",__name__)
-                if(board_chars[row][column] == spot_type.BUILDING):
-                    continue
-                valid_spots.append(self.coord_to_alphanum({"row":row, "column":column}))
-
-        return valid_spots
-                # print(f"({row},{column})")
-
+        alpha = self.coord_to_alphanum(coord)
+        self.spots_visited = [alpha]
+        self.find_next_valids(coord, 0, range_)
+        return self.spots_visited
+      
     def move_entity_to(self, reference, alphanum=None, coord=None):
         try:
             entity : Thing = self.factory.get_instance(reference["category"])
@@ -131,6 +141,7 @@ class Board(Thing):
     def print_board(self):
         # print_normal("Board.py: finge que o tabuleiro foi imprimido")
         copy = self.board_copy()
+        categ : Category = self.get("Category")
 
         a = """
             "Class": [
@@ -143,6 +154,13 @@ class Board(Thing):
 
         self.event.notify("building_board_print", self.reference(MOCK_ID), entities)
         # Players will be the last to be printed
+        entities["PlayerIM"] = entities.pop("PlayerIM")
+        # Buildings go over players
+        for category in entities.keys():
+            if(categ.is_category_or_inside(category, "Building")):
+                entities[category] = entities.pop(category)
+
+
         entities["PlayerIM"] = entities.pop("PlayerIM")
         # print_debug(f"isso foi o que recolhi: ",__name__)
         # print_beauty_json(entities)
@@ -167,4 +185,5 @@ class Board(Thing):
     def print_raw_board(self):
         for row in board_chars:
             print(row)
+
 
