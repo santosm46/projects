@@ -3,7 +3,6 @@ from beauty_print import *
 from common import *
 from Player import Player
 from DataStructure import DataStructure
-import random
 from Board import Board, spot_type
 
 
@@ -11,17 +10,22 @@ class PlayerIM(Player):
 
     def __init__(self):
         super().__init__()
+        self.modes_info["on_board"] = {"func":self.move_on_board}
+
+        
+
 
     def set_factory(self, factory):
         super().set_factory(factory)
     
+    
+
     def setup(self, game):
         super().setup(game)
         # dar subscribe em building_board_print,
         # para quando o board for montar o seu print, o Player pegar
         # todos os jogadores que estão em partida e inserir
         # na lista da board de coisas para imprimir 
-
         # não é necessário verificar se já deu subscribe pois o event já faz isso
         event : Event = self.factory.get_instance("Event")
         event.subscribe(
@@ -33,6 +37,35 @@ class PlayerIM(Player):
 
     def player_move(self):
         player_id = self.game.turn_of()
+        player = self.get_players()[player_id]
+        if("mode" not in player):
+            # because old saves doesn't have "mode"
+            player["mode"] = "on_board"
+        self.modes_info[player["mode"]]["func"]({"id":player_id})
+ 
+        self.game.pass_turn()
+
+    def roll_dice_for(self, _id: str):
+        player = self.get_concrete_thing(_id)
+        dice = self.factory.get_instance(player["dice_method"])
+        result = dice.roll_dice()
+        print_sucess(f"Resultado do dado: {result}")
+        self.choose_spot_to_move(player, result)
+
+    # new_concrete_thing
+    def create_player(self, name):
+        data : DataStructure = self.factory.get_instance("DataStructure")
+
+        concrete_player = self.new_concrete_thing()
+        # debug_error(f"concrete_player = {concrete_player}",__name__)
+
+        concrete_player["name"] = name
+        concrete_player["dice_method"] = "DiceRollOrRandom"
+
+        data.keep_concrete_thing(concrete_player["id"], concrete_player, self.get_category())
+
+    def move_on_board(self, params=None):
+        player_id = params["id"]
         
         while(player_id == self.game.turn_of()):
             print_normal(f"\nEscolha uma opção")
@@ -60,40 +93,25 @@ class PlayerIM(Player):
             else:
                 print_error(f"Opção ({option}) inválida! pressione ENTER")
                 input("")
-        self.game.pass_turn()
-
-    def roll_dice_for(self, _id: str):
-        player = self.get_concrete_thing(_id)
-        dice = self.factory.get_instance(player["dice_method"])
-        result = dice.roll_dice()
-        print_sucess(f"Resultado do dado: {result}")
-        self.choose_spot_to_move(player, result)
-
-    # new_concrete_thing
-    def create_player(self, name):
-        data : DataStructure = self.factory.get_instance("DataStructure")
-
-        concrete_player = self.new_concrete_thing()
-        # debug_error(f"concrete_player = {concrete_player}",__name__)
-
-        concrete_player["name"] = name
-        concrete_player["dice_method"] = "DiceRollOrRandom"
-
-        data.keep_concrete_thing(concrete_player["id"], concrete_player, self.get_category())
-
-        
         
     
     def choose_spot_to_move(self, player, range_):
         board : Board = self.factory.get_instance("Board")
         valid_spots = board.get_valid_spots_for_range(player["coord"], range_)
+        buildings = []
         if(len(valid_spots) == 0):
             print_normal("Não há lugares para ir")
             return
+        event : Event = self.factory.gi("Event")
+        event.notify("entity_choosing_spot", 
+            self.reference(player["id"]), 
+            {"spots":valid_spots, "buildings":buildings, "range":range_})
         spot = None
-        print_number_list(valid_spots, title="\nCasas disponíveis", layed=True)
+        print_header("\nLugares disponíveis\n")
+        print_normal(", ".join(buildings), end='')
+        print_number_list(valid_spots, title="", layed=True)
         while True:
-            option = input_question("\nDigite a casa ou o valor correspondente: ").upper()
+            option = input_question("\n\nDigite a casa ou o valor correspondente: ").upper()
             if option in valid_spots:
                 spot = option
                 break
@@ -134,14 +152,9 @@ class PlayerIM(Player):
     
     
     def on_building_board_print(self, interested=None, event_causer=None, additional=None):
-    # print_debug(f"sou {interested} e fui notificado de on_building_board_print",__name__)
         # pegar lista de id's dos jogadores IM
-        
         players_im : dict = self.get_players()
 
-        # print_debug(f"os pl_im ",__name__)
-        # print_beauty_json(players_im)
-        # input("")
         category = self.get_category()
         if(category not in additional):
             additional[category] = []
@@ -152,15 +165,5 @@ class PlayerIM(Player):
                 "coord": player["coord"]
             })
 
-        # try:
-        #     _id = interested["id"]
-        #     data : DataStructure = self.factory.get_instance("DataStructure")
-        #     this = data.get_concrete_thing(_id, interested["category"])
-            
-        #     additional.append({
-        #         "image": self.get_image(_id),
-        #         "coord": this["coord"]
-        #     })
-        # except:
-        #     debug_error(f"Error in on_building_board_print() of player ",fname=__name__, enabled=DEBUG_ENABLED)
+    
 

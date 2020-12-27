@@ -5,6 +5,7 @@ import json
 from common import *
 from beauty_print import *
 from Thing import Thing
+from School import School
 
 SAVES_PATH = './saves/'
 
@@ -74,6 +75,12 @@ class SaveManager(Thing):
         save.keep_concrete_thing("1", save_metadata, self.get_category())
         # salvando save_metadata na estrutura de dados
         # save.data[self.get_category()]["concrete_things"]["1"] = save_metadata
+
+        # criando escola pros menino estudarem
+        self.factory.gi("Event").setup()
+        schoolClass : School = self.factory.get_instance("School")
+        school = schoolClass.new_concrete_thing()
+        save.keep_concrete_thing(school["id"], school, schoolClass.get_category())
 
         self.save_to_file(save.data)
 

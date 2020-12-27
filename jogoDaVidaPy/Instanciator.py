@@ -15,7 +15,9 @@ from Board import Board
 from RandomName import RandomName
 from DiceRandom import DiceRandom
 from DiceRollOrRandom import DiceRollOrRandom
- 
+from School import School
+
+
 class Instanciator:
 
     classes = {
@@ -31,7 +33,8 @@ class Instanciator:
         "Board": Board,
         "RandomName": RandomName,
         "DiceRandom": DiceRandom,
-        "DiceRollOrRandom": DiceRollOrRandom
+        "DiceRollOrRandom": DiceRollOrRandom,
+        "School": School,
     }
 
     instances = {}

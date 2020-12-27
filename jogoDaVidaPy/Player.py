@@ -18,23 +18,6 @@ class Player(Person):
 
     def setup(self, game):
         self.game  = game
-        # if("game_is_starting" not in event.events)
-        # self.im : Player = self.factory.get_instance("PlayerIM")
-        # self.oom : Player = self.factory.get_instance("PlayerOOM")
-        # self.im.setup(game)
-
-        
-
-    # def on_game_is_starting(self):
-    #     # on game is starting, it need to subscribe all functions of players
-    #     event : Event = self.factory.gi("Event")
-    #     event.unsubscribe_func("game_is_starting")
-    #     event.unsubscribe("building_board_print", self.reference(_id, "PlayerIM"))
-
-    def new_concrete_thing(self):
-        return super().new_concrete_thing()
-    
-
 
 
     

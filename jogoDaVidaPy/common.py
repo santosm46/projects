@@ -10,6 +10,7 @@ FILE_NAME = "saves.txt"
 GAME_VERSION = "1.0.0"
 DATA_PATH = './data/'
 NAMES_FILE = 'names.txt'
+GOVERNMENT = "government"
 
 class prim_opt:
     PASS_TURN = 'P'

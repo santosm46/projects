@@ -64,5 +64,5 @@ def print_number_list(values: list, title: str, layed=False):
     output = ''
     for i in range(len(values)):
         output = output + f"{bcolors.HEADER}{i+1}) {bcolors.WARNING}{values[i]}{bcolors.ENDC}" + (". " if layed else "\n")
-    print_normal(output)
+    print_normal(output, end='')
 

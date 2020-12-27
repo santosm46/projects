@@ -1,5 +1,5 @@
 from common import DEBUG_ENABLED, get_linenumber, replacer
-from beauty_print import debug_error, print_debug, print_header, print_normal, bcolors
+from beauty_print import debug_error, print_beauty_json, print_debug, print_header, print_normal, bcolors
 from Thing import Thing
 from Event import Event
 # from PlayerIM import PlayerIM
@@ -96,7 +96,7 @@ class Board(Thing):
                     continue
                 # if(self.coord_to_alphanum(coord) == "E10"):
                 #     print_debug(f"board[{i}][{j}] = {board_chars[i][j]}",__name__)
-                if(board_chars[row][column] != spot_type.FREE):
+                if(board_chars[row][column] == spot_type.BUILDING):
                     continue
                 valid_spots.append(self.coord_to_alphanum({"row":row, "column":column}))
 
@@ -143,6 +143,9 @@ class Board(Thing):
         entities = {}
 
         self.event.notify("building_board_print", self.reference("id_mock"), entities)
+
+        # print_debug(f"isso foi o que recolhi: ",__name__)
+        # print_beauty_json(entities)
 
         for category, entities in entities.items():
             for entity in entities:

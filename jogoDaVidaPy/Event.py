@@ -17,8 +17,18 @@ event_debug = {
 all_events = [
     "entity_moved_to_coord",
     "building_board_print",
+    "new_round",
 ]
 
+"""
+Event will run the function for the subscribers passing these parameters
+(interested, event_causer, additional=None)
+
+interested  and event_causer are on the format {"id": str, "category":str}
+param additional format depends on the interested to extract the correct params
+according to the function
+
+"""
 
 class Event(Thing):
 
@@ -47,11 +57,12 @@ class Event(Thing):
     # É preciso dar setup após carregar data structure na main
     def setup(self):
         self.update_events_data_ref()
+        pass
         # get events pointer of concrete_things of Event
         
     def set_factory(self, factory):
         self.factory = factory
-        self.update_events_data_ref()
+        # self.update_events_data_ref()
         
     # update reference to data structure
     def update_events_data_ref(self):
@@ -104,11 +115,14 @@ class Event(Thing):
     
 
     def notify(self, event_name: str, event_causer: dict = None, additional = None):
+        # print_debug(f"veja self.events",__name__)
+        # print_beauty_json(self.events)
         if(event_name not in self.events):
             # debug_error(f"There aren't listeners for event {event_name}", fname=__name__, enabled=DEBUG_ENABLED)
             return False
-        
         for category, interesteds in self.events[event_name].items():
+            # if(event_name == 'building_board_print'):
+            #     print_debug(f"notificando categoria {category} sobre {event_name}",__name__)
             self.notify_category(event_name, event_causer, category, additional)
         
         return True

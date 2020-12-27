@@ -21,6 +21,13 @@ class GameManager(Thing):
         
         # Just to work with the category system used at the time
         self.factory.get_instance("Category").setup(save)
+
+        self.factory.get_instance("Event").setup()
+
+        self.player_im : PlayerIM = self.factory.get_instance("PlayerIM")
+        self.player_im.setup(self)
+        self.player_oom : PlayerOOM = self.factory.get_instance("PlayerOOM")
+        self.player_oom.setup(self)
         
         # self.get_state() = save
 
@@ -53,14 +60,10 @@ class GameManager(Thing):
 
     def set_factory(self, factory):
         super().set_factory(factory)
-        self.board : Board = self.factory.get_instance("Board")
         self.state : DataStructure = self.factory.get_instance("DataStructure")
-        self.player_im : PlayerIM = self.factory.get_instance("PlayerIM")
-        self.player_im.setup(self)
-        self.player_oom : PlayerOOM = self.factory.get_instance("PlayerOOM")
-        self.player_oom.setup(self)
+        self.board : Board = self.factory.get_instance("Board")
+        
         self.save_manager : SaveManager = self.factory.get_instance("SaveManager")
-        self.factory.get_instance("Event").setup()
         
 
 

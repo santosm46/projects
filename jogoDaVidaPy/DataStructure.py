@@ -15,7 +15,7 @@ class DataStructure(Thing):
     
     def set_factory(self, factory):
         super().set_factory(factory)
-        self.new_data_structure()
+        # self.new_data_structure()
 
     
     def new_data_structure(self):
