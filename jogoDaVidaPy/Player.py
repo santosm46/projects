@@ -29,7 +29,7 @@ class Player(Person):
         max_hp = player["max_hp"]
         hearts = "💜" * hp + "🖤" * (max_hp - hp)
         coord = player["coord"]
-        board : Board = self.factory.get_instance("Board")
+        board : Board = self.get("Board")
         alphanum = board.coord_to_alphanum(coord)
         image = self.get_image(player_id)
 
@@ -84,7 +84,7 @@ class Player(Person):
         
 
     # def unsubscribe_funcs(self, _id):
-    #     event : Event = self.factory.get_instance("Event")
+    #     event : Event = self.get("Event")
     #     event.unsubscribe("building_board_print", self.reference(_id, "PlayerIM"))
     
     # remove player from match and put it on OOM list
@@ -185,7 +185,7 @@ class Player(Person):
         return None
     
     def get_players(self):
-        return self.get_dict_list()["concrete_things"]
+        return self.get_dict_list()
     
     # fix
     def get_players_oom(self):

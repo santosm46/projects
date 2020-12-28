@@ -22,7 +22,7 @@ class Thing:
     
     # every class will implement their own method new_concrete_thing()
     def new_concrete_thing(self):
-        game_manager = self.factory.get_instance("GameManager")
+        game_manager = self.get("GameManager")
 
         _id = game_manager.generate_id()
         return {
@@ -43,21 +43,27 @@ class Thing:
         self.factory  = factory
         self.fac  = factory
         if(self.get_category() != "Event"):
-            self.event = factory.get_instance("Event")
+            self.event = self.get("Event")
     
     # Get instance of a class
     def get(self, class_name):
-        return self.fac.gi(class_name)
+        return self.factory.get_instance(class_name)
 
-    def get_concrete_thing(self, id: str):
-        data = self.factory.get_instance("DataStructure")
-        concrete_thing = data.get_concrete_thing(id, self.get_category())
+    def get_concrete_thing(self, id: str, category=None):
+        if category is None:
+            category = self.get_category()
+        data = self.get("DataStructure")
+        concrete_thing = data.get_concrete_thing(id, category)
         return concrete_thing
     
     def get_dict_list(self):
-        data = self.factory.get_instance("DataStructure")
+        data = self.get("DataStructure")
         dict_list = data.data[self.get_category()]
         # print(dict_list)
-        return dict_list
+        return dict_list["concrete_things"]
     
-    
+    def get_concrete_thing_by_ref(self, reference: dict):
+        data = self.get("DataStructure")
+        r = data.get_concrete_thing(reference["id"], reference["category"])
+        return r
+

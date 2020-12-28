@@ -18,7 +18,7 @@ class Tester(Thing):
     def new_concrete_thing(self, name):
         concrete_thing = super().new_concrete_thing()
 
-        data : DataStructure = self.factory.get_instance("DataStructure")
+        data : DataStructure = self.get("DataStructure")
 
         concrete_thing["name"] = name
 
@@ -30,7 +30,7 @@ class Tester(Thing):
     def gritar(self, interested, event_causer, additional=None):
         olhar = type(interested["id"])
 
-        data : DataStructure = self.factory.get_instance("DataStructure")
+        data : DataStructure = self.get("DataStructure")
         me = data.get_concrete_thing(interested["id"], interested["category"])
         other = data.get_concrete_thing(event_causer["id"], event_causer["category"])
         me_name = me["name"]

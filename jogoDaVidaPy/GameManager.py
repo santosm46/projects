@@ -24,14 +24,14 @@ class GameManager(Thing):
         self.state.setup(save)
         
         # Just to work with the category system used at the time
-        self.factory.get_instance("Category").setup(save)
+        self.get("Category").setup(save)
 
-        event : Event = self.factory.get_instance("Event")
+        event : Event = self.get("Event")
         event.setup()
 
-        self.player_im : PlayerIM = self.factory.get_instance("PlayerIM")
+        self.player_im : PlayerIM = self.get("PlayerIM")
         self.player_im.setup(self)
-        self.player_oom : PlayerOOM = self.factory.get_instance("PlayerOOM")
+        self.player_oom : PlayerOOM = self.get("PlayerOOM")
         self.player_oom.setup(self)
         
         # self.get_state() = save
@@ -47,7 +47,7 @@ class GameManager(Thing):
             return "Save name not loaded"
     
     def meta_data(self):
-        data : DataStructure = self.factory.get_instance("DataStructure")
+        data : DataStructure = self.get("DataStructure")
         try:
             # print_debug(data.data["SaveManager"]["concrete_things"], __name__)
             return data.data["SaveManager"]["concrete_things"]["1"]
@@ -63,10 +63,10 @@ class GameManager(Thing):
 
     def set_factory(self, factory):
         super().set_factory(factory)
-        self.state : DataStructure = self.factory.get_instance("DataStructure")
-        self.board : Board = self.factory.get_instance("Board")
+        self.state : DataStructure = self.get("DataStructure")
+        self.board : Board = self.get("Board")
         
-        self.save_manager : SaveManager = self.factory.get_instance("SaveManager")
+        self.save_manager : SaveManager = self.get("SaveManager")
         
 
     def on_building_board_print(self, interested, event_causer, additional):
@@ -110,12 +110,14 @@ class GameManager(Thing):
 
         self.game_ruinning = True
 
-        self.factory.get_instance("Event").notify("game_is_starting")
+        self.get("Event").notify("game_is_starting")
 
         while self.game_ruinning:
             self.print_game()
             self.player_im.print_player(self.turn_of())
-            self.player_im.player_move()
+            self.player_im.player_move(self.turn_of())
+            self.pass_turn()
+
 
     def stop(self):
         self.game_ruinning = False

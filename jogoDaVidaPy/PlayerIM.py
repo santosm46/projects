@@ -10,9 +10,8 @@ class PlayerIM(Player):
 
     def __init__(self):
         super().__init__()
-        self.modes_info["on_board"] = {"func":self.move_on_board}
-
-        
+        # self.mode_func[modes.ON_BOARD] = self.move_on_board
+        # self.mode_func[modes.ON_BUILDING] = self.interact_with_building
 
 
     def set_factory(self, factory):
@@ -27,33 +26,29 @@ class PlayerIM(Player):
         # todos os jogadores que estão em partida e inserir
         # na lista da board de coisas para imprimir 
         # não é necessário verificar se já deu subscribe pois o event já faz isso
-        event : Event = self.factory.get_instance("Event")
+        event : Event = self.get("Event")
         event.subscribe("building_board_print", 
             self.reference(MOCK_ID),
             "on_building_board_print")
 
 
 
-    def player_move(self):
-        player_id = self.game.turn_of()
-        player = self.get_players()[player_id]
-        if("mode" not in player):
-            # because old saves doesn't have "mode"
-            player["mode"] = "on_board"
-        self.modes_info[player["mode"]]["func"]({"id":player_id})
+    def player_move(self, player_id):
+        # player = self.get_players()[player_id]
+        player = self.get_concrete_thing(player_id)
+        # execute a function according to the mode of the player
+        self.mode_func[player["mode"]](self.reference(player_id))
  
-        self.game.pass_turn()
+        # self.game.pass_turn()
 
-    def roll_dice_for(self, _id: str):
-        player = self.get_concrete_thing(_id)
-        dice = self.factory.get_instance(player["dice_method"])
-        result = dice.roll_dice()
-        print_sucess(f"Resultado do dado: {result}")
-        self.choose_spot_to_move(player, result)
+    def roll_dice_to_move(self, _id: str):
+        result = self.roll_dice(_id)
+        self.choose_spot_to_move(_id, result)
+        
 
     # new_concrete_thing
     def create_player(self, name):
-        data : DataStructure = self.factory.get_instance("DataStructure")
+        data : DataStructure = self.get("DataStructure")
 
         concrete_player = self.new_concrete_thing()
         # debug_error(f"concrete_player = {concrete_player}",__name__)
@@ -65,11 +60,12 @@ class PlayerIM(Player):
 
     def move_on_board(self, params=None):
         player_id = params["id"]
+        name = self.get_concrete_thing(player_id)["name"]
         
         while(player_id == self.game.turn_of()):
             print_normal(f"\nEscolha uma opção")
+            print_normal(f"\tENTER) Jogar dado")
             print_normal(f"\t{prim_opt.PASS_TURN}) Passar vez")
-            print_normal(f"\t{prim_opt.ROLL_DICE}) Jogar dado")
             print_normal(f"\n")
             # print_normal(f"\t{prim_opt.SAVE}) Salvar")
             # print_normal(f"\t{prim_opt.EXIT}) Sair")
@@ -77,11 +73,12 @@ class PlayerIM(Player):
             option = input_question("\nOpção: ").upper()
 
             if(option == prim_opt.PASS_TURN):
-                print_normal("Passando vez...  ENTER para confirmar ou outra coisa para cancelar\n")
-                if len(input("")) == 0:
-                    break
+                # print_normal("Passando vez...  ENTER para confirmar ou outra coisa para cancelar\n")
+                print_normal(f"Passando vez de {name}...  \n")
+                # if len(input("")) == 0:
+                break
             if(option == prim_opt.ROLL_DICE):
-                self.roll_dice_for(player_id)
+                self.roll_dice_to_move(player_id)
                 
                 break
             elif(option == prim_opt.SAVE_EXIT):
@@ -94,21 +91,23 @@ class PlayerIM(Player):
                 input("")
         
     
-    def choose_spot_to_move(self, player, range_):
-        board : Board = self.factory.get_instance("Board")
+    def choose_spot_to_move(self, _id, range_):
+        player = self.get_concrete_thing(_id)
+        board : Board = self.get("Board")
         valid_spots = board.get_valid_spots_for_range(player["coord"], range_)
         buildings = []
+        buildings_list = {}
         if(len(valid_spots) == 0):
             print_normal("Não há lugares para ir")
             return
         event : Event = self.factory.gi("Event")
-        event.notify("entity_choosing_spot", 
-            self.reference(player["id"]), 
-            {"spots":valid_spots, "buildings":buildings, "range":range_})
+        event.notify("entity_choosing_spot", self.reference(player["id"]), 
+            {"spots":valid_spots, "buildings":buildings, "range":range_, "buildings_list":buildings_list})
         spot = None
         self.game.print_game()
+        print_sucess(f"Resultado do dado: {range_}")
         print_header("\nLugares disponíveis\n")
-        print_normal(", ".join(buildings), end='')
+        print_normal(", ".join(buildings))
         print_number_list(valid_spots, title="", layed=True)
         while True:
             option = input_question("\n\nDigite a casa ou o valor correspondente: ").upper()
@@ -118,9 +117,12 @@ class PlayerIM(Player):
             if(valid_number(option, 1, len(valid_spots))):
                 spot = valid_spots[int(option)-1]
                 break
-        print_normal(f"Movendo para {spot}... ", end='')
+        place = spot
+        if spot in buildings_list:
+            place = buildings_list[spot]
+        name = player["name"]
+        print_normal(f"Movendo {name} para {place}... ", end='')
         board.move_entity_to(reference=self.reference(player["id"]), alphanum=spot)
-        input("[pressione ENTER para continuar] ")
 
     def create_players(self):
         clear()
@@ -166,4 +168,16 @@ class PlayerIM(Player):
             })
 
     
+    # def on_school_move(self, params=None):
+    #     person = self.get_concrete_thing(params["id"])
+    #     name = person["name"]
+    #     print_warning(f"Pessoa {name} está na escola")
+    
+
+
+    def gui_output(self, text, color=bcolors.ENDC, end='\n',pause=False):
+        print_header(f"{color}{text}{bcolors.ENDC}",end=end)
+        if pause:
+            input("")
+
 

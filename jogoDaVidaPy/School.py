@@ -1,25 +1,47 @@
 
-from beauty_print import print_debug, bcolors
+from beauty_print import print_beauty_json, print_debug, bcolors
 from Education import Education
 from Event import Event
-from common import GOVERNMENT
+from common import GOVERNMENT, modes
 from Board import Board
 from Category import Category
 from Person import Person
 
+
+
+
 class School(Education):
+
+    class school_level:
+        ELEMENTARY = "elementary_school"
+        MIDDLE = "middle_school"
+        HIGH = "high_school"
+
+    level_nick = {
+        school_level.ELEMENTARY: "Ensino Básico",
+        school_level.MIDDLE: "Ensino Fundamental",
+        school_level.HIGH: "Ensino Médio"
+    }
 
     def __init__(self) -> None:
         super().__init__()
+
+        self.passing_grades = {
+            self.school_level.ELEMENTARY: 5,
+            self.school_level.MIDDLE: 4,
+            self.school_level.HIGH: 3,
+        }
+
+        self.diploms = list(self.passing_grades.keys())
 
     def set_factory(self, factory):
         super().set_factory(factory)
         
 
     def new_concrete_thing(self):
-        event : Event = self.factory.gi("Event")
+        event : Event = self.get("Event")
         school = super().new_concrete_thing()
-        board : Board = self.factory.get_instance("Board")
+        board : Board = self.get("Board")
 
         school["coord"] = board.alphanum_to_coord("D3")
         school["name"] = "Escola"
@@ -29,54 +51,59 @@ class School(Education):
         event.subscribe("entity_moved_to_coord", school_ref, "put_person_on_school")
         event.subscribe("building_board_print", school_ref, "on_building_board_print")
         event.subscribe("entity_choosing_spot", school_ref, "on_entity_choosing_spot")
+        event.subscribe("entity_interacting_with_building", school_ref, "person_school_interaction")
         
         
         return school
     
     def is_person(self, person_categ):
-        categ_mg : Category = self.factory.gi("Category")
+        categ_mg : Category = self.get("Category")
         return categ_mg.is_category_or_inside(person_categ, "Person")
 
-    def put_person_on_school(self, school_data, person_ref, additional=None):
+    def put_person_on_school(self, school_ref, person_ref, additional=None):
+        print_debug("tentando colocar pessoa na escola 1")
         person_categ = person_ref["category"]
         if(not self.is_person(person_categ)):
             # only people can enter school
             return
-        mode_name = "on_school"
-        person_class : Person = self.factory.gi(person_categ)
-        person_id = person_ref["id"]
+        # print_debug("tentando colocar pessoa na escola 2")
+        mode_name = "on_building"
+        person_class : Person = self.get(person_categ)
 
-        school_id = school_data["id"]
+        school_id = school_ref["id"]
         school = self.get_concrete_thing(school_id)
-        person_concr = person_class.get_concrete_thing(person_id)
+        person = person_class.get_concrete_thing(person_ref["id"])
         # can only put person if stepping at school
-        if(person_concr["coord"] != school["coord"]):
+        if(person["coord"] != school["coord"]):
             return
+        # print_debug("tentando colocar pessoa na escola 3")
 
-        mode_info = person_class.get_mode_info_of(mode_name)
-        mode_info["school"] = {"id": school_id}
+        mode_info = person_class.get_mode_info_of(person_ref,mode_name)
+        print_beauty_json(mode_info)
+        mode_info["building"] = self.reference(school_id)
 
-        person_class.change_mode(person_id, mode_name)
+        print_debug("consegui colocar pessoa na escola")
+        person_class.change_mode(person["id"], mode_name, self.reference(school_id))
 
     def on_entity_choosing_spot(self, school_data, person_ref, additional):
         # if Person can reach some school, it is gonna put it's coordenate
-        # on the spots options for the player
+        # on the spots options for the player to enter it
         person_categ = person_ref["category"]
         if(not self.is_person(person_categ)):
             return
+        # person with highest diplom can't enter school
+        if(self.person_has_highest_level(person_ref)):
+            return
         spots = additional["spots"]
         buildings = additional["buildings"]
+        buildings_list : dict = additional["buildings_list"]
         range_ = additional["range"]
 
-        school_id = school_data["id"]
-        school = self.get_concrete_thing(school_id)
-        board : Board = self.factory.gi("Board")
+        school = self.get_concrete_thing(school_data["id"])
+        board : Board = self.get("Board")
         my_valid_spots = board.get_valid_spots_for_range(school["coord"], range_)
-        person_id = person_ref["id"]
-        person_class : Person = self.factory.gi(person_categ)
-        person_concr = person_class.get_concrete_thing(person_id)
-        person_alphanum_pos = board.coord_to_alphanum(person_concr["coord"])
-        person_class : Person = self.factory.gi(person_categ)
+        person = self.get_concrete_thing_by_ref(person_ref)
+        person_alphanum_pos = board.coord_to_alphanum(person["coord"])
 
         # can only suggest school if person can reach school
         if(person_alphanum_pos not in my_valid_spots):
@@ -85,6 +112,7 @@ class School(Education):
         spots.append(my_alphanum)
         school_name = school["name"]
         # for user to see only
+        buildings_list[my_alphanum] = school_name
         buildings.append(f"{bcolors.HEADER}{my_alphanum}) {bcolors.WARNING}{school_name}{bcolors.ENDC}")
         
 
@@ -93,7 +121,7 @@ class School(Education):
 
     def on_building_board_print(self, interested=None, event_causer=None, additional=None):
         # pegar lista de id's dos jogadores IM
-        escolas : dict = self.get_dict_list()["concrete_things"]
+        escolas : dict = self.get_dict_list()
 
         category = self.get_category()
         if(category not in additional):
@@ -108,4 +136,57 @@ class School(Education):
             })
 
         # print_debug
+
+    def person_school_interaction(self, school_data, person_ref, additional=None):
+        # building has to be school
+        category = additional["category"]
+        if(category != self.get_category()):
+            return
+        if(not self.is_person(person_ref["category"])):
+            return
+        person_class : Person = self.get(person_ref["category"])
+        person_id = person_ref["id"]
+        if(self.person_has_highest_level(person_ref)):
+            person_class.change_mode(person_id,modes.ON_BOARD)
+            return
+
+        school = self.get_concrete_thing_by_ref(additional)
+        name = school["name"]
+
+        level = self.next_level_of_person(person_ref)
+        passing_note = self.passing_grades[level]
+        text = f"Você está na {name} cursando o {self.level_nick[level]}. Precisa de nota >= {self.number_to_grade(passing_note)} ({passing_note}) para passar"
+        person_class.gui_output(text, bcolors.HEADER)
+        
+        result = person_class.roll_dice(person_id)
+
+        grade = self.number_to_grade(result)
+
+        text = f"\nVocê tirou {grade} ({result}) "
+        if(self.can_pass_with(result, level)):
+            new_level = self.next_level_of_person(person_ref)
+            self.give_diplom_to_person(person_ref, new_level, additional["id"])
+            next_level_nick = self.next_level_nick_of(person_ref)
+            if(self.person_has_highest_level(person_ref)):
+                text += f"e se formou na {name}! Parabéns!"
+                person_class.change_mode(person_id,modes.ON_BOARD)
+            else:
+                text += f"e passou para o {next_level_nick} "
+            color = bcolors.OKGREEN
+        else:
+            text += "e reprovou. Tente na próxima!"
+            color = bcolors.FAIL
+        text += " (ENTER para continuar) "
+        person_class.gui_output(text, color=color, pause=True)
+    
+
+    
+
+
+
+
+
+    # def has_high_school(person_ref,)
+
+# violence, endy scott
 

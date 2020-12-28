@@ -12,7 +12,7 @@ class Building(Thing):
     def new_concrete_thing(self):
         building = super().new_concrete_thing()
 
-        board : Board = self.factory.get_instance("Board")
+        board : Board = self.get("Board")
 
         building["coord"] = board.alphanum_to_coord("A1")
         building["selling_price"] = 1000

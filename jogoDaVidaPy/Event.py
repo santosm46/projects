@@ -18,7 +18,8 @@ all_events = [
     "entity_moved_to_coord",
     "building_board_print",
     "new_round",
-    "entity_choosing_spot"
+    "entity_choosing_spot",
+    "entity_interacting_with_building",
 ]
 
 """
@@ -33,24 +34,6 @@ according to the function
 
 class Event(Thing):
 
-    # def has_event(self, event_name):
-    #     return event_name in self.events
-    
-    # def has_category_on_event(self, category, event_name):
-    #     return self.has_event(event_name) and category in self.events[event_name]
-
-    # def has_id_on_category_of_event(self, _id, category, event_name):
-    #     return (self.has_category_on_event(category, event_name)
-    #         and _id in self.events[event_name][category]
-    #     )
-    
-    # def has_function_for_event_of_entity(self, function, event_name, reference: dict[str, str]):
-    #     category = reference["category"]
-    #     _id = reference["id"]
-    #     return (
-    #         self.has_id_on_category_of_event(_id, category, event_name)
-    #         and function in self.events[event_name][category][_id]
-    #     )
 
     def __init__(self):
         super().__init__()
@@ -67,7 +50,7 @@ class Event(Thing):
         
     # update reference to data structure
     def update_events_data_ref(self):
-        data_structure : DataStructure = self.factory.get_instance("DataStructure")
+        data_structure : DataStructure = self.get("DataStructure")
         self.events : dict = data_structure.data[self.get_category()]["concrete_things"]
 
 
@@ -146,7 +129,7 @@ class Event(Thing):
         for function_name in function_list:
             try:    
                 func_debug = function_name
-                category_inst : Thing = self.factory.get_instance(category)
+                category_inst : Thing = self.get(category)
                 if additional is None:
                     category_inst.run_func(function_name, category_inst.reference(_id), event_causer)
                 else:

@@ -19,7 +19,7 @@ class DataStructure(Thing):
 
     
     def new_data_structure(self):
-        category : Category = self.factory.get_instance("Category")
+        category : Category = self.get("Category")
         self.data = category.get_categories_copy()
 
         # add fields

@@ -53,7 +53,7 @@ class SaveManager(Thing):
             return True
         
         # criar e salvar uma nova estrutura
-        save : DataStructure = self.factory.get_instance("DataStructure")
+        save : DataStructure = self.get("DataStructure")
 
         clear()
 
@@ -70,7 +70,7 @@ class SaveManager(Thing):
         
 
         # dados do save (seria criado por new_concrete_thing)
-        game = self.factory.get_instance("GameManager")
+        game = self.get("GameManager")
         save_metadata = game.new_concrete_thing(game_name)
         save.keep_concrete_thing("1", save_metadata, self.get_category())
         # salvando save_metadata na estrutura de dados
@@ -78,7 +78,7 @@ class SaveManager(Thing):
 
         # criando escola pros menino estudarem
         self.factory.gi("Event").setup()
-        schoolClass : School = self.factory.get_instance("School")
+        schoolClass : School = self.get("School")
         school = schoolClass.new_concrete_thing()
         save.keep_concrete_thing(school["id"], school, schoolClass.get_category())
 

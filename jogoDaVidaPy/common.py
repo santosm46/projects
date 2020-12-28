@@ -16,17 +16,34 @@ MOCK_ID = "mock_id"
 class prim_opt:
     PASS_TURN = 'P'
     SAVE = 'S'
-    EXIT = 'E'
+    EXIT = 'F'
     SAVE_EXIT = '0'
     CONTINUE = 'C'
     ADD_PLAYER = 'A'
     REM_PLAYER = 'R'
     DEL_PLAYER = 'D'
-    ROLL_DICE = 'R'
+    ROLL_DICE = ''
 
     DELETE = 'D'
-    LOAD = 'L'
-    CREATE = 'C'
+    LOAD = 'C'
+    CREATE = 'N'
+
+class emotions:
+    NEUTRAL = "neutral"
+    HAPPY = "happy"
+    SAD = "sad"
+    ANGRY = "angry"
+    SCARED = "scared"
+    WORRIED = "worried"
+
+class modes:
+    ON_BOARD = "on_board"
+    ON_BUILDING = "on_building"
+
+class stats:
+    QI = 20
+    MAX_HP = 5
+
 
 def get_linenumber():
     cf = currentframe()

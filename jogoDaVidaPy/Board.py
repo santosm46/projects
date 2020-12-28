@@ -115,8 +115,8 @@ class Board(Thing):
       
     def move_entity_to(self, reference, alphanum=None, coord=None):
         try:
-            entity : Thing = self.factory.get_instance(reference["category"])
-            event : Event = self.factory.get_instance("Event")
+            entity : Thing = self.get(reference["category"])
+            event : Event = self.get("Event")
             concrete = entity.get_concrete_thing(reference["id"])
             if coord is None:
                 coord = self.alphanum_to_coord(alphanum)
@@ -161,7 +161,6 @@ class Board(Thing):
                 entities[category] = entities.pop(category)
 
 
-        entities["PlayerIM"] = entities.pop("PlayerIM")
         # print_debug(f"isso foi o que recolhi: ",__name__)
         # print_beauty_json(entities)
 

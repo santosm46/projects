@@ -72,7 +72,7 @@ def run():
     while(True):
         clear()
         print_header("Menu inicial\n")
-        print_normal(f"\t{prim_opt.CREATE}) Criar novo jogo")
+        print_normal(f"\t{prim_opt.CREATE}) Novo jogo")
         print_normal(f"\t{prim_opt.LOAD}) Continuar um jogo")
         print_normal(f"\t{prim_opt.DELETE}) Deletar um jogo")
 
