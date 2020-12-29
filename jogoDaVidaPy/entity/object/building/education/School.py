@@ -1,7 +1,8 @@
 
+from entity.object.building.commerce.Bank import Bank
 from utils.beauty_print import bcolors
 from game.Event import Event
-from utils.common import GOVERNMENT, modes
+from utils.common import GOVERNMENT, line, log_error, modes, prim_opt
 from game.Board import Board
 from game.Category import Category
 from entity.livingbeing.person.Person import Person
@@ -42,12 +43,14 @@ class School(Education):
         self.update_concrete(school)
         school_ref = self.reference(school["id"])
         self.update_subscriber(school_ref)
+        
         return school
     
     # 
     def update_concrete(self, school: dict):
         super().update_concrete(school)
         board : Board = self.get("Board")
+        school[self.attr_price_per_round] = 75
         school[self.attr_coord] = board.alphanum_to_coord("D3")
         school[self.attr_name] = "Escola"
         school[self.attr_price] = 800
@@ -85,6 +88,17 @@ class School(Education):
         mode_info["building"] = self.reference(school_id)
 
         person_class.change_mode(person["id"], mode_name, self.reference(school_id))
+
+    def take_person_out_of_school(self, school_ref, person_ref):
+        try:
+            school = self.get_concrete_thing_by_ref(school_ref)
+            person_class : Person = self.get(person_ref["category"])
+            person_class.change_mode(person_ref["id"], person_class.mode_on_board)
+            board : Board = self.get("Board")
+            close_free_spot = board.closer_free_spot_to(school[self.attr_coord])
+            board.move_entity_to(person_class.reference(person_ref["id"]), alphanum=close_free_spot)
+        except:
+            log_error(f"Error trying to take person {person_ref} out of school {school_ref}",__name__,line())
 
     def on_entity_choosing_spot(self, school_data, person_ref, additional):
         # if Person can reach some school, it is gonna put it's coordenate
@@ -138,14 +152,28 @@ class School(Education):
             return
 
         school = self.get_concrete_thing_by_ref(additional)
+        person = self.get_concrete_thing_by_ref(person_ref)
         name = school["name"]
+
+        bank : Bank = self.get("Bank")
+        price_per_round = school[self.attr_price_per_round]
+        if(not bank.entity_can_pay(person, price_per_round)):
+            person_class.gui_output(f"Você está sem dinheiro para as despesas da {name} (custo: {price_per_round}). Volte aqui mais tarde. [ENTER]",color=bcolors.WARNING,pause=True)
+            self.take_person_out_of_school(self.reference(school["id"]), person_ref)
+            return
 
         level = self.next_level_of_person(person_ref)
         passing_note = self.passing_grades[level]
         text = f"Você está na {name} cursando o {self.level_nick[level]}. Precisa de nota >= {self.number_to_grade(passing_note)} ({passing_note}) para passar"
+        text += f"\n\t(Digite {prim_opt.LEAVE} para sair da {name}) (Taxa por rodada: {price_per_round})"
         person_class.gui_output(text, bcolors.HEADER)
         
         result = person_class.roll_dice(person_id)
+
+        if(result is None):
+            person_class.gui_output("Saindo da escola...")
+            self.take_person_out_of_school(self.reference(school["id"]), person_ref)
+            return
 
         grade = self.number_to_grade(result)
 
@@ -156,17 +184,16 @@ class School(Education):
             next_level_nick = self.next_level_nick_of(person_ref)
             if(self.person_has_highest_level(person_ref)):
                 text += f"e se formou na {name}! Parabéns!"
-                person_class.change_mode(person_id,modes.ON_BOARD)
-                board : Board = self.get("Board")
-                close_free_spot = board.closer_free_spot_to(school[self.attr_coord])
-                board.move_entity_to(person_class.reference(person_id), alphanum=close_free_spot)
+                self.take_person_out_of_school(self.reference(school["id"]), person_ref)
             else:
                 text += f"e passou para o {next_level_nick} "
             color = bcolors.OKGREEN
         else:
             text += "e reprovou. Tente na próxima!"
             color = bcolors.FAIL
-        text += " (ENTER para continuar) "
+        
+        bank.transfer_money_from_to(person_ref, additional, price_per_round)
+        text += f"\nFoi descontado {price_per_round} da sua conta (ENTER para continuar) "
         person_class.gui_output(text, color=color, pause=True)
     
 

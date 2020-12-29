@@ -11,6 +11,7 @@ from game.dicerandom.DiceRandom import DiceRandom
 from game.dicerandom.DiceRollOrRandom import DiceRollOrRandom
 from game.RandomName import RandomName
 from game.Board import Board
+from game.Logger import Logger
 
 from entity.livingbeing.person.player.PlayerIM import PlayerIM
 from entity.livingbeing.person.player.PlayerOOM import PlayerOOM
@@ -37,6 +38,7 @@ class Instanciator:
         "DiceRollOrRandom": DiceRollOrRandom,
         "School": School,
         "Bank": Bank,
+        "Logger": Logger,
     }
 
     instances = {}

@@ -6,7 +6,7 @@ class Education(Building):
 
     def __init__(self) -> None:
         super().__init__()
-        self.price_per_round_attr = 'price_per_round'
+        self.attr_price_per_round = 'price_per_round'
 
         # to be overwitten
         self.grades = ['A','B','C','D','E','F']
@@ -30,7 +30,7 @@ class Education(Building):
 
     def update_concrete(self, education: dict):
         super().update_concrete(education)
-        education[self.price_per_round_attr] = 50
+        self.add_attr_if_not_exists(education, self.attr_price_per_round, 75)
 
     
     def get_person_highest_diplom(self, person_ref, mock_person=None):

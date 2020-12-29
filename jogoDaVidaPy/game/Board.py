@@ -114,6 +114,7 @@ class Board(Game):
         return self.spots_visited
       
     def move_entity_to(self, reference, alphanum=None, coord=None):
+        # maybe change the mode to on_board if it's new coord is a valid spot
         try:
             entity = self.get(reference["category"])
             concrete = entity.get_concrete_thing(reference["id"])
@@ -202,10 +203,9 @@ class Board(Game):
     def closer_free_spot_to(self, this_spot):
         # this_spot has to be coord
         spot_alphanum = self.coord_to_alphanum(this_spot)
-        near_range = 10
 
         # it is most likely that there will be a free spot in the range 4
-        range_ = near_range
+        range_ = 3
         valid_close_spots = self.get_valid_spots_for_range(this_spot, 100)
         print(valid_close_spots)
         # can't include it self

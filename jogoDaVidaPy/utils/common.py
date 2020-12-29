@@ -34,6 +34,8 @@ class prim_opt:
     LOAD = 'C'
     CREATE = 'N'
 
+    LEAVE = 'sair'
+
 class emotions:
     NEUTRAL = "neutral"
     HAPPY = "happy"
@@ -74,9 +76,11 @@ def log_error(error, file, line=''):
     
 
 
-def clear():
+def clear(clear_all=False):
     # pass
     os.system("clear -x")
+    if(clear_all):
+        os.system("clear")
 
 def is_integer(n):
     try:

@@ -1,7 +1,7 @@
 
 from game.dicerandom.DiceRandom import DiceRandom
 from utils.beauty_print import input_question
-from utils.common import valid_number
+from utils.common import prim_opt, valid_number
 
 class DiceRollOrRandom(DiceRandom):
 
@@ -15,6 +15,8 @@ class DiceRollOrRandom(DiceRandom):
         #     return 
         while True:
             result = input_question("Jogue o dado e digite o resultado (ENTER para valor aleatório): ")
+            if(result.lower() == prim_opt.LEAVE):
+                return None
             if(len(result) == 0):
                 return super().roll_dice(num_of_sides)
             if(valid_number(result, 1, num_of_sides)):
