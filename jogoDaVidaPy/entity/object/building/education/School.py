@@ -157,6 +157,9 @@ class School(Education):
             if(self.person_has_highest_level(person_ref)):
                 text += f"e se formou na {name}! Parabéns!"
                 person_class.change_mode(person_id,modes.ON_BOARD)
+                board : Board = self.get("Board")
+                close_free_spot = board.closer_free_spot_to(school[self.attr_coord])
+                board.move_entity_to(person_class.reference(person_id), alphanum=close_free_spot)
             else:
                 text += f"e passou para o {next_level_nick} "
             color = bcolors.OKGREEN

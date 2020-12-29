@@ -76,7 +76,7 @@ def log_error(error, file, line=''):
 
 def clear():
     # pass
-    os.system("clear")
+    os.system("clear -x")
 
 def is_integer(n):
     try:

@@ -9,20 +9,21 @@ import math
 class spot_type:
     FREE = '⬜'
     BUILDING = '⬛'
+    CANT_STEP = ['🌃', '🌇', '🌆', '🌌', '⬛']
 
 
 board_chars = [
     "⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜",
     "⬜⬛⬛⬛⬛⬜⬛⬛⬛⬛⬜⬛⬛⬜⬛⬛⬜",
-    "⬜⬛⬛⬛⬛⬜⬛⬛⬛⬛⬜⬛⬛⬜⬛⬛⬜",
+    "⬜⬛🌃🌌⬛⬜⬛🌃🌇⬛⬜⬛⬛⬜⬛⬛⬜",
     "⬜⬛⬛⬛⬛⬜⬛⬛⬛⬛⬜⬛⬛⬜⬛⬛⬜",
     "⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜",
     "⬜⬛⬛⬛⬜⬛⬛⬛⬛⬜⬛⬛⬜⬛⬛⬛⬜",
-    "⬜⬛⬛⬛⬜⬛⬛⬛⬛⬜⬛⬛⬜⬛⬛⬛⬜",
+    "⬜⬛🌇⬛⬜⬛🌆🌆⬛⬜⬛⬛⬜⬛🌇⬛⬜",
     "⬜⬛⬛⬛⬜⬛⬛⬛⬛⬜⬛⬛⬜⬛⬛⬛⬜",
     "⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜",
     "⬜⬛⬛⬛⬜⬛⬛⬛⬜⬛⬛⬛⬜⬛⬛⬛⬜",
-    "⬜⬛⬛⬛⬜⬛⬛⬛⬜⬛⬛⬛⬜⬛⬛⬛⬜",
+    "⬜⬛🌃⬛⬜⬛🌆⬛⬜⬛🌃⬛⬜⬛🌌⬛⬜",
     "⬜⬛⬛⬛⬜⬛⬛⬛⬜⬛⬛⬛⬜⬛⬛⬛⬜",
     "⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜",
 ]
@@ -85,7 +86,7 @@ class Board(Game):
             column = coord["column"] + j
             if(row < 0 or column < 0): continue
             if(row >= self.rows() or column >= self.columns()): continue
-            if(board_chars[row][column] == spot_type.BUILDING): continue
+            if(board_chars[row][column] in spot_type.CANT_STEP): continue
             # print(f"r,c = {row},{column}")
             valids.append(self.coord_to_alphanum({"row":row, "column":column}))
         return valids
@@ -114,13 +115,12 @@ class Board(Game):
       
     def move_entity_to(self, reference, alphanum=None, coord=None):
         try:
-            entity : Thing = self.get(reference["category"])
-            event : Event = self.get("Event")
+            entity = self.get(reference["category"])
             concrete = entity.get_concrete_thing(reference["id"])
             if coord is None:
                 coord = self.alphanum_to_coord(alphanum)
             concrete["coord"] = coord
-            event.notify("entity_moved_to_coord", reference, coord)
+            self.get("Event").notify("entity_moved_to_coord", reference, coord)
         except:
             log_error(f"Error trying to move entity {reference} to coord {coord}", __name__, line())
     # def get_free_spots(self, coord: dict ) -> dict [str, str]:
@@ -156,7 +156,7 @@ class Board(Game):
         try:
             entities["PlayerIM"] = entities.pop("PlayerIM")
         except:
-            log_error(f"entities doen't have key 'PlayerIM'",__name__,line())
+            log_error(f"entities don't have key 'PlayerIM'",__name__,line())
         # Buildings go over players
 
         categ_debug = ''
@@ -166,7 +166,7 @@ class Board(Game):
                 if(categ.is_category_or_inside(category, "Building")):
                     entities[category] = entities.pop(category)
         except:
-            log_error(f"entities doen't have key '{categ_debug}'",__name__,line())
+            log_error(f"entities don't have key '{categ_debug}'",__name__,line())
             
 
         # print_debug(f"isso foi o que recolhi: ",__name__)
@@ -187,10 +187,55 @@ class Board(Game):
 
     def print_column_numbers(self):
         # print_normal("            11111111")
-        print_normal("🖤   1 2 3 4 5 6 7 8 91011121314151617")
+        print_normal("     1 2 3 4 5 6 7 8 91011121314151617")
 
     def print_raw_board(self):
         for row in board_chars:
             print(row)
 
+    def distance_between_spots(self, spot1_coord, spot2_coord):
+        r1, c1 = spot1_coord["row"], spot1_coord["column"]
+        r2, c2 = spot2_coord["row"], spot2_coord["column"]
+        dist = math.hypot(r2-r1, c2-c1)
+        return dist
+
+    def closer_free_spot_to(self, this_spot):
+        # this_spot has to be coord
+        spot_alphanum = self.coord_to_alphanum(this_spot)
+        near_range = 10
+
+        # it is most likely that there will be a free spot in the range 4
+        range_ = near_range
+        valid_close_spots = self.get_valid_spots_for_range(this_spot, 100)
+        print(valid_close_spots)
+        # can't include it self
+        valid_close_spots.remove(spot_alphanum)
+
+        # if it doesn't find any spot, look on the whole board
+        if(len(valid_close_spots) == 0):
+            board_diameter = int(math.hypot(self.rows(), self.columns()))+1
+            range_ = board_diameter
+            valid_close_spots = self.get_valid_spots_for_range(this_spot, range_)
+            # can't include it self
+            valid_close_spots.remove(spot_alphanum)
+            # if still hasn't found some free spot (Impossible!!!) return the same spot
+            if(len(valid_close_spots) == 0):
+                alpha = self.coord_to_alphanum(this_spot)
+                log_error(f"Couldn't finde close spot to {alpha}: {this_spot} at range {range_}.", __name__,line())
+                return alpha
+
+        distance = math.inf
+        closer_spot = valid_close_spots[0]
+        for spot in valid_close_spots:
+            spot_coord = self.alphanum_to_coord(spot)
+            new_distance = self.distance_between_spots(this_spot, spot_coord)
+            if new_distance < distance:
+                distance = new_distance
+                closer_spot = spot
+        
+        return closer_spot
+        
+
+        
+        
 
