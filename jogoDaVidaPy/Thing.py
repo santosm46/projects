@@ -1,7 +1,7 @@
 
 
-from common import MOCK_ID, line, log_error
-from beauty_print import debug_error, print_debug
+from utils.common import MOCK_ID, line, log_error
+from utils.beauty_print import debug_error, print_debug
 
 
 class Thing:

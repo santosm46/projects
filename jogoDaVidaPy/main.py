@@ -1,10 +1,11 @@
-from Player import Player
-from common import *
-from beauty_print import *
+from entity.livingbeing.person.player.Player import Player
 
-from Instanciator import Instanciator
-from SaveManager import SaveManager
-from GameManager import GameManager
+from utils.common import *
+from utils.beauty_print import *
+from utils.Instanciator import Instanciator
+
+from game.GameManager import GameManager
+from game.SaveManager import SaveManager
 
 
 def start_game(save):
