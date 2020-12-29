@@ -5,27 +5,33 @@ from Building import Building
 
 class Education(Building):
 
-    level_nick = {
-        'basic': "Ensino Básico",
-        'medium': "Ensino Fundamental",
-        'high': "Ensino Médio"
-    }
-
     def __init__(self) -> None:
         super().__init__()
+        self.price_per_round_attr = 'price_per_round'
 
+        # to be overwitten
         self.grades = ['A','B','C','D','E','F']
-        # self.grades = ['F','E','D','C','B','A']
-        # will be overwitten
         self.diploms = ['basic', 'medium', 'high']
-
         self.passing_grades = {
             'basic': 5,
             'medium': 4,
             'high': 3,
         }
+        self.level_nick = {
+            'basic': "Ensino Básico",
+            'medium': "Ensino Fundamental",
+            'high': "Ensino Médio"
+        }
 
-    
+    def new_concrete_thing(self):
+        education = super().new_concrete_thing()
+        self.update_concrete(education)
+        return education
+
+
+    def update_concrete(self, education: dict):
+        super().update_concrete(education)
+        education[self.price_per_round_attr] = 50
 
     
     def get_person_highest_diplom(self, person_ref, mock_person=None):

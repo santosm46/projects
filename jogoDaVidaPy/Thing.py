@@ -5,7 +5,29 @@ from beauty_print import debug_error, print_debug
 
 class Thing:
     def __init__(self):
-        pass
+        self.id_attr = 'id'
+
+    all_images = {
+        
+        "Teacher": '👩‍🏫',
+        "Animal": {
+            "Dog": '🐶',
+            "Cat": '🐱',
+            "Cow": '🐮',
+            "Pig": '🐷',
+            "Chicken": '🐔',
+        },
+        "Tree": {
+            "GrownTree": '🌳',
+            "SmallTree": '🌱',
+        },
+        "Car": {
+            "White": '🚗',
+            "Yellow": '🚕',
+            "Blue": '🚙'
+        },
+        
+    }
         
     
     def get_category(self) -> str:
@@ -42,8 +64,7 @@ class Thing:
     def set_factory(self, factory):
         self.factory  = factory
         self.fac  = factory
-        if(self.get_category() != "Event"):
-            self.event = self.get("Event")
+        
     
     # Get instance of a class
     def get(self, class_name):
@@ -67,3 +88,33 @@ class Thing:
         r = data.get_concrete_thing(reference["id"], reference["category"])
         return r
 
+    # will be overwritten
+    def get_image(self, _id=None):
+        try:
+            return self.all_images[self.get_category()]
+        except:
+            return 'i'
+
+
+    def add_attr_if_not_exists(self, concrete, attr, default):
+        if(attr not in concrete):
+            concrete[attr] = default
+
+
+    # to be overwritten
+    def update_subscriber(self, reference: dict):
+        pass
+    
+    def update_subscribers(self):
+        for _id in self.get_dict_list().keys():
+            self.update_subscriber(self.reference(_id))
+    
+    def update_concrete(self, concrete: dict):
+        pass
+
+    def update_concretes(self):
+        for _id in self.get_dict_list().keys():
+            self.update_concrete(self.reference(_id))
+
+
+    

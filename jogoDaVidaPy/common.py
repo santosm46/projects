@@ -3,15 +3,20 @@ from inspect import currentframe
 from datetime import datetime
 import os
 from beauty_print import print_error
+from pathlib import Path
 
 # MAX_HP = 10
 DEBUG_ENABLED = True
 FILE_NAME = "saves.txt"
+TEST_FILE_NAME = "test.txt"
 GAME_VERSION = "1.0.0"
-DATA_PATH = './data/'
+DATA_PATH = 'data/'
 NAMES_FILE = 'names.txt'
+ERRORS_PATH = 'errors/'
+ERRORS_FILE = '_errors.txt'
 GOVERNMENT = "government"
 MOCK_ID = "mock_id"
+
 
 class prim_opt:
     PASS_TURN = 'P'
@@ -23,6 +28,7 @@ class prim_opt:
     REM_PLAYER = 'R'
     DEL_PLAYER = 'D'
     ROLL_DICE = ''
+    RESETE_TEST = 'RT'
 
     DELETE = 'D'
     LOAD = 'C'
@@ -45,13 +51,28 @@ class stats:
     MAX_HP = 5
 
 
-def get_linenumber():
+
+def line():
     cf = currentframe()
     return cf.f_back.f_lineno
 
 def date_now():
     now = datetime.now()
     return now.strftime("%d/%m/%Y - %H:%M:%S")
+
+def log_error(error, file, line=''):
+    date = datetime.today().strftime('%Y-%m-%d')
+    time = datetime.today().strftime("%H:%M:%S")
+    error_to_save = f"[{time}] Error at: {file}.py:{line} Message: {error}\n"
+    file_name = f"{date}{ERRORS_FILE}"
+    # file name format: 20/12/30_errors.txt
+    path = f"{DATA_PATH}{ERRORS_PATH}"
+    Path(path).mkdir(parents=True, exist_ok=True)
+    f = open(f"{path}{file_name}", "a")
+    f.write(error_to_save)
+    f.close()
+    
+
 
 def clear():
     # pass
@@ -100,7 +121,7 @@ def random_name():
     vogals = "aeiou"
     consonants = "bcdfghjklmnpqrstvxz"
 
-    dobleCon = {'nt': 57, 'tr': 18, 'nh': 58, 'rg': 9, 'rs': 11, 'nd': 19, 'sc': 27, 'cr': 23, 'sp': 10, 'st': 17, 'cn': 22, 'ch': 26, 'pr': 20, 'bj': 6, 'mb': 17, 'lh': 33, 'fl': 1, 'rt': 43, 'mp': 22, 'rp': 1, 'rr': 2, 'rm': 3, 'ss': 13, 'nv': 3, 'lm': 2, 'ns': 7, 'th': 3, 'br': 8, 'lg': 17, 'rd': 3, 'nc': 19, 'sm': 2, 'cl': 1, 'gr': 2, 'xp': 7, 'pl': 4, 'lv': 1, 'fr': 1, 'nq': 1, 'ng': 3, 'nf': 1, 'bs': 1, 'rv': 1, 'lt': 1, 'sf': 1, 'lq': 1, 'vr': 1, 'dr': 1, 'dy': 1, 'yl': 1, 'cc': 1, 'll': 1}
+    dobleCon = {'nt': 57, 'tr': 18, 'nh': 58, 'rg': 9, 'rs': 11, 'nd': 19, 'sc': 27, 'cr': 23, 'sp': 10, 'st': 17, 'cn': 22, 'ch': 26, 'pr': 20, 'bj': 6, 'mb': 17, 'lh': 33, 'fl': 1, 'rt': 43, 'mp': 22, 'rp': 1, 'rr': 2, 'rm': 3, 'ss': 13, 'nv': 3, 'lm': 2, 'ns': 7, 'th': 3, 'br': 8, 'lg': 17, 'rd': 3, 'nc': 19, 'sm': 2, 'cl': 1, 'gr': 2, 'xp': 7, 'pl': 4, 'lv': 1, 'fr': 1, 'nq': 1, 'ng': 3, 'nf': 1, 'bs': 1, 'rv': 1, 'lt': 1, 'sf': 1, 'lq': 1, 'vr': 1, 'dr': 1, 'dy': 1, 'yl': 1, 'll': 1}
     dobleVog = {'ia': 7, 'au': 24, 'ea': 24, 'ua': 45, 'ei': 8, 'ai': 7, 'io': 4, 'ui': 8, 'ue': 5, 'ou': 2, 'ie': 6, 'oi': 1, 'ao': 1, 'eu': 1}
 
     doble_con_list = []
@@ -125,18 +146,24 @@ def random_name():
     
     for i in range(num_sil):
         if(random.randrange(100) < 20 and i != 0):
-            name = name + rand_char(doble_con_list)
+            name += rand_char(doble_con_list)
         else:
-            name = name + rand_char(consonants)
+            name += rand_char(consonants)
         if(random.randrange(100) < 20):
-            name = name + rand_char(doble_vog_list)
+            name += rand_char(doble_vog_list)
         else:
-            name = name + rand_char(vogals)
+            name += rand_char(vogals)
 
     return name.capitalize()
 
 
-
+def prepare_data(fac, file_name):
+    save = fac.get_instance("SaveManager")
+    data = fac.get_instance("DataStructure")
+    lido = save.get_save_by_filename(file_name)
+    data.setup(lido)
+    event = fac.get_instance("Event")
+    event.setup()
 
 def procura():
     tudo = """texto aqui"""

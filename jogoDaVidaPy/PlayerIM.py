@@ -10,26 +10,15 @@ class PlayerIM(Player):
 
     def __init__(self):
         super().__init__()
-        # self.mode_func[modes.ON_BOARD] = self.move_on_board
-        # self.mode_func[modes.ON_BUILDING] = self.interact_with_building
 
-
-    def set_factory(self, factory):
-        super().set_factory(factory)
-    
-    
-
-    def setup(self, game):
-        super().setup(game)
+    # called on set_factory() -> update_subscribers()
+    def update_subscribers(self):
+        event : Event = self.get("Event")
         # dar subscribe em building_board_print,
         # para quando o board for montar o seu print, o Player pegar
         # todos os jogadores que estão em partida e inserir
         # na lista da board de coisas para imprimir 
-        # não é necessário verificar se já deu subscribe pois o event já faz isso
-        event : Event = self.get("Event")
-        event.subscribe("building_board_print", 
-            self.reference(MOCK_ID),
-            "on_building_board_print")
+        event.subscribe("building_board_print", self.reference(MOCK_ID), "on_building_board_print")
 
 
 
@@ -37,9 +26,9 @@ class PlayerIM(Player):
         # player = self.get_players()[player_id]
         player = self.get_concrete_thing(player_id)
         # execute a function according to the mode of the player
-        self.mode_func[player["mode"]](self.reference(player_id))
+        self.modes_func[player[self.attr_mode]](self.reference(player_id))
  
-        # self.game.pass_turn()
+        # self.get("GameManager").pass_turn()
 
     def roll_dice_to_move(self, _id: str):
         result = self.roll_dice(_id)
@@ -50,19 +39,26 @@ class PlayerIM(Player):
     def create_player(self, name):
         data : DataStructure = self.get("DataStructure")
 
-        concrete_player = self.new_concrete_thing()
-        # debug_error(f"concrete_player = {concrete_player}",__name__)
+        player = self.new_concrete_thing()
+        self.update_concrete(player)
+        
+        player[self.attr_name] = name
+        player[self.attr_dice_method] = "DiceRollOrRandom"
+        # self.add_attr_if_not_exists(player, self.attr_dice_method, "DiceRollOrRandom")
 
-        concrete_player["name"] = name
-        concrete_player["dice_method"] = "DiceRollOrRandom"
+        data.keep_concrete_thing(player["id"], player, self.get_category())
+    
 
-        data.keep_concrete_thing(concrete_player["id"], concrete_player, self.get_category())
+    def update_concrete(self, player: dict):
+        super().update_concrete(player)
+        
+
 
     def move_on_board(self, params=None):
         player_id = params["id"]
         name = self.get_concrete_thing(player_id)["name"]
         
-        while(player_id == self.game.turn_of()):
+        while(player_id == self.get("GameManager").turn_of()):
             print_normal(f"\nEscolha uma opção")
             print_normal(f"\tENTER) Jogar dado")
             print_normal(f"\t{prim_opt.PASS_TURN}) Passar vez")
@@ -83,8 +79,8 @@ class PlayerIM(Player):
                 break
             elif(option == prim_opt.SAVE_EXIT):
                 print_sucess("Salvando e saindo...")
-                self.game.stop()
-                self.game.save()
+                self.get("GameManager").stop()
+                self.get("GameManager").save()
                 return
             else:
                 print_error(f"Opção ({option}) inválida! pressione ENTER")
@@ -104,7 +100,7 @@ class PlayerIM(Player):
         event.notify("entity_choosing_spot", self.reference(player["id"]), 
             {"spots":valid_spots, "buildings":buildings, "range":range_, "buildings_list":buildings_list})
         spot = None
-        self.game.print_game()
+        self.get("GameManager").print_game()
         print_sucess(f"Resultado do dado: {range_}")
         print_header("\nLugares disponíveis\n")
         print_normal(", ".join(buildings))
@@ -131,7 +127,7 @@ class PlayerIM(Player):
         while(True):
             print_header("\tCriação ou adicionar jogadores fora da partida\n")
             print_warning("\t\tobs: Aperte ENTER para sair\n")
-            players_oom = self.game.player_oom.get_players_list()
+            players_oom = self.get("GameManager").player_oom.get_players_list()
             print_header("Fora da partida: ")
             self.print_players_list(players_oom)
 
@@ -148,7 +144,7 @@ class PlayerIM(Player):
                 created_players += 1
                 print_sucess(f"Jogador {name} criado!\n")
         
-        self.game.save()
+        self.get("GameManager").save()
         print_sucess(f"Foram criados {created_players} jogadores")
     
     

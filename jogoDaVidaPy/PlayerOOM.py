@@ -10,6 +10,8 @@ class PlayerOOM(Player):
     def __init__(self):
         super().__init__()
     
+    def set_factory(self, factory):
+        self.factory  = factory
     
     def delete_players(self):
         clear()

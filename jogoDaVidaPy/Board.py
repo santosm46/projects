@@ -1,4 +1,4 @@
-from common import DEBUG_ENABLED, get_linenumber, replacer
+from common import DEBUG_ENABLED, line, log_error, replacer
 from beauty_print import debug_error, print_beauty_json, print_debug, print_header, print_normal, bcolors, print_warning
 from Thing import Thing
 from Event import Event
@@ -123,7 +123,7 @@ class Board(Thing):
             concrete["coord"] = coord
             event.notify("entity_moved_to_coord", reference, coord)
         except:
-            debug_error(f"Error trying to move entity {reference} to coord {coord}", fname=__name__, enabled=DEBUG_ENABLED, fline=get_linenumber())
+            log_error(f"Error trying to move entity {reference} to coord {coord}", __name__, line())
     # def get_free_spots(self, coord: dict ) -> dict [str, str]:
 
     def rows(self):
@@ -152,14 +152,23 @@ class Board(Thing):
 
         entities = {}
 
-        self.event.notify("building_board_print", self.reference(MOCK_ID), entities)
+        self.get("Event").notify("building_board_print", self.reference(MOCK_ID), entities)
         # Players will be the last to be printed
-        entities["PlayerIM"] = entities.pop("PlayerIM")
+        try:
+            entities["PlayerIM"] = entities.pop("PlayerIM")
+        except:
+            log_error(f"entities doen't have key 'PlayerIM'",__name__,line())
         # Buildings go over players
-        for category in entities.keys():
-            if(categ.is_category_or_inside(category, "Building")):
-                entities[category] = entities.pop(category)
 
+        categ_debug = ''
+        try:
+            for category in entities.keys():
+                categ_debug = category
+                if(categ.is_category_or_inside(category, "Building")):
+                    entities[category] = entities.pop(category)
+        except:
+            log_error(f"entities doen't have key '{categ_debug}'",__name__,line())
+            
 
         # print_debug(f"isso foi o que recolhi: ",__name__)
         # print_beauty_json(entities)

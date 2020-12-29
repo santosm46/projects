@@ -17,12 +17,6 @@ class School(Education):
         MIDDLE = "middle_school"
         HIGH = "high_school"
 
-    level_nick = {
-        school_level.ELEMENTARY: "Ensino Básico",
-        school_level.MIDDLE: "Ensino Fundamental",
-        school_level.HIGH: "Ensino Médio"
-    }
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -32,43 +26,50 @@ class School(Education):
             self.school_level.HIGH: 3,
         }
 
-        self.diploms = list(self.passing_grades.keys())
+        self.level_nick = {
+            self.school_level.ELEMENTARY: "Ensino Básico",
+            self.school_level.MIDDLE: "Ensino Fundamental",
+            self.school_level.HIGH: "Ensino Médio"
+        }
 
-    def set_factory(self, factory):
-        super().set_factory(factory)
+        self.diploms = list(self.passing_grades.keys())
         
 
     def new_concrete_thing(self):
-        event : Event = self.get("Event")
         school = super().new_concrete_thing()
-        board : Board = self.get("Board")
-
-        school["coord"] = board.alphanum_to_coord("D3")
-        school["name"] = "Escola"
-        school["selling_price"] = 800
-        school["price_per_round"] = 75
+        self.update_concrete(school)
         school_ref = self.reference(school["id"])
+        self.update_subscriber(school_ref)
+        return school
+    
+    # 
+    def update_concrete(self, school: dict):
+        super().update_concrete(school)
+        board : Board = self.get("Board")
+        school[self.attr_coord] = board.alphanum_to_coord("D3")
+        school[self.attr_name] = "Escola"
+        school[self.attr_price] = 800
+        
+    
+    def update_subscriber(self, school_ref):
+        event : Event = self.get("Event")
         event.subscribe("entity_moved_to_coord", school_ref, "put_person_on_school")
         event.subscribe("building_board_print", school_ref, "on_building_board_print")
         event.subscribe("entity_choosing_spot", school_ref, "on_entity_choosing_spot")
         event.subscribe("entity_interacting_with_building", school_ref, "person_school_interaction")
-        
-        
-        return school
-    
+
     def is_person(self, person_categ):
         categ_mg : Category = self.get("Category")
         return categ_mg.is_category_or_inside(person_categ, "Person")
 
     def put_person_on_school(self, school_ref, person_ref, additional=None):
-        print_debug("tentando colocar pessoa na escola 1")
         person_categ = person_ref["category"]
         if(not self.is_person(person_categ)):
             # only people can enter school
             return
         # print_debug("tentando colocar pessoa na escola 2")
-        mode_name = "on_building"
         person_class : Person = self.get(person_categ)
+        mode_name = person_class.mode_on_building
 
         school_id = school_ref["id"]
         school = self.get_concrete_thing(school_id)
@@ -77,12 +78,10 @@ class School(Education):
         if(person["coord"] != school["coord"]):
             return
         # print_debug("tentando colocar pessoa na escola 3")
-
         mode_info = person_class.get_mode_info_of(person_ref,mode_name)
-        print_beauty_json(mode_info)
+        # print_beauty_json(mode_info)
         mode_info["building"] = self.reference(school_id)
 
-        print_debug("consegui colocar pessoa na escola")
         person_class.change_mode(person["id"], mode_name, self.reference(school_id))
 
     def on_entity_choosing_spot(self, school_data, person_ref, additional):

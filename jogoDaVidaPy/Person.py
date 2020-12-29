@@ -9,23 +9,36 @@ class Person(LivingBeing):
     def __init__(self):
         super().__init__()
         self.MAX_HP = 10
-        self.mode_func[modes.ON_BOARD] = self.move_on_board
-        self.mode_func[modes.ON_BUILDING] = self.interact_with_building
+        self.modes_func[self.mode_on_board] = self.move_on_board
+        self.modes_func[self.mode_on_building] = self.interact_with_building
+
+        self.attr_genre = "genre"
+        self.attr_name = "name"
+        self.attr_money = "money"
+
     
+
     def new_concrete_thing(self):
-        info_gen : RandomName = self.get("RandomName")
-        info = info_gen.gen_person_info()
-
-        concrete = super().new_concrete_thing()
-        concrete["genre"] = info["genre"]
-        concrete["name"] = info["name"]
-        concrete["money"] = 200
-        concrete["hp"] = self.MAX_HP
-        concrete["max_hp"] = self.MAX_HP
-        concrete["modes_info"] = {modes.ON_BOARD: None, modes.ON_BUILDING: {"building":None}}
+        person = super().new_concrete_thing()
+        self.update_concrete(person)
+        person[self.attr_hp] = self.MAX_HP
+        person[self.attr_max_hp] = self.MAX_HP
+        person[self.attr_mode_info] = {self.mode_on_board: None, self.mode_on_building: {"building":None}}
+        return person
 
 
-        return concrete
+    def update_concrete(self, person: dict):
+        super().update_concrete(person)
+
+        info = self.get("RandomName").gen_person_info()
+        
+        self.add_attr_if_not_exists(person, self.attr_genre, info["genre"])
+        self.add_attr_if_not_exists(person, self.attr_name, info["name"])
+        self.add_attr_if_not_exists(person, self.attr_money, 200)
+        self.add_attr_if_not_exists(person, self.attr_hp, self.MAX_HP)
+        self.add_attr_if_not_exists(person, self.attr_max_hp, self.MAX_HP)
+        self.add_attr_if_not_exists(person, self.attr_mode_info, {self.mode_on_board: None, self.mode_on_building: {"building":None}})
+
 
         
     def on_school_move(self, params=None):
@@ -36,7 +49,7 @@ class Person(LivingBeing):
         event.notify("interact_with_building", self.reference(params["id"]))
     
     def interact_with_building(self, reference=None):
-        info = self.get_mode_info_of(reference, modes.ON_BUILDING)
+        info = self.get_mode_info_of(reference, self.mode_on_building)
         event : Event = self.get("Event")
         event.notify("entity_interacting_with_building", reference, info["building"])
 
@@ -46,3 +59,6 @@ class Person(LivingBeing):
 
     def gui_output(self, text, color=None,end='\n',pause=False):
         pass
+
+
+

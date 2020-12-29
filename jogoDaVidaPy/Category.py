@@ -24,6 +24,19 @@ tree = {
                 "Animal":{},
             },
             "Object": {
+                "Building":{
+                    "Health": {
+                        "Hospital": {},
+                    },
+                    "Education": {
+                        "School": {},
+                        "College": {},
+                    },
+                    "Commerce": {
+                        "DrugStore": {},
+                        "Market": {},
+                    }
+                },
                 "Food":{
                     "Steak": {},
                     "Cookie": {},
@@ -39,23 +52,10 @@ tree = {
                     "WhiteGun": {
                         "Sword": {},
                         "Knife": {},
+                        "Bow": {},
                     },
                 },
             },
-            
-        },
-        "Building":{
-            "Health": {
-                "Hospital": {},
-            },
-            "Education": {
-                "School": {},
-                "College": {},
-            },
-            "Commerce": {
-                "DrugStore": {},
-                "Market": {},
-            }
         },
         "Tester": {}
     },

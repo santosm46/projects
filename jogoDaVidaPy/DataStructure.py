@@ -13,11 +13,7 @@ class DataStructure(Thing):
     def setup(self, data: dict):
         self.data = data
     
-    def set_factory(self, factory):
-        super().set_factory(factory)
-        # self.new_data_structure()
 
-    
     def new_data_structure(self):
         category : Category = self.get("Category")
         self.data = category.get_categories_copy()

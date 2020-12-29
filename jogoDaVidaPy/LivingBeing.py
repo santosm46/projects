@@ -1,25 +1,40 @@
 from beauty_print import debug_error
 from Entity import Entity
-from common import emotions, stats, modes
+from common import emotions, stats
 
 class LivingBeing(Entity):
 
     def __init__(self):
         super().__init__()
-        self.mode_func = {}
 
+        self.attr_hp = "hp"
+        self.attr_max_hp = "max_hp"
+        self.attr_qi = "qi"
+        self.attr_emotion = "emotion"
+        self.attr_inventory = "inventory"
+
+        self.mode_wandering = "wandering"
+        self.mode_sleeping = "sleeping"
+        self.mode_attaking = "attaking"
+        self.mode_on_building = "on_building"
 
     def new_concrete_thing(self):
-        concrete = super().new_concrete_thing()
+        being = super().new_concrete_thing()
+        self.update_concrete(being)
 
-        concrete["hp"] = stats.MAX_HP
-        concrete["max_hp"] = stats.MAX_HP
-        concrete["qi"] = stats.QI
-        concrete["emotion"] = emotions.NEUTRAL
-        concrete["mode"] = modes.ON_BOARD
-        concrete["modes_info"] = {}
+        return being
 
-        concrete["inventory"] = {}
+
+    def update_concrete(self, being: dict):
+        super().update_concrete(being)
+        
+        self.add_attr_if_not_exists(being, self.attr_hp, stats.MAX_HP)
+        self.add_attr_if_not_exists(being, self.attr_max_hp, stats.MAX_HP)
+        self.add_attr_if_not_exists(being, self.attr_qi, stats.QI)
+        self.add_attr_if_not_exists(being, self.attr_emotion, emotions.NEUTRAL)
+        self.add_attr_if_not_exists(being, self.attr_inventory, {})
+
+
         """
         the keys of an inventory is the class that will handle the
         information of the associated dict
@@ -52,22 +67,6 @@ class LivingBeing(Entity):
         """
 
 
-        return concrete
     
-    def change_mode(self, _id, new_mode, mode_info=None):
-        being = self.get_concrete_thing(_id)
-        being["mode"] = new_mode
-        if not mode_info:
-            being["modes_info"][new_mode] = mode_info
-
-
-    def get_mode_info_of(self, reference, mode):
-        being = self.get_concrete_thing_by_ref(reference)
-        try:
-            return being["modes_info"][mode]
-        except:
-            debug_error(f"Can't get mode {mode} of {self.get_category()}",__name__)
-            return None
-
 
 

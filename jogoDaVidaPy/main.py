@@ -1,3 +1,4 @@
+from Player import Player
 from common import *
 from beauty_print import *
 
@@ -17,8 +18,8 @@ def start_game(save):
 
     while(True):
         clear()
-
-        print_header(f"Menu da partida: {game.get_save_name()} \nJogadores: {game.get_players_list()} \n")
+        players_names = ", ".join(game.get_players_list())
+        print_header(f"Menu da partida: {game.get_save_name()} \nJogadores: {players_names} \n")
     
         print_normal(f"\t{prim_opt.CONTINUE}) Continuar partida")
         print_normal(f"\t{prim_opt.ADD_PLAYER}) Adicionar jogadores na partida")
@@ -57,9 +58,18 @@ def continue_game():
     if save is not None:
         start_game(save)
 
-def delete_game():
+def resete_test():
     factory : Instanciator = Instanciator()
     save_manager : SaveManager = factory.get_instance("SaveManager")
+    save_manager.delete_save(TEST_FILE_NAME)
+    save_manager.create_new_save(TEST_FILE_NAME)
+    prepare_data(factory, TEST_FILE_NAME)
+    player : Player = save_manager.get("Player")
+    player.create_players_mock()
+
+def delete_game():
+    # factory : Instanciator = Instanciator()
+    save_manager : SaveManager = SaveManager()
     save_manager.delete_save()
 
 def exit_game():
@@ -87,6 +97,8 @@ def run():
             continue_game()
         elif(option == prim_opt.DELETE): 
             delete_game()
+        elif(option == prim_opt.RESETE_TEST):
+            resete_test()
         elif(option == prim_opt.EXIT):
             exit_game()
             break

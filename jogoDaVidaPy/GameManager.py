@@ -23,19 +23,18 @@ class GameManager(Thing):
         
         self.state.setup(save)
         
-        # Just to work with the category system used at the time
-        self.get("Category").setup(save)
+        # # Just to work with the category system used at the time
+        # self.get("Category").setup(save)
 
-        event : Event = self.get("Event")
-        event.setup()
+        self.get("Event").setup()
 
         self.player_im : PlayerIM = self.get("PlayerIM")
-        self.player_im.setup(self)
         self.player_oom : PlayerOOM = self.get("PlayerOOM")
-        self.player_oom.setup(self)
-        
+        self.update_subscribers()
         # self.get_state() = save
 
+    def update_subscribers(self):
+        event : Event = self.get("Event")
         # to show valid paths
         event.subscribe("building_board_print", self.reference("1"), "on_building_board_print")
         event.subscribe("entity_choosing_spot", self.reference("1"), "save_valid_spots_on_buffer")

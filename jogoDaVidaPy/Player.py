@@ -16,9 +16,8 @@ class Player(Person):
     def __init__(self):
         super().__init__()
 
-    def setup(self, game):
-        self.game  = game
-
+    def get_game(self):
+        return self.get("GameManager")
 
     
     def print_player(self, player_id):
@@ -29,8 +28,7 @@ class Player(Person):
         max_hp = player["max_hp"]
         hearts = "💜" * hp + "🖤" * (max_hp - hp)
         coord = player["coord"]
-        board : Board = self.get("Board")
-        alphanum = board.coord_to_alphanum(coord)
+        alphanum = self.get("Board").coord_to_alphanum(coord)
         image = self.get_image(player_id)
 
         print_header(f"Jogador/a: {image} {name}    Posição: {alphanum}")
@@ -60,7 +58,7 @@ class Player(Person):
         return players_list
 
     def add_player_on_match(self, idx):
-        players_oom_id_list = self.game.player_oom.get_players_id_list()
+        players_oom_id_list = self.get_game().player_oom.get_players_id_list()
 
         if(len(players_oom_id_list) == 0):
             clear()
@@ -90,11 +88,11 @@ class Player(Person):
     # remove player from match and put it on OOM list
     def remove_player(self, _id) -> bool:
         try:
-            if(_id == self.game.turn_of()):
-                self.game.pass_turn()
+            if(_id == self.get_game().turn_of()):
+                self.get_game().pass_turn()
             player = self.get_players().pop(_id)
             self.get_players_oom()[_id] = player
-            self.game.save()
+            self.get_game().save()
         except:
             print_error(f"player.py: _id:{_id} não é str ou deu outro erro em remove_player()")
             return False
@@ -105,7 +103,7 @@ class Player(Person):
         try:
             player = self.get_players_oom().pop(id)
             self.get_players()[id] = player
-            self.game.save()
+            self.get_game().save()
         except:
             print_error(f"player.py: id:{id} não é str ou deu outro erro em remove_player()")
             return False
@@ -120,7 +118,7 @@ class Player(Person):
         clear()
         
         while(True):
-            players = self.game.get_players_list()
+            players = self.get_game().get_players_list()
             if(len(players) == 0):
                 print_warning("Não há jogadores para remover da partida! \nAperte ENTER para voltar e insira jogadores na partida.")
                 input("")
@@ -150,9 +148,11 @@ class Player(Person):
             
 
     def create_players_mock(self):
-        self.create_player('Anny Beatriz')
-        self.create_player('Marcelo')
-        self.create_player('Andréia')
+        players_im = self.get("PlayerIM")
+        players_im.create_player('Anny Beatriz')
+        players_im.create_player('Marcelo')
+        players_im.create_player('Andréia')
+        self.get("GameManager").save()
     
     def number_of_players(self) -> int:
         return len(self.get_players())
@@ -175,7 +175,7 @@ class Player(Person):
         return self.get_players()[str(key)]
     
     def get_player_idx(self) -> int:
-        player_id = str(self.game.turn_of())
+        player_id = str(self.get_game().turn_of())
         keys = self.get_players().keys()
         keys_list = list(keys)
         num_players = self.number_of_players()
@@ -189,7 +189,7 @@ class Player(Person):
     
     # fix
     def get_players_oom(self):
-        return self.game.player_oom.get_players()
+        return self.get_game().player_oom.get_players()
     
     def get_players_id_list(self) -> list:
         id_list = list(self.get_players().keys())

@@ -44,7 +44,7 @@ class SaveManager(Thing):
     #     with open(FILE_NAME, 'w') as outfile:
     #         json.dump(saves, outfile)
 
-    def create_new_save(self):
+    def create_new_save(self, file_name: str =None):
         def valid_file_name(file_name):
             if(str_to_file_format(file_name) in get_saves_list()):
                 print_error(f"Arquivo {file_name} já existe! Digite outra coisa")
@@ -54,19 +54,18 @@ class SaveManager(Thing):
         
         # criar e salvar uma nova estrutura
         save : DataStructure = self.get("DataStructure")
-
-        clear()
-
-        while True:
-            game_name = input_question("Nome da nova partida: (ENTER para cancelar)\n").strip()
-
-            if(len(game_name) == 0):
-                return
-            if(valid_file_name(game_name)):
-                break
-
         save.new_data_structure()
-        
+
+        if file_name is not None:
+            game_name = file_name.replace('.txt','')
+        else:
+            clear()
+            while True:
+                game_name = input_question("Nome da nova partida: (ENTER para cancelar)\n").strip()
+                if(len(game_name) == 0):
+                    return
+                if(valid_file_name(game_name)):
+                    break
         
 
         # dados do save (seria criado por new_concrete_thing)
@@ -84,8 +83,11 @@ class SaveManager(Thing):
 
         self.save_to_file(save.data)
 
+        if file_name is not None:
+            return
+
         print_sucess(f"Partida \"{game_name}\" criado! Aperte ENTER para continuar.\n")
-        cont = input("")
+        input("")
 
     def valid_save_value(self, value, size):
         if(not is_integer(value)):
@@ -133,15 +135,16 @@ class SaveManager(Thing):
 
 
     def delete_save(self, save_filename=None):
+        clear()
+        
         if save_filename is not None:
             os.system(f"rm {SAVES_PATH}{save_filename}")
             return
         
-        clear()
-
-        saves_names = get_saves_list()
 
         while True:
+            saves_names = get_saves_list()
+            
             if(len(saves_names) == 0):
                 print_warning("Não há partidas salvas! Aperte ENTER para voltar.")
                 input("")
@@ -167,8 +170,13 @@ class SaveManager(Thing):
             
             clear()
             if(sure == 'S'):
+                clear()
                 os.system(f"rm {SAVES_PATH}{save_name}")
                 print_sucess(f"Partida \"{save_name}\" deletada!\n")
-
+                if(len(saves_names)-1 == 0):
+                    input("ENTER para voltar")
+                    return
             else:
                 print_normal("Deleção cancelada!\n")
+
+

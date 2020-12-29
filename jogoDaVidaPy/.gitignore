@@ -1,7 +1,8 @@
 __pycache__
 sav.json
-*.txt
 debug.py
 outros
-saves
+saves/*
 *.pyc
+data/errors
+debug*
