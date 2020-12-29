@@ -16,6 +16,7 @@ from RandomName import RandomName
 from DiceRandom import DiceRandom
 from DiceRollOrRandom import DiceRollOrRandom
 from School import School
+from Bank import Bank
 
 
 class Instanciator:
@@ -35,6 +36,7 @@ class Instanciator:
         "DiceRandom": DiceRandom,
         "DiceRollOrRandom": DiceRollOrRandom,
         "School": School,
+        "Bank": Bank,
     }
 
     instances = {}
@@ -56,6 +58,9 @@ class Instanciator:
         return self.instances[class_name]
     
     def gi(self, class_name):
+        return self.get_instance(class_name)
+
+    def get(self, class_name):
         return self.get_instance(class_name)
 
 # For debug

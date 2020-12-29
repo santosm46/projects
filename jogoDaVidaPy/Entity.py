@@ -64,3 +64,6 @@ class Entity(Thing):
             log_error(f"Can't get mode {mode} of {reference}",__name__, line())
             return None
 
+
+
+

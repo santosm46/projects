@@ -1,4 +1,5 @@
 #file -- SaveManager.py --
+from Bank import Bank
 from os import truncate
 from DataStructure import DataStructure
 import json
@@ -80,6 +81,10 @@ class SaveManager(Thing):
         schoolClass : School = self.get("School")
         school = schoolClass.new_concrete_thing()
         save.keep_concrete_thing(school["id"], school, schoolClass.get_category())
+
+        bankClass : Bank = self.get("Bank")
+        bank = bankClass.new_concrete_thing()
+        save.keep_concrete_thing(bank["id"], bank, bankClass.get_category())
 
         self.save_to_file(save.data)
 

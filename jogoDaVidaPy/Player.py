@@ -7,7 +7,7 @@ from Person import Person
 # from GameManager import GameManager
 from Board import Board
 
-player_image = ['😎','🤡','👽','🤠','🧑‍','🤯','👻','😷','😁','👻']
+player_image = ['😎','🤡','👽','🤠','🧑‍','🤯','🧐','😷','😁','👻','🥳','🤑']
 
 events_to_listen = {"building_board_print": "on_building_board_print"}
 
@@ -198,7 +198,10 @@ class Player(Person):
             id_list_str.append(str(i))
         return id_list_str
     
-    def get_image(self, _id):
+    def get_image(self, _id=None):
+        if not _id:
+            return '🧑'
+        
         size = len(player_image)
         return player_image[int(_id) % size]
     

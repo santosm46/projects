@@ -76,7 +76,8 @@ class GameManager(Thing):
             additional[category] = []
         for i in self.valid_spots_buffer:
             additional[category].append({
-                "image": '🍏',
+                "image": '📗',
+                # "image": '🔲',
                 "coord": self.board.alphanum_to_coord(i)
             })
         self.valid_spots_buffer = []

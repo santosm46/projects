@@ -35,6 +35,7 @@ tree = {
                     "Commerce": {
                         "DrugStore": {},
                         "Market": {},
+                        "Bank": {},
                     }
                 },
                 "Food":{

@@ -33,7 +33,9 @@ class School(Education):
         }
 
         self.diploms = list(self.passing_grades.keys())
-        
+    
+    def get_image(self, _id=None):
+        return '🏫'
 
     def new_concrete_thing(self):
         school = super().new_concrete_thing()
@@ -52,9 +54,9 @@ class School(Education):
         
     
     def update_subscriber(self, school_ref):
+        super().update_subscriber(school_ref)
         event : Event = self.get("Event")
         event.subscribe("entity_moved_to_coord", school_ref, "put_person_on_school")
-        event.subscribe("building_board_print", school_ref, "on_building_board_print")
         event.subscribe("entity_choosing_spot", school_ref, "on_entity_choosing_spot")
         event.subscribe("entity_interacting_with_building", school_ref, "person_school_interaction")
 
@@ -118,21 +120,7 @@ class School(Education):
     # event.notify("entity_choosing_spot", 
         #     self.reference(player["id"]), {"spots":valid_spots, "buildings":buildings})
 
-    def on_building_board_print(self, interested=None, event_causer=None, additional=None):
-        # pegar lista de id's dos jogadores IM
-        escolas : dict = self.get_dict_list()
-
-        category = self.get_category()
-        if(category not in additional):
-            additional[category] = []
-        
-        # print_debug(f"chegou na escola -> {escolas}",__name__)
-
-        for building_id, building in escolas.items():
-            additional[category].append({
-                "image": '🏫',
-                "coord": building["coord"]
-            })
+    
 
         # print_debug
 

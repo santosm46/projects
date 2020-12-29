@@ -12,13 +12,13 @@ class PlayerIM(Player):
         super().__init__()
 
     # called on set_factory() -> update_subscribers()
-    def update_subscribers(self):
-        event : Event = self.get("Event")
+    # def update_subscribers(self):
+        
         # dar subscribe em building_board_print,
         # para quando o board for montar o seu print, o Player pegar
         # todos os jogadores que estão em partida e inserir
         # na lista da board de coisas para imprimir 
-        event.subscribe("building_board_print", self.reference(MOCK_ID), "on_building_board_print")
+        
 
 
 
@@ -148,20 +148,6 @@ class PlayerIM(Player):
         print_sucess(f"Foram criados {created_players} jogadores")
     
     
-    
-    def on_building_board_print(self, interested=None, event_causer=None, additional=None):
-        # pegar lista de id's dos jogadores IM
-        players_im : dict = self.get_players()
-
-        category = self.get_category()
-        if(category not in additional):
-            additional[category] = []
-
-        for player_id, player in players_im.items():
-            additional[category].append({
-                "image": self.get_image(player_id),
-                "coord": player["coord"]
-            })
 
     
     # def on_school_move(self, params=None):

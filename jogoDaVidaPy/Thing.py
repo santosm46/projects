@@ -1,11 +1,16 @@
 
 
+from common import MOCK_ID, line, log_error
 from beauty_print import debug_error, print_debug
 
 
 class Thing:
     def __init__(self):
         self.id_attr = 'id'
+
+    atenção = 4
+
+
 
     all_images = {
         
@@ -16,6 +21,8 @@ class Thing:
             "Cow": '🐮',
             "Pig": '🐷',
             "Chicken": '🐔',
+            "Jaguar":'🐆',
+            "Mosquito": '🦟',
         },
         "Tree": {
             "GrownTree": '🌳',
@@ -26,7 +33,7 @@ class Thing:
             "Yellow": '🚕',
             "Blue": '🚙'
         },
-        
+        # "Money": '💵💴💶💷'
     }
         
     
@@ -106,9 +113,16 @@ class Thing:
         pass
     
     def update_subscribers(self):
+        event = self.get("Event")
+        # for this event, it doesn't need a reference to an entity, because the function
+        # takes all the entities of the class
+        event.subscribe("building_board_print", self.reference(MOCK_ID), "on_building_board_print")
         for _id in self.get_dict_list().keys():
-            self.update_subscriber(self.reference(_id))
-    
+            try:
+                self.update_subscriber(self.reference(_id))
+            except:
+                log_error(f"Couldn't update subscriber {_id} of category {self.get_category()}",__name__,line())
+        
     def update_concrete(self, concrete: dict):
         pass
 
@@ -117,4 +131,20 @@ class Thing:
             self.update_concrete(self.reference(_id))
 
 
-    
+    def on_building_board_print(self, interested=None, event_causer=None, additional=None):
+        # pegar dict de concrete_things da classe
+        entities : dict = self.get_dict_list() 
+
+        category = self.get_category()
+        if(category not in additional):
+            additional[category] = []
+        
+        # print_debug(f"chegou na escola -> {entity}",__name__)
+
+        for entity_id, entity in entities.items():
+            additional[category].append({
+                "image": self.get_image(entity_id),
+                "coord": entity["coord"]
+            })
+
+
