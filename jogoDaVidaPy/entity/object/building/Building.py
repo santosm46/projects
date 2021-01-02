@@ -43,7 +43,8 @@ class Building(Object):
     def new_concrete_thing(self):
         building = super().new_concrete_thing()
 
-        self.update_concrete(building)        
+        self.update_concrete(building)
+        building[self.attr_owner] = GOVERNMENT
 
         return building
     
@@ -54,9 +55,8 @@ class Building(Object):
         board : Board = self.get("Board")
         
         self.add_attr_if_not_exists(building, self.attr_coord, board.alphanum_to_coord("A1"))
-        self.add_attr_if_not_exists(building, self.attr_price, 1000)
+        self.add_attr_if_not_exists(building, self.attr_price, 125000000)
         self.add_attr_if_not_exists(building, self.attr_money, 0)
-        self.add_attr_if_not_exists(building, self.attr_owner, GOVERNMENT)
         self.add_attr_if_not_exists(building, self.attr_name  ,"Nome da construção")
 
     def remove_from_building(self, building_ref, person_ref):

@@ -18,6 +18,7 @@ all_events = [
     "entity_moved_to_coord",
     "building_board_print",
     "new_round",
+    "new_turn",
     "entity_choosing_spot",
     "entity_interacting_with_building",
 ]
@@ -110,7 +111,7 @@ class Event(Game):
 
     def run_function_list(self, event_causer: dict, category: str, function_list: list, _id: str, additional = None):
         for function_name in function_list:
-            category_inst : Thing = self.get(category)
+            category_inst = self.get(category)
             if additional is None:
                 category_inst.run_func(function_name, category_inst.reference(_id), event_causer)
             else:

@@ -1,7 +1,10 @@
 #file -- game.py --
+from game.Logger import Logger
+from entity.object.building.commerce.Bank import Bank
 from entity.livingbeing.person.player.PlayerIM import PlayerIM
 from entity.livingbeing.person.player.PlayerOOM import PlayerOOM
 from game.Game import Game
+from utils import beauty_print
 from utils.beauty_print import *
 from utils.common import *
 from game.SaveManager import SaveManager
@@ -36,8 +39,9 @@ class GameManager(Game):
     def update_subscribers(self):
         event : Event = self.get("Event")
         # to show valid paths
-        event.subscribe("building_board_print", self.reference("1"), "on_building_board_print")
-        event.subscribe("entity_choosing_spot", self.reference("1"), "save_valid_spots_on_buffer")
+        event.subscribe("building_board_print", self.reference(MOCK_ID), "on_building_board_print")
+        event.subscribe("entity_choosing_spot", self.reference(MOCK_ID), "save_valid_spots_on_buffer")
+        event.subscribe("new_round", self.reference(MOCK_ID), "on_new_round")
     
     def get_save_name(self):
         try:
@@ -117,6 +121,21 @@ class GameManager(Game):
             self.player_im.print_player(self.turn_of())
             self.player_im.player_move(self.turn_of())
             self.pass_turn()
+            if(self.turn_of() == self.player_im.get_players_id_list()[0]):
+                self.get("Event").notify("new_round")
+
+    def on_new_round(self, interested, event_causer):
+        ubi = 50
+        bank : Bank = self.get("Bank")
+        bank_k = list(bank.get_dict_list().keys())[0]
+        # print_debug(bank_k)
+        bank_crt = bank.get_concrete_thing(bank_k)
+        for player in self.player_im.get_players_id_list():
+            bank.transfer_money_from_to(bank.reference(MOCK_ID), self.player_im.reference(player), ubi)
+        log : Logger = self.get("Logger")
+        players_list = ", ".join(self.player_im.get_players_list())
+        log.add(f"Jogadores {players_list} receberam auxílio de R$ {ubi}")
+        # print_debug(bank_crt)
 
 
     def stop(self):
@@ -173,6 +192,8 @@ class GameManager(Game):
         next_player = self.player_im.get_player_by_idx(next_player_idx)
 
         self.meta_data()["turn_of"] = next_player["id"]
+        e : Event = self.get("Event")
+        e.notify("new_turn", additional=self.turn_of())
     
     def turn_of(self) -> str:
         return self.meta_data()["turn_of"]

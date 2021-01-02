@@ -1,5 +1,5 @@
 
-from utils.common import line, log_error
+from utils.common import MOCK_ID, line, log_error
 from game.Board import Board
 from game.Event import Event
 
@@ -28,8 +28,10 @@ class Bank(Commerce):
         bank = super().new_concrete_thing()
         self.update_concrete(bank)
         board : Board = self.get("Board")
+        bank["id"] = MOCK_ID
         bank[self.attr_name] = "Banco"
         bank[self.attr_money] = 10000000
+        # bank[self.attr_owner] = 10000000
         bank[self.attr_coord] = board.alphanum_to_coord("H7")
         self.update_subscriber(self.reference(bank["id"]))
 
@@ -103,4 +105,4 @@ class Bank(Commerce):
         
 
 
-
+    # def give_money()
