@@ -1,4 +1,5 @@
 #file -- player.py --
+import math
 from utils.beauty_print import *
 from utils.common import clear, is_integer
 from entity.livingbeing.person.Person import Person
@@ -21,6 +22,8 @@ class Player(Person):
         player = self.get_players()[str(player_id)]
         name = player["name"]
         hp = player["hp"]
+        money = player[self.attr_money]
+        money_bags = "💰" * min(125, math.ceil(money / 50))
         max_hp = player["max_hp"]
         hearts = "💜" * hp + "🖤" * (max_hp - hp)
         coord = player["coord"]
@@ -30,7 +33,8 @@ class Player(Person):
         print_header(f"Jogador/a: {image} {name}    Posição: {alphanum}")
 
         
-        print_normal(f"   vida {hp} [{hearts}]", end='')
+        print_normal(f"   vida {hp} [{hearts}]")
+        print_normal(f"   Dinheiro {money} {money_bags}", end='')
         print_normal("\n")
     
     def print_players_list(self, players=None):
