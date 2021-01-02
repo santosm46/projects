@@ -45,6 +45,7 @@ class PlayerIM(Player):
         self.update_concrete(player)
         
         player[self.attr_name] = name
+        player[self.attr_money] = 200
         player[self.attr_dice_method] = "DiceRollOrRandom"
         # self.add_attr_if_not_exists(player, self.attr_dice_method, "DiceRollOrRandom")
 

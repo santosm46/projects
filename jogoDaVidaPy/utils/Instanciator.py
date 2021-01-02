@@ -18,6 +18,10 @@ from entity.livingbeing.person.player.PlayerOOM import PlayerOOM
 from entity.livingbeing.person.player.Player import Player
 
 from entity.object.building.education.School import School
+from entity.object.building.education.College import Medicine
+from entity.object.building.education.College import Pedagogy
+from entity.object.building.education.College import LawCourse
+from entity.object.building.education.College import Engineer
 from entity.object.building.commerce.Bank import Bank
 
 
@@ -39,7 +43,12 @@ class Instanciator:
         "School": School,
         "Bank": Bank,
         "Logger": Logger,
+        "Medicine": Medicine,
+        "Pedagogy": Pedagogy,
+        "LawCourse": LawCourse,
+        "Engineer": Engineer
     }
+
 
     instances = {}
 

@@ -32,7 +32,12 @@ tree = {
                     "House": {},
                     "Education": {
                         "School": {},
-                        "College": {},
+                        "College": {
+                            "Medicine": {},
+                            "Pedagogy": {},
+                            "LawCourse": {},
+                            "Engineer": {},
+                        },
                     },
                     "Commerce": {
                         "Bank": {},

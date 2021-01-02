@@ -1,3 +1,4 @@
+import random
 from game.Event import Event
 from utils.beauty_print import print_warning
 from entity.livingbeing.LivingBeing import LivingBeing
@@ -32,7 +33,7 @@ class Person(LivingBeing):
         
         self.add_attr_if_not_exists(person, self.attr_genre, info["genre"])
         self.add_attr_if_not_exists(person, self.attr_name, info["name"])
-        self.add_attr_if_not_exists(person, self.attr_money, 200)
+        self.add_attr_if_not_exists(person, self.attr_money, random.randrange(30,70)*5)
         self.add_attr_if_not_exists(person, self.attr_hp, self.MAX_HP)
         self.add_attr_if_not_exists(person, self.attr_max_hp, self.MAX_HP)
         self.add_attr_if_not_exists(person, self.attr_mode_info, {self.mode_on_board: None, self.mode_on_building: {"building":None}})

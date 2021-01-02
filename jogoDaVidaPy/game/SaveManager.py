@@ -1,12 +1,17 @@
 #file -- SaveManager.py --
+from entity.object.building.Building import Building
+from entity.object import building
 from game.DataStructure import DataStructure
 import json
 from utils.common import *
 from utils.beauty_print import *
 from game.Game import Game
-from entity.object.building.education.School import School
 from entity.object.building.commerce.Bank import Bank
-
+from entity.object.building.education.School import School
+from entity.object.building.education.College import *
+# from entity.object.building.education.College import Pedagogy
+# from entity.object.building.education.College import LawCourse
+# from entity.object.building.education.College import Engineer
 
 SAVES_PATH = './saves/'
 
@@ -35,8 +40,8 @@ class SaveManager(Game):
 
     def save_to_file(self, save):
         current_datetime = date_now()
-        save[self.get_category()]["concrete_things"]["1"]["last_save_date"] = current_datetime
-        filename = save[self.get_category()]["concrete_things"]["1"]["save_filename"]
+        save[self.get_category()]["concrete_things"][MOCK_ID]["last_save_date"] = current_datetime
+        filename = save[self.get_category()]["concrete_things"][MOCK_ID]["save_filename"]
 
         with open(f"{SAVES_PATH}{filename}", 'w') as outfile:
             json.dump(save, outfile)
@@ -72,19 +77,23 @@ class SaveManager(Game):
         # dados do save (seria criado por new_concrete_thing)
         game = self.get("GameManager")
         save_metadata = game.new_concrete_thing(game_name)
-        save.keep_concrete_thing("1", save_metadata, self.get_category())
+        save.keep_concrete_thing(MOCK_ID, save_metadata, self.get_category())
         # salvando save_metadata na estrutura de dados
-        # save.data[self.get_category()]["concrete_things"]["1"] = save_metadata
+        # save.data[self.get_category()]["concrete_things"][MOCK_ID] = save_metadata
 
-        # criando escola pros menino estudarem
+        # criando construções no jogo
         self.factory.gi("Event").setup()
-        schoolClass : School = self.get("School")
-        school = schoolClass.new_concrete_thing()
-        save.keep_concrete_thing(school["id"], school, schoolClass.get_category())
+        college_courses = list(Medicine().course_nicks.keys())
+        buildings_to_insert = ["School", "Bank"] + college_courses
 
-        bankClass : Bank = self.get("Bank")
-        bank = bankClass.new_concrete_thing()
-        save.keep_concrete_thing(bank["id"], bank, bankClass.get_category())
+        for building in buildings_to_insert:
+            buildingClass = self.get(building)
+            building = buildingClass.new_concrete_thing()
+            save.keep_concrete_thing(building["id"], building, buildingClass.get_category())
+
+        # bankClass : Bank = self.get("Bank")
+        # bank = bankClass.new_concrete_thing()
+        # save.keep_concrete_thing(bank["id"], bank, bankClass.get_category())
 
         self.save_to_file(save.data)
 

@@ -46,23 +46,24 @@ class LivingBeing(Entity):
                 "Pistol": 7,
                 "MachineGun": 10
             },
-            "Education": {
+
+            "School": {
                 "Diploms": {
-                    "School": {}
+                    "elementary_school": school_id
+                    "middle_school": school_id
+                    "high_school": school_id
                 }
-                "School": {
-                    "Diploms": {
-                        "elementary_school": school_id
-                        "middle_school": school_id
-                        "high_school": school_id
-                    }
-                },
-                "College": {
-                    "Diploms": {
-                        "medicine": college_id
-                    }
+            },
+
+            "College": {
+                "Diploms": {
+                    "medicine": {
+                        "first_year": college_id,
+                        "second_year": college_id,
+                    },
                 }
             }
+
         }
         """
 

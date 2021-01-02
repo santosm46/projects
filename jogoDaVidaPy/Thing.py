@@ -8,9 +8,6 @@ class Thing:
     def __init__(self):
         self.id_attr = 'id'
 
-    atenção = 4
-
-
 
     all_images = {
         

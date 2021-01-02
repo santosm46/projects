@@ -207,7 +207,6 @@ class Board(Game):
         # it is most likely that there will be a free spot in the range 4
         range_ = 3
         valid_close_spots = self.get_valid_spots_for_range(this_spot, 100)
-        print(valid_close_spots)
         # can't include it self
         valid_close_spots.remove(spot_alphanum)
 

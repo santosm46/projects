@@ -1,9 +1,9 @@
 #file -- player.py --
 from utils.beauty_print import *
-from utils.common import clear
+from utils.common import clear, is_integer
 from entity.livingbeing.person.Person import Person
 
-player_image = ['😎','🤡','👽','🤠','🧑‍','🤯','🧐','😷','😁','👻','🥳','🤑']
+player_image = ['😎','🤡','👽','🤠','🧑‍','🤯','🧐','😷','😁','👻','🤑']
 
 events_to_listen = {"building_board_print": "on_building_board_print"}
 

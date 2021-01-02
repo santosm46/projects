@@ -1,4 +1,4 @@
-from utils.common import DEBUG_ENABLED
+from utils.common import DEBUG_ENABLED, line, log_error
 from game.Game import Game
 from game.Category import Category
 from utils.beauty_print import debug_error, print_debug
@@ -31,7 +31,7 @@ class DataStructure(Game):
         try:
             self.data[category]["concrete_things"][id] = concrete_thing
         except:
-            debug_error(f"self.data isn't instantiated or there isn't category {category}", fname=__name__, enabled=DEBUG_ENABLED)
+            log_error(f"self.data isn't instantiated or there isn't category {category}", __name__, line())
 
     def get_concrete_thing(self, id: str, category: str):
         # return self.data[category]["concrete_things"][id]
@@ -40,7 +40,7 @@ class DataStructure(Game):
             # print_debug(f"peguei concrete_thing: {concrete_thing}. ({id},{category}) ", fname=__name__)
             return concrete_thing
         except:
-            debug_error(f"Error getting thing {id} of category {category}", fname=__name__, enabled=DEBUG_ENABLED)
+            log_error(f"Error getting thing {id} of category {category}", __name__, line())
             return None
 
 
