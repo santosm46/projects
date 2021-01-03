@@ -28,7 +28,11 @@ class Player(Person):
         energy = player[self.attr_energy]
         max_energy = player[self.attr_max_energy]
         money = player[self.attr_money]
-        money_bags = "💰" * min(125, math.ceil(money / 50))
+        money_dims = "💎" * math.floor(money / 1000)
+        money_aux = money % 1000
+        money_bags = "💰" * math.floor(money_aux / 100)
+        money_aux = money_aux % 100
+        money_notes = "💵" * math.ceil(money_aux / 10)
         hp = player["hp"]
         max_hp = player["max_hp"]
         hearts = "💜" * hp + "🖤" * (max_hp - hp)
@@ -40,7 +44,7 @@ class Player(Person):
 
         
         print_normal(f"   vida {hp} [{hearts}]", end='')
-        print_normal(f"    Dinheiro {money} {money_bags}")
+        print_normal(f"    Dinheiro {money} {money_notes}{money_bags}{money_dims}")
         print_normal(f"   Energia: {energy}/{max_energy}")
 
         # print_normal("\n")
