@@ -23,7 +23,7 @@ from entity.object.building.education.College import Pedagogy
 from entity.object.building.education.College import LawCourse
 from entity.object.building.education.College import Engineer
 from entity.object.building.commerce.Bank import Bank
-
+from entity.object.building.commerce.Bank import MoneyBag
 
 class Instanciator:
 
@@ -46,7 +46,8 @@ class Instanciator:
         "Medicine": Medicine,
         "Pedagogy": Pedagogy,
         "LawCourse": LawCourse,
-        "Engineer": Engineer
+        "Engineer": Engineer,
+        "MoneyBag": MoneyBag,
     }
 
 

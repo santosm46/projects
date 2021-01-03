@@ -135,6 +135,7 @@ class GameManager(Game):
         log : Logger = self.get("Logger")
         players_list = ", ".join(self.player_im.get_players_list())
         log.add(f"Jogadores {players_list} receberam auxílio de R$ {ubi}")
+        self.save()
         # print_debug(bank_crt)
 
 

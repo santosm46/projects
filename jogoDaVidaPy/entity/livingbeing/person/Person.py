@@ -1,6 +1,9 @@
+from game.Logger import Logger
+from game.DataStructure import DataStructure
+from entity.object.building.commerce.Bank import Bank
 import random
 from game.Event import Event
-from utils.beauty_print import print_warning
+from utils.beauty_print import bcolors, print_warning
 from entity.livingbeing.LivingBeing import LivingBeing
 
 class Person(LivingBeing):
@@ -60,4 +63,16 @@ class Person(LivingBeing):
         pass
 
 
+    def kill_being(self, being_ref, cause=None):
+        self.drop_inventory(being_ref)
 
+        super().kill_being(being_ref, cause)
+
+
+
+    def drop_inventory(self, being_ref):
+        bank : Bank = self.get("Bank")
+        bank.put_all_money_on_board(being_ref)
+        # put_all_money_on_board
+
+        

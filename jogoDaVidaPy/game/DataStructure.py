@@ -12,6 +12,15 @@ class DataStructure(Game):
     
     def setup(self, data: dict):
         self.data = data
+        self.check_new_categories(self.data)
+    
+    
+    def check_new_categories(self, data):
+        new = self.get("Category").get_categories_copy()
+        for category, info in new.items():
+            if category not in data:
+                info["concrete_things"] = {}
+                data[category] = info.copy()
     
 
     def new_data_structure(self):
@@ -34,14 +43,22 @@ class DataStructure(Game):
             log_error(f"self.data isn't instantiated or there isn't category {category}", __name__, line())
 
     def get_concrete_thing(self, id: str, category: str):
-        # return self.data[category]["concrete_things"][id]
         try:
+            # print_debug(f"id={id}, categ={category}",__name__,line())
             concrete_thing = self.data[category]["concrete_things"][id]
-            # print_debug(f"peguei concrete_thing: {concrete_thing}. ({id},{category}) ", fname=__name__)
             return concrete_thing
         except:
             log_error(f"Error getting thing {id} of category {category}", __name__, line())
             return None
+
+
+    def delete_concrete_thing(self, thing_ref: dict):
+        try:
+            category = thing_ref["category"]
+            _id = thing_ref["id"]
+            del self.data[category]["concrete_things"][_id]
+        except:
+            log_error(f"self.data isn't instantiated or there isn't thing {thing_ref}", __name__, line())
 
 
     

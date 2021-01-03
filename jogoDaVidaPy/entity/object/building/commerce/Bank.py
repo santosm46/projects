@@ -1,4 +1,9 @@
 
+from utils.beauty_print import debug_error, print_debug
+from game.DataStructure import DataStructure
+from entity.livingbeing import person
+from game.Logger import Logger
+from entity.object.Object import Object
 from utils.common import MOCK_ID, line, log_error
 from game.Board import Board
 from game.Event import Event
@@ -65,6 +70,13 @@ class Bank(Commerce):
 
         return True
 
+    def transfer_from_bank_to(self, receiver_ref, amount):
+        # bank = self.get
+        if(not self.transfer_money_from_to(self.reference(MOCK_ID), receiver_ref, amount)):
+            log_error(f"Bank has no money to pay {receiver_ref} value {amount}", __name__, line())
+            return False
+        return True
+
 
     def entity_can_pay(self, entity_concr: dict, amount: int):
         if self.not_has_attr_money(entity_concr):
@@ -78,6 +90,8 @@ class Bank(Commerce):
     def transfer_all_money(self, sender_ref, receiver_ref):
         sender = self.get_concrete_thing_by_ref(sender_ref)
         receiver = self.get_concrete_thing_by_ref(receiver_ref)
+        # debug_error(f"bag_ref = {receiver_ref}",__name__,line())
+        # debug_error(f"send = {sender},  bag_ref = {receiver}",__name__,line())
 
         if(self.not_has_attr_money(sender)):
             return False
@@ -98,11 +112,74 @@ class Bank(Commerce):
 
     # tries to transfer money amount, if doesn't have the money required, transfer the rest
     def transfer_money_or_the_rest(self, sender_ref, receiver_ref, amount):
+        
         if(not self.transfer_money_from_to(sender_ref, receiver_ref, amount)):
             if(not self.transfer_all_money(sender_ref, receiver_ref)):
                 return False
         return True
+    
+    def put_all_money_on_board(self, entity_ref):
+        bag : MoneyBag = self.get("MoneyBag")
+        person = self.get_concrete_thing_by_ref(entity_ref)
+        moneybag = bag.new_concrete_thing()
+        # print_debug(f"\n\t-> p={person}\n\t-> m={moneybag}",__name__,line())
+
+        moneybag[self.attr_coord] = person[self.attr_coord]
+        data : DataStructure = self.get("DataStructure")
+        data.keep_concrete_thing(moneybag["id"], moneybag, bag.get_category())
+        bag_ref = bag.reference(moneybag["id"])
+        self.transfer_all_money(entity_ref, bag_ref)
+
         
+    
 
 
-    # def give_money()
+class MoneyBag(Object):
+
+    def __init__(self):
+        super().__init__()
+        self.attr_money = "money"
+    
+    def new_concrete_thing(self):
+        bag = super().new_concrete_thing()
+        self.update_concrete(bag)
+        self.update_subscriber(self.reference(bag["id"]))
+        # bag[self.mon]
+        return bag
+    
+    def get_image(self, _id=None):
+        return '💰'
+
+
+    def update_subscriber(self, reference: dict):
+        super().update_subscriber(reference)
+        e : Event = self.get("Event")
+        e.subscribe("entity_moved_to_coord", reference, "entity_stepped_on_money")
+
+
+    def update_concrete(self, concrete: dict):
+        super().update_concrete(concrete)
+        self.add_attr_if_not_exists(concrete, self.attr_money, 0)
+
+
+    def entity_stepped_on_money(self, interested, event_causer, additional=None):
+        # print_debug(f"{event_causer} pisou no dinheiro {interested} ",__name__,line())
+        log : Logger = self.get("Logger")
+        moneybag = self.get_concrete_thing_by_ref(interested)
+        money = moneybag[self.attr_money]
+        bank : Bank = self.get("Bank")
+        bank.transfer_all_money(interested, event_causer)
+
+        person = self.get_concrete_thing_by_ref(event_causer)
+        person_categ = event_causer["category"]
+        name = person["name"]
+        log.add(f"[{person_categ}]: {name} achou um saco de dinheiro com R$ {money}")
+
+        e : Event = self.get("Event")
+        # print_debug(f"1 removiodo entity_moved_to_coord de MoneyBag {interested}",__name__,line())
+        e.unsubscribe("entity_moved_to_coord", interested)
+        # print_debug(f"2 removiodo entity_moved_to_coord de MoneyBag {interested}",__name__,line())
+        # super()
+        data : DataStructure = self.get("DataStructure")
+        data.delete_concrete_thing(interested)
+

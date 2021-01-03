@@ -1,5 +1,7 @@
+from entity.livingbeing.LivingBeing import LivingBeing
+from utils import beauty_print
 from utils.common import line, log_error, replacer, MOCK_ID
-from utils.beauty_print import print_header, print_normal
+from utils.beauty_print import debug_error, print_debug, print_header, print_normal
 from game.Event import Event
 from game.Category import Category
 from game.Game import Game
@@ -117,9 +119,14 @@ class Board(Game):
         # maybe change the mode to on_board if it's new coord is a valid spot
         try:
             entity = self.get(reference["category"])
+            categ_mg : Category = self.get("Category")
             concrete = entity.get_concrete_thing(reference["id"])
             if coord is None:
                 coord = self.alphanum_to_coord(alphanum)
+            if(categ_mg.inside_of_category(reference["category"], "LivingBeing")):
+                living : LivingBeing = self.get(reference["category"])
+                energy = math.floor(self.distance_between_spots(coord, concrete["coord"]))
+                living.reduce_energy(reference, decrease= energy)
             concrete["coord"] = coord
             self.get("Event").notify("entity_moved_to_coord", reference, coord)
         except:

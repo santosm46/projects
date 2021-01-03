@@ -1,11 +1,12 @@
 
+from game.Logger import Logger
 from game.Event import Event
 from entity.object.building.commerce.Bank import Bank
 from game.Category import Category
 from utils.common import line, log_error, prim_opt
 from game.Board import Board
 from entity.livingbeing.person.Person import Person
-from utils.beauty_print import bcolors, print_beauty_json, print_debug
+from utils.beauty_print import bcolors, input_question, print_beauty_json, print_debug, print_number_list
 from entity.object.building.Building import Building
 
 class Education(Building):
@@ -155,9 +156,24 @@ class Education(Building):
         person_id = person_ref["id"]
         school = self.get_concrete_thing_by_ref(additional)
         name = school["name"]
+
+
+        mode_info = person_class.get_mode_info_of(person_ref, person_class.mode_on_building)
+
+
         if(self.person_has_highest_level(person_ref)):
-            person_class.change_mode(person_id,person_class.mode_on_board)
-            person_class.gui_output(f"Você já tem todos os diplomas. Será removido da {name}",color=bcolors.WARNING,pause=True)
+            teacher = self.get("Pedagogy")
+            teacher_dip = teacher.get_person_highest_diplom(person_ref)
+            high = teacher.person_has_highest_level(person_ref)
+
+            # print_debug(f"teacher_dip = {teacher_dip}. high = {high}",__name__)
+            if(high):
+                opt = self.work(person_class, person_id)
+                if(str(opt) == prim_opt.CONTINUE):
+                    return
+            else:
+                person_class.gui_output(f"Você já tem todos os diplomas. Será removido da {name}",color=bcolors.WARNING,pause=True)
+            # person_class.change_mode(person_id,person_class.mode_on_board)
             self.remove_from_building(self.reference(school["id"]), person_ref)
             return
 
@@ -205,6 +221,29 @@ class Education(Building):
         person_class.gui_output(text, color=color, pause=True)
     
 
-    
+    def work(self, person_class: Person, person_id):
+        person_class.gui_output(f"\nVocê é professor/a. escolha uma opção")
+        options = ["trabalhar", "trabalhar e sair", "sair"]
+        print_number_list(options)
+        option = input_question("Opção: ")
+        if(str(option) == "3"):
+            return prim_opt.LEAVE
+        person_class.gui_output("Role o dado e veja quanto ganhará")
+        dice_num = person_class.roll_dice(person_id)
+        dice_num -= 2    
+        earned_money = 50 * dice_num
+        log : Logger = self.get("Logger")
+        if(dice_num == -1):
+            log.add.gui_output(f"A escola atrasou o salário, você teve que arcar com as despesas, gastou {earned_money}", color=bcolors.FAIL)
+        elif(dice_num == 0):
+            log.add.gui_output(f"A escola atrasou o salário, ganhou nada", color=bcolors.FAIL)
+        else:
+            log.add.gui_output(f"A escola te pagou {earned_money}", color=bcolors.OKGREEN)
+
+        if(str(option) == "2"):
+            return prim_opt.LEAVE
+
+        return prim_opt.CONTINUE
+
 
 

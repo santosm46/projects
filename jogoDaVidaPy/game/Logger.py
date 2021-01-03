@@ -19,7 +19,7 @@ class Logger(Game):
         e.subscribe("building_board_print", self.reference(MOCK_ID), "dump")
     
 
-    def dump(self, interested, event_causer, additional):
+    def dump(self, interested, event_causer, additional=None):
         for m in self.messages_buffer:
             print(m)
         self.messages_buffer.clear()

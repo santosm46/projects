@@ -1,7 +1,8 @@
 #file -- player.py --
+from game.Logger import Logger
 import math
 from utils.beauty_print import *
-from utils.common import clear, is_integer
+from utils.common import clear, is_integer, line, log_error
 from entity.livingbeing.person.Person import Person
 
 player_image = ['😎','🤡','👽','🤠','🧑‍','🤯','🧐','😷','😁','👻','🤑']
@@ -20,10 +21,15 @@ class Player(Person):
     def print_player(self, player_id):
         # print_debug(f"\n\nplayer_id={player_id}", fline=get_linenumber(),fname=__name__, pause=True)
         player = self.get_players()[str(player_id)]
+        if not player:
+            log_error(f"Couldn't find player of id {player_id} to print",__name__, line())
+            return
         name = player["name"]
-        hp = player["hp"]
+        energy = player[self.attr_energy]
+        max_energy = player[self.attr_max_energy]
         money = player[self.attr_money]
         money_bags = "💰" * min(125, math.ceil(money / 50))
+        hp = player["hp"]
         max_hp = player["max_hp"]
         hearts = "💜" * hp + "🖤" * (max_hp - hp)
         coord = player["coord"]
@@ -33,9 +39,11 @@ class Player(Person):
         print_header(f"Jogador/a: {image} {name}    Posição: {alphanum}")
 
         
-        print_normal(f"   vida {hp} [{hearts}]")
-        print_normal(f"   Dinheiro {money} {money_bags}", end='')
-        print_normal("\n")
+        print_normal(f"   vida {hp} [{hearts}]", end='')
+        print_normal(f"    Dinheiro {money} {money_bags}")
+        print_normal(f"   Energia: {energy}/{max_energy}")
+
+        # print_normal("\n")
     
     def print_players_list(self, players=None):
         if players is None:
@@ -94,7 +102,7 @@ class Player(Person):
             self.get_players_oom()[_id] = player
             self.get_game().save()
         except:
-            print_error(f"player.py: _id:{_id} não é str ou deu outro erro em remove_player()")
+            log_error(f"player.py: _id:{_id} não é str ou deu outro erro em remove_player()",__name__,line())
             return False
         return True
     

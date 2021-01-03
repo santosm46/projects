@@ -72,7 +72,11 @@ class Event(Game):
         category = interested["category"]
         _id = interested["id"]
 
-        if(self.has_event_categ_id()):
+        has_event = self.has_event_categ_id(event_name, category, _id)
+        
+
+        if(has_event):
+
             self.events[event_name][category][_id].clear()
             return True
         else:
@@ -133,10 +137,13 @@ class Event(Game):
         return False
     
     def has_event_categ_id(self, event_name, category, _id):
-        if ( self.has_event_categ(event_name, category) and _id in self.events[event_name][category]):
-            return True
-        self.events[event_name][category][_id] = []
-        return False
+        try:
+            if ( self.has_event_categ(event_name, category) and _id in self.events[event_name][category]):
+                return True
+            self.events[event_name][category][_id] = []
+            return False
+        except:
+            debug_error("deu erro no unsubscribe",__name__)
 
     def has_event_categ_id_func(self, event_name, category, _id, func):
         return (

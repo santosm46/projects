@@ -1,8 +1,9 @@
 from game.Event import Event
 from utils.beauty_print import *
-from utils.common import prim_opt, valid_number, clear, is_integer
+from utils.common import line, prim_opt, valid_number, clear, is_integer
 from game.DataStructure import DataStructure
 from game.Board import Board
+from game.Logger import Logger
 
 from entity.livingbeing.person.player.Player import Player
 
@@ -22,11 +23,12 @@ class PlayerIM(Player):
         # na lista da board de coisas para imprimir 
         
 
-
+    MAX_ENERGY = 30
 
     def player_move(self, player_id):
         # player = self.get_players()[player_id]
         player = self.get_concrete_thing(player_id)
+        
         # execute a function according to the mode of the player
         self.modes_func[player[self.attr_mode]](self.reference(player_id))
  
@@ -46,6 +48,8 @@ class PlayerIM(Player):
         
         player[self.attr_name] = name
         player[self.attr_money] = 200
+        player[self.attr_energy] = self.MAX_ENERGY
+        player[self.attr_max_energy] = self.MAX_ENERGY
         player[self.attr_dice_method] = "DiceRollOrRandom"
         # self.add_attr_if_not_exists(player, self.attr_dice_method, "DiceRollOrRandom")
 
@@ -53,7 +57,10 @@ class PlayerIM(Player):
     
 
     def update_concrete(self, player: dict):
+        # print_debug("chamadooooooooooooooooooooooo",__name__,line())
         super().update_concrete(player)
+        self.add_attr_if_not_exists(player, self.attr_energy, self.MAX_ENERGY)
+        self.add_attr_if_not_exists(player, self.attr_max_energy, self.MAX_ENERGY)
         
 
 
@@ -65,7 +72,6 @@ class PlayerIM(Player):
             print_normal(f"\nEscolha uma opção")
             print_normal(f"\tENTER) Jogar dado")
             print_normal(f"\t{prim_opt.PASS_TURN}) Passar vez")
-            print_normal(f"\n")
             # print_normal(f"\t{prim_opt.SAVE}) Salvar")
             # print_normal(f"\t{prim_opt.EXIT}) Sair")
             print_normal(f"\t{prim_opt.SAVE_EXIT}) Salvar e sair para menu da partida")
@@ -120,7 +126,7 @@ class PlayerIM(Player):
         if spot in buildings_list:
             place = buildings_list[spot]
         name = player["name"]
-        print_normal(f"Movendo {name} para {place}... ", end='')
+        print_normal(f"Movendo {name} para {place}... ")
         board.move_entity_to(reference=self.reference(player["id"]), alphanum=spot)
 
     def create_players(self):
@@ -164,5 +170,19 @@ class PlayerIM(Player):
         print_header(f"{color}{text}{bcolors.ENDC}",end=end)
         if pause:
             input("")
+
+
+    def kill_being(self, being_ref, cause=None):
+        # player = self.get_concrete_thing_by_ref(being_ref)
+        self.drop_inventory(being_ref)
+        person = self.get_concrete_thing_by_ref(being_ref)
+        name = person["name"]
+        categ = being_ref["category"]
+        log : Logger = self.get("Logger")
+        log.add(f"[{categ}] {name} morreu! Removendo do jogo", color=bcolors.FAIL)
+        # data : DataStructure = self.get("DataStructure")
+        self.remove_player(being_ref["id"])
+        # data.data["PlayerOOM"][being_ref["id"]] = player
+
 
 

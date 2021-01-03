@@ -1,6 +1,5 @@
 
 from utils.beauty_print import bcolors, print_debug
-from entity.livingbeing.person.Person import Person
 from entity.object.Object import Object
 from utils.common import GOVERNMENT, log_error
 from game.Board import Board
@@ -31,6 +30,7 @@ class Building(Object):
         "Castle": '🏰',
         "SuperMarket": '🛒',
         "Casino": '🎰',
+        "Cemitery": 'C'
     }
     
     def get_image(self, _id=None):
@@ -62,7 +62,7 @@ class Building(Object):
     def remove_from_building(self, building_ref, person_ref):
         try:
             building = self.get_concrete_thing_by_ref(building_ref)
-            person_class : Person = self.get(person_ref["category"])
+            person_class = self.get(person_ref["category"])
             person_class.change_mode(person_ref["id"], person_class.mode_on_board)
             board : Board = self.get("Board")
             close_free_spot = board.closer_free_spot_to(building[self.attr_coord])

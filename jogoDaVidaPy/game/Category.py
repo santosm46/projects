@@ -66,6 +66,7 @@ tree = {
                         "Bow": {},
                     },
                 },
+                "MoneyBag": {},
             },
         },
         "Tester": {}
