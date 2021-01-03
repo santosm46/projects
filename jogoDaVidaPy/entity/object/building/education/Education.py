@@ -44,11 +44,7 @@ class Education(Building):
 
     def update_subscriber(self, educ_build_ref):
         super().update_subscriber(educ_build_ref)
-        event : Event = self.get("Event")
-        event.subscribe("entity_moved_to_coord", educ_build_ref, "put_person_on_building")
-        event.subscribe("entity_choosing_spot", educ_build_ref, "on_entity_choosing_spot")
-        event.subscribe("entity_interacting_with_building", educ_build_ref, "educ_building_interact")
-
+        
     def custom_requirement_to_enter(self, building_data, person_ref, additional):
         return self.is_person(person_ref["category"])
 
@@ -140,12 +136,9 @@ class Education(Building):
         this_categ = self.get_category()
         person["inventory"][this_categ]["Diploms"][new_level] = education_id
 
-    def is_person(self, person_categ):
-        categ_mg : Category = self.get("Category")
-        return categ_mg.is_category_or_inside(person_categ, "Person")
+    
 
-
-    def educ_building_interact(self, school_data, person_ref, additional=None):
+    def on_building_interact(self, school_data, person_ref, additional=None):
         # building has to be school
         category = additional["category"]
         if(category != self.get_category()):

@@ -7,6 +7,7 @@ from utils.beauty_print import debug_error, print_debug
 class Thing:
     def __init__(self):
         self.id_attr = 'id'
+        self.attr_id = 'id'
 
 
     all_images = {

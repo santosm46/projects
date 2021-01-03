@@ -17,9 +17,7 @@ class Bank(Commerce):
         super().__init__()
     
 
-    def get_image(self, _id=None):
-        return '🏦'
-    
+
     # def update_subscriber(self, school_ref):
         # event : Event = self.get("Event")
         # event.subscribe("entity_moved_to_coord", school_ref, "put_person_on_school")
@@ -43,9 +41,6 @@ class Bank(Commerce):
         return bank
 
     
-    def update_concrete(self, building: dict):
-        super().update_concrete(building)
-
     def not_has_attr_money(self, entity):
         if(self.attr_money not in entity):
             log_error(f"Can't transfer money, entity doesn't have attr_money\n     -> {entity}",__name__,line())

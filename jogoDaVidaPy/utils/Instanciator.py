@@ -1,3 +1,5 @@
+from entity.object.building.commerce.SuperMarket import SuperMarket
+from entity.object.Food import Food
 from utils.beauty_print import print_debug
 
 # from Thing import Thing
@@ -48,6 +50,8 @@ class Instanciator:
         "LawCourse": LawCourse,
         "Engineer": Engineer,
         "MoneyBag": MoneyBag,
+        "Food": Food,
+        "SuperMarket": SuperMarket,
     }
 
 

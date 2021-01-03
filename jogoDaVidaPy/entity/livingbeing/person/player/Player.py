@@ -1,4 +1,5 @@
 #file -- player.py --
+from entity.object.Food import Food
 from game.Logger import Logger
 import math
 from utils.beauty_print import *
@@ -40,12 +41,29 @@ class Player(Person):
         alphanum = self.get("Board").coord_to_alphanum(coord)
         image = self.get_image(player_id)
 
+        foods_img = ''
+        foods_list = None
+        food_cls : Food = self.get("Food")
+        food_info = food_cls.food_info
+        # because player may not have food
+        if("Food" in player[self.attr_inventory]):
+            foods_list = player[self.attr_inventory]["Food"]
+            for food_name, food_qtd in foods_list.items():
+                foods_img += food_info[food_name][food_cls.i_image] * food_qtd
+            # for k, v in food_cls.food_info.items():
+        
+
+
         print_header(f"Jogador/a: {image} {name}    Posição: {alphanum}")
 
         
         print_normal(f"   vida {hp} [{hearts}]", end='')
         print_normal(f"    Dinheiro {money} {money_notes}{money_bags}{money_dims}")
-        print_normal(f"   Energia: {energy}/{max_energy}")
+        print_normal(f"   Energia: {energy}/{max_energy}", end='')
+        print_normal(f"    Comida: {foods_img}")
+
+    def has_food(self):
+        pass
 
         # print_normal("\n")
     

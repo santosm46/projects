@@ -7,12 +7,16 @@ class Food(Object):
 
     def __init__(self):
         super().__init__()
+        self.i_image = "image"
+        self.i_energy = "energy"
+        self.i_price = "price"
+        self.i_health = "health"
 
 
     food_info = {
         "Hamburger": {
             "image": '🍔',
-            "energy": 10,
+            "energy": 9,
             "price": 50,
             "health": -3
             
@@ -36,17 +40,17 @@ class Food(Object):
             "health": 1
         },
         "Mango": {
-            "image": '🥭',
+            "image": '🥭 ',
             "energy": 3,
             "price": 25,
             "health": 1
         },
-        "Bone": {
-            "image": '🦴',
-            "energy": 0,
-            "price": 10,
-            "health": 0
-        },
+        # "Bone": {
+        #     "image": '🦴',
+        #     "energy": 0,
+        #     "price": 10,
+        #     "health": 0
+        # },
         "Avocado": {
             "image": '🥑',
             "energy": 3,

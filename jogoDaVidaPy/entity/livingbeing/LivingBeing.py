@@ -50,7 +50,7 @@ class LivingBeing(Entity):
         if not being:
             return
         # fix descomenar
-        # being[self.attr_energy] -= decrease
+        being[self.attr_energy] -= decrease
 
         if(being[self.attr_energy] <= 0):
             being[self.attr_energy] = 0
@@ -69,13 +69,14 @@ class LivingBeing(Entity):
         # put being on cemitery later instead of deleting it
         data.delete_concrete_thing(being_ref)
 
-
+    
         """
         the keys of an inventory is the class that will handle the
         information of the associated dict
         "inventory" -> {
             "Food": {
-                "Apple": 3
+                "Apple": 3,
+                "Banana": 3,
             }
             "Firearm": {
                 "Pistol": 7,

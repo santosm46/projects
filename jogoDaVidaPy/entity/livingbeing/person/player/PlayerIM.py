@@ -66,11 +66,14 @@ class PlayerIM(Player):
 
     def move_on_board(self, params=None):
         player_id = params["id"]
-        name = self.get_concrete_thing(player_id)["name"]
-        
+        player = self.get_concrete_thing(player_id)
+        name = player["name"]
+
         while(player_id == self.get("GameManager").turn_of()):
             print_normal(f"\nEscolha uma opção")
             print_normal(f"\tENTER) Jogar dado")
+            if("Food" in player["inventory"]):
+                print_normal(f"\t{prim_opt.EAT_FOOD}) Comer")
             print_normal(f"\t{prim_opt.PASS_TURN}) Passar vez")
             # print_normal(f"\t{prim_opt.SAVE}) Salvar")
             # print_normal(f"\t{prim_opt.EXIT}) Sair")
@@ -82,9 +85,8 @@ class PlayerIM(Player):
                 print_normal(f"Passando vez de {name}...  \n")
                 # if len(input("")) == 0:
                 break
-            if(option == prim_opt.ROLL_DICE):
+            elif(option == prim_opt.ROLL_DICE):
                 self.roll_dice_to_move(player_id)
-                
                 break
             elif(option == prim_opt.SAVE_EXIT):
                 print_sucess("Salvando e saindo...")

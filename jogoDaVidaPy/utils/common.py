@@ -30,6 +30,8 @@ class prim_opt:
     ROLL_DICE = ''
     RESETE_TEST = 'RT'
 
+    EAT_FOOD = 'C'
+
     DELETE = 'D'
     LOAD = 'C'
     CREATE = 'N'

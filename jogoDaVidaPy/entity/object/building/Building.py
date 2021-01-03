@@ -1,7 +1,8 @@
 
-from utils.beauty_print import bcolors, print_debug
+from game.Event import Event
+from utils.beauty_print import bcolors, debug_error, print_debug
 from entity.object.Object import Object
-from utils.common import GOVERNMENT, log_error
+from utils.common import GOVERNMENT, line, log_error
 from game.Board import Board
 import random
 
@@ -32,7 +33,18 @@ class Building(Object):
         "Casino": '🎰',
         "Cemitery": 'C'
     }
-    
+
+    def update_subscriber(self, reference: dict):
+        super().update_subscriber(reference)
+        event : Event = self.get("Event")
+        event.subscribe("entity_moved_to_coord", reference, "put_person_on_building")
+        event.subscribe("entity_choosing_spot", reference, "on_entity_choosing_spot")
+        event.subscribe("entity_interacting_with_building", reference, "on_building_interact")
+
+    def on_building_interact(self, building_ref, person_ref, additional=None):
+        log_error(f"This funcion [on_building_interact] needs to be overwritten",__name__,line())
+
+
     def get_image(self, _id=None):
         categ = self.get_category()
         image = self.images[categ]
@@ -69,6 +81,10 @@ class Building(Object):
             board.move_entity_to(person_class.reference(person_ref["id"]), alphanum=close_free_spot)
         except:
             log_error(f"Error trying to take person {person_ref} out of building {building_ref}",__name__,line())
+
+    def is_person(self, person_categ):
+        categ_mg : Category = self.get("Category")
+        return categ_mg.is_category_or_inside(person_categ, "Person")
 
 
 
