@@ -1,3 +1,4 @@
+from entity.livingbeing.person.npc.criminal.Robber import Robber
 from entity.object.building.commerce.SuperMarket import SuperMarket
 from entity.object.Food import Food
 from utils.beauty_print import print_debug
@@ -52,6 +53,7 @@ class Instanciator:
         "MoneyBag": MoneyBag,
         "Food": Food,
         "SuperMarket": SuperMarket,
+        "Robber": Robber,
     }
 
 

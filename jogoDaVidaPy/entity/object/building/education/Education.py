@@ -45,7 +45,7 @@ class Education(Building):
     def update_subscriber(self, educ_build_ref):
         super().update_subscriber(educ_build_ref)
         
-    def custom_requirement_to_enter(self, building_data, person_ref, additional):
+    def custom_requirement_to_interact(self, building_data, person_ref, additional):
         return self.is_person(person_ref["category"])
 
 

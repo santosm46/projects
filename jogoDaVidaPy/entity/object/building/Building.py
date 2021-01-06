@@ -38,8 +38,8 @@ class Building(Object):
     def update_subscriber(self, reference: dict):
         super().update_subscriber(reference)
         event : Event = self.get("Event")
-        event.subscribe("entity_interacting_with_entity", reference, "put_person_on_building")
-        event.subscribe("entity_choosing_spot", reference, "on_entity_choosing_spot")
+        # event.subscribe("entity_interacting_with_entity", reference, "put_person_on_building")
+        
         event.subscribe("entity_interacting_with_building", reference, "on_building_interact")
 
     def on_building_interact(self, building_ref, person_ref, additional=None):
@@ -88,6 +88,9 @@ class Building(Object):
         return categ_mg.is_category_or_inside(person_categ, "Person")
 
 
+    def entity_interaction(self, me_ref, other_ref, additional):
+        self.put_person_on_building(me_ref, other_ref, additional)
+
 
     def put_person_on_building(self, building_ref, person_ref, additional=None):
         person_categ = person_ref["category"]
@@ -116,8 +119,5 @@ class Building(Object):
     
 
 
-    # this is for some entities_to_interact with special restrictions
-    # they will overwrite this function
-    def custom_requirement_to_enter(self, building_data, person_ref, additional):
-        return True
+    
 

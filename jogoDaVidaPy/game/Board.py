@@ -11,7 +11,8 @@ import math
 class spot_type:
     FREE = '⬜'
     BUILDING = '⬛'
-    CANT_STEP = ['🌃', '🌇', '🌆', '🌌', '⬛']
+    CITY_VIEW = ['🌃', '🌇', '🌆', '🌌']
+
 
 
 board_chars = [
@@ -50,6 +51,12 @@ class Board(Game):
         
         return letter
     
+    def cant_step(self):
+        return [spot_type.BUILDING] + spot_type.CITY_VIEW
+    
+    def is_city_view(self, r, c):
+        return board_chars[r][c] in spot_type.CITY_VIEW
+
     def letter_to_num(self, letter: str) -> int: 
         size = len(self.alphabet)
         num = 0
@@ -80,6 +87,9 @@ class Board(Game):
         column = coord["column"]+1
         alpha = self.num_to_letter(row)
         return f"{alpha}{column}"
+
+    def rc_to_coord(self, r, c):
+        return {"row":r, "column": c}
     
     def valid_neighbors(self, coord):
         valids = []
@@ -88,7 +98,7 @@ class Board(Game):
             column = coord["column"] + j
             if(row < 0 or column < 0): continue
             if(row >= self.rows() or column >= self.columns()): continue
-            if(board_chars[row][column] in spot_type.CANT_STEP): continue
+            if(board_chars[row][column] in self.cant_step()): continue
             # print(f"r,c = {row},{column}")
             valids.append(self.coord_to_alphanum({"row":row, "column":column}))
         return valids
@@ -207,13 +217,13 @@ class Board(Game):
         dist = math.hypot(r2-r1, c2-c1)
         return dist
 
-    def closer_free_spot_to(self, this_spot):
-        # this_spot has to be coord
-        spot_alphanum = self.coord_to_alphanum(this_spot)
+    def closer_free_spot_to(self, this_spot_coord):
+        # this_spot_coord has to be coord
+        spot_alphanum = self.coord_to_alphanum(this_spot_coord)
 
         # it is most likely that there will be a free spot in the range 4
         range_ = 3
-        valid_close_spots = self.get_valid_spots_for_range(this_spot, 100)
+        valid_close_spots = self.get_valid_spots_for_range(this_spot_coord, 100)
         # can't include it self
         valid_close_spots.remove(spot_alphanum)
 
@@ -221,20 +231,20 @@ class Board(Game):
         if(len(valid_close_spots) == 0):
             board_diameter = int(math.hypot(self.rows(), self.columns()))+1
             range_ = board_diameter
-            valid_close_spots = self.get_valid_spots_for_range(this_spot, range_)
+            valid_close_spots = self.get_valid_spots_for_range(this_spot_coord, range_)
             # can't include it self
             valid_close_spots.remove(spot_alphanum)
             # if still hasn't found some free spot (Impossible!!!) return the same spot
             if(len(valid_close_spots) == 0):
-                alpha = self.coord_to_alphanum(this_spot)
-                log_error(f"Couldn't finde close spot to {alpha}: {this_spot} at range {range_}.", __name__,line())
+                alpha = self.coord_to_alphanum(this_spot_coord)
+                log_error(f"Couldn't finde close spot to {alpha}: {this_spot_coord} at range {range_}.", __name__,line())
                 return alpha
 
         distance = math.inf
         closer_spot = valid_close_spots[0]
         for spot in valid_close_spots:
             spot_coord = self.alphanum_to_coord(spot)
-            new_distance = self.distance_between_spots(this_spot, spot_coord)
+            new_distance = self.distance_between_spots(this_spot_coord, spot_coord)
             if new_distance < distance:
                 distance = new_distance
                 closer_spot = spot

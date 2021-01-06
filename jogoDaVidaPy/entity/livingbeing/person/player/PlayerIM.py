@@ -41,12 +41,14 @@ class PlayerIM(Player):
 
         player = self.new_concrete_thing()
         self.update_concrete(player)
+        board : Board = self.get("Board")
         
         player[self.attr_name] = name
         player[self.attr_money] = 200
         player[self.attr_energy] = self.MAX_ENERGY
         player[self.attr_max_energy] = self.MAX_ENERGY
         player[self.attr_dice_method] = "DiceRollOrRandom"
+        player[self.attr_coord] = board.rc_to_coord(0, 0)
         # self.add_attr_if_not_exists(player, self.attr_dice_method, "DiceRollOrRandom")
 
         data.keep_concrete_thing(player["id"], player, self.get_category())

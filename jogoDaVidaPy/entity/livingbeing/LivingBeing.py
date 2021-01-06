@@ -1,7 +1,7 @@
+from entity.Entity import Entity
 from game.DataStructure import DataStructure
 from game.Event import Event
 from utils.beauty_print import bcolors, debug_error, get_number_list, input_question, print_debug, print_number_list
-from entity.Entity import Entity
 from utils.common import MOCK_ID, emotions, line, stats, valid_number
 import random
 
@@ -90,8 +90,9 @@ class LivingBeing(Entity):
 
     def move_on_board(self, reference=None):
         being_id = reference["id"]
+        categ = reference["category"]
         # being = self.get_concrete_thing(being_id)
-
+        # self.get("Logger").add(f" {categ}.{being_id} movendo... file={__name__}:{line()}")
         self.roll_dice_to_move(being_id)
     
 
@@ -121,6 +122,9 @@ class LivingBeing(Entity):
     }
     """
     def choose_spot_to_move(self, _id, range_):
+        # if(_id == '13'):
+        #     self.get("Logger").add(f" Robber 13 choose_spot_to_move... file={__name__}:{line()}")
+
         player = self.get_concrete_thing(_id)
         board : Board = self.get("Board")
         valid_spots = board.get_valid_spots_for_range(player["coord"], range_)
@@ -138,7 +142,7 @@ class LivingBeing(Entity):
         event : Event = self.get("Event")
         event.notify("entity_choosing_spot", self.reference(player["id"]), params)
         spot = None
-        self.get("GameManager").print_game()
+        # self.get("GameManager").print_game()
         self.gui_output(f"Resultado do dado: {range_}",color=bcolors.OKGREEN)
         self.gui_output("\nPara interagir: ",color=bcolors.HEADER)
         # parse entities ref to it's names, spots and interaction name
@@ -164,6 +168,8 @@ class LivingBeing(Entity):
                 break
         # if spot in buildings_list:
         #     place = buildings_list[spot]
+        
+        
         name = player["name"]
         if entity_ref is None:
             self.gui_output(f"Movendo {name} para {spot}... ")
@@ -171,6 +177,9 @@ class LivingBeing(Entity):
         else:
             self.gui_output(f"Movendo {name} para interagir com {entity_ref}... ")
             self.move_to_and_interact_with(self.reference(_id), entity_ref)
+        
+        # if(_id == '13'):
+        #     input("Deu certo?")
     
 
 

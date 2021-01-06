@@ -1,7 +1,11 @@
 
+# from game.Event import Event
+# from game.Logger import Logger
+# from game.Board import Board
 from utils.beauty_print import print_beauty_json, print_debug
 from Thing import Thing
 from utils.common import log_error, line
+import random
 
 class Entity(Thing):
 
@@ -35,13 +39,31 @@ class Entity(Thing):
     #   just in case the game updated and a new attribute was created
     #   so the players receives the new attributes 
     def update_concrete(self, concrete: dict):
+        # from game.Board import Board
         super().update_concrete(concrete)
-        coord = self.get("Board").alphanum_to_coord("A1")
+        board : Board = self.get("Board")
+
+        while True:
+            r = random.randint(0, board.rows()-1)
+            c = random.randint(0, board.columns()-1)
+            if(not board.is_city_view(r, c)):
+                break
+        # .alphanum_to_coord("A1")
+        coord = board.rc_to_coord(r, c)
+        coord = board.closer_free_spot_to(coord)
+        coord = board.alphanum_to_coord(coord)
 
         self.add_attr_if_not_exists(concrete, self.attr_dice_method, "DiceRandom")
         self.add_attr_if_not_exists(concrete, self.attr_coord, coord)
         self.add_attr_if_not_exists(concrete, self.attr_mode, self.mode_on_board)
         self.add_attr_if_not_exists(concrete, self.attr_mode_info, {})
+
+    
+    def update_subscriber(self, reference: dict):
+        super().update_subscriber(reference)
+        event : Event = self.get("Event")
+        event.subscribe("entity_choosing_spot", reference, "on_entity_choosing_spot")
+        event.subscribe("entity_interacting_with_entity", reference, "on_entity_interacting_with_entity")
 
     def roll_dice(self, _id, max_val=6):
         entity = self.get_concrete_thing(_id)
@@ -72,8 +94,8 @@ class Entity(Thing):
         # entity to interact with it
 
         # this is for some entities_to_interact with special restrictions
-        # they will overwrite the function custom_requirement_to_enter()
-        if(not self.custom_requirement_to_enter(interested_ref, person_ref, additional)):
+        # they will overwrite the function custom_requirement_to_interact()
+        if(not self.custom_requirement_to_interact(interested_ref, person_ref, additional)):
             return
         entities_to_interact : list = additional["entities_to_interact"]
         range_ : int = additional["range"]
@@ -95,6 +117,23 @@ class Entity(Thing):
             "interaction": f"{self.first_interaction} {building_name}",
         })
 
+    def on_entity_interacting_with_entity(self, target_ref, causer_ref, additional=None):
+        # checks if it's target is this category
+        if(target_ref["category"] != self.get_category()):
+            return
+        self.entity_interaction(target_ref, causer_ref, additional)
+
+
+    # this is to be overwritten, 
+    def entity_interaction(self, me_ref, other_ref, additional=None):
+        log : Logger = self.get("Logger")
+        categ = self.get_category()
+        log.add(f"sou do tipo {categ} e estou interagindo com -> {other_ref}")
+
+
+    # this is for some entities_to_interact with special restrictions
+    # they will overwrite this function
+    def custom_requirement_to_interact(self, building_data, person_ref, additional):
+        return True
     
-
-
+    

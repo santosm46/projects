@@ -13,8 +13,8 @@ class Npc(Person):
 
     def update_subscriber(self, reference: dict):
         super().update_subscriber(reference)
-        e : Event = self.get("Event")
-        e.subscribe("new_round", reference, "reduce_energy")
+        # e : Event = self.get("Event")
+        # e.subscribe("new_round", reference, "reduce_energy")
 
 
         

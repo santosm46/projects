@@ -91,6 +91,18 @@ class SaveManager(Game):
             building = buildingClass.new_concrete_thing()
             save.keep_concrete_thing(building["id"], building, buildingClass.get_category())
 
+        # creating beings
+        beings = {
+            "Robber": 5,
+        }
+
+        for being_categ, number in beings.items():
+            being_class = self.get(being_categ)
+            for i in range(number):
+                being = being_class.new_concrete_thing()
+                save.keep_concrete_thing(being["id"], being, being_class.get_category())
+
+
         # bankClass : Bank = self.get("Bank")
         # bank = bankClass.new_concrete_thing()
         # save.keep_concrete_thing(bank["id"], bank, bankClass.get_category())
