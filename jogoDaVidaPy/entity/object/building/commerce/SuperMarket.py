@@ -52,7 +52,7 @@ class SuperMarket(Commerce):
         
         while True:
 
-            print_number_list(options, "Escolha uma comida [ENTER para sair]")
+            print_number_list(options, "\nEscolha uma comida [ENTER para sair]\n")
 
             while True:
                 opt = input_question("Opção: ")

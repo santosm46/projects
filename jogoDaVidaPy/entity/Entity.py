@@ -16,6 +16,9 @@ class Entity(Thing):
 
         self.modes_func = {}
         self.mode_on_board = "on_board"
+
+        self.first_interaction = 'Interagir com'
+
     
     def set_factory(self, factory):
         super().set_factory(factory)
@@ -64,5 +67,34 @@ class Entity(Thing):
             return None
 
 
+    def on_entity_choosing_spot(self, interested_ref, person_ref, additional):
+        # if Person can reach some building, it is gonna put it's reference for the
+        # entity to interact with it
+
+        # this is for some entities_to_interact with special restrictions
+        # they will overwrite the function custom_requirement_to_enter()
+        if(not self.custom_requirement_to_enter(interested_ref, person_ref, additional)):
+            return
+        entities_to_interact : list = additional["entities_to_interact"]
+        range_ : int = additional["range"]
+
+        entity_conc = self.get_concrete_thing(interested_ref["id"])
+        board = self.get("Board")
+        my_valid_spots = board.get_valid_spots_for_range(entity_conc["coord"], range_)
+        person = self.get_concrete_thing_by_ref(person_ref)
+        person_alphanum_pos = board.coord_to_alphanum(person["coord"])
+
+        # can only suggest entity_conc if entity can reach entity_conc
+        if(person_alphanum_pos not in my_valid_spots):
+            return
+
+        building_name = entity_conc["name"]
+
+        entities_to_interact.append({
+            "ref": interested_ref,
+            "interaction": f"{self.first_interaction} {building_name}",
+        })
+
+    
 
 

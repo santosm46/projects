@@ -59,11 +59,20 @@ def print_beauty_json(saves):
     print(json.dumps(saves, indent=4))
     # print(json.dumps(saves["saves"]["1"], indent=4))
 
-def print_number_list(values: list, title: str = None, layed=False):
-    if title is not None:
-        print_header(title)
+
+
+def get_number_list(values: list, title: str = None, layed=False, end='\n'):
     output = ''
+    if title is not None:
+        output += f"{bcolors.HEADER}{title}{bcolors.ENDC}"
     for i in range(len(values)):
         output = output + f"{bcolors.HEADER}{i+1}) {bcolors.WARNING}{values[i]}{bcolors.ENDC}" + (". " if layed else "\n")
-    print_normal(output, end='')
+    return output
+
+
+def print_number_list(values: list, title: str = None, layed=False, end='\n'):
+    output = get_number_list(values, title, layed, end)
+    print_normal(output, end=end)
+
+
 

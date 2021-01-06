@@ -25,19 +25,15 @@ class PlayerIM(Player):
 
     MAX_ENERGY = 30
 
+    def being_move(self, being_id):
+        pass
+
+
     def player_move(self, player_id):
         # player = self.get_players()[player_id]
         player = self.get_concrete_thing(player_id)
-        
         # execute a function according to the mode of the player
         self.modes_func[player[self.attr_mode]](self.reference(player_id))
- 
-        # self.get("GameManager").pass_turn()
-
-    def roll_dice_to_move(self, _id: str):
-        result = self.roll_dice(_id)
-        self.choose_spot_to_move(_id, result)
-        
 
     # new_concrete_thing
     def create_player(self, name):
@@ -98,38 +94,6 @@ class PlayerIM(Player):
                 input("")
         
     
-    def choose_spot_to_move(self, _id, range_):
-        player = self.get_concrete_thing(_id)
-        board : Board = self.get("Board")
-        valid_spots = board.get_valid_spots_for_range(player["coord"], range_)
-        buildings = []
-        buildings_list = {}
-        if(len(valid_spots) == 0):
-            print_normal("Não há lugares para ir")
-            return
-        event : Event = self.factory.gi("Event")
-        event.notify("entity_choosing_spot", self.reference(player["id"]), 
-            {"spots":valid_spots, "buildings":buildings, "range":range_, "buildings_list":buildings_list})
-        spot = None
-        self.get("GameManager").print_game()
-        print_sucess(f"Resultado do dado: {range_}")
-        print_header("\nLugares disponíveis\n")
-        print_normal(", ".join(buildings))
-        print_number_list(valid_spots, title="", layed=True)
-        while True:
-            option = input_question("\n\nDigite a casa ou o valor correspondente: ").upper()
-            if option in valid_spots:
-                spot = option
-                break
-            if(valid_number(option, 1, len(valid_spots))):
-                spot = valid_spots[int(option)-1]
-                break
-        place = spot
-        if spot in buildings_list:
-            place = buildings_list[spot]
-        name = player["name"]
-        print_normal(f"Movendo {name} para {place}... ")
-        board.move_entity_to(reference=self.reference(player["id"]), alphanum=spot)
 
     def create_players(self):
         clear()
@@ -173,6 +137,8 @@ class PlayerIM(Player):
         if pause:
             input("")
 
+    def gui_input(self, _id=None, function=None, question_id=None, params=None):
+        return input_question("")
 
     def kill_being(self, being_ref, cause=None):
         # player = self.get_concrete_thing_by_ref(being_ref)

@@ -11,7 +11,7 @@ class Person(LivingBeing):
     def __init__(self):
         super().__init__()
         self.MAX_HP = 10
-        self.modes_func[self.mode_on_board] = self.move_on_board
+        
         self.modes_func[self.mode_on_building] = self.interact_with_building
 
         self.attr_genre = "genre"
@@ -55,17 +55,14 @@ class Person(LivingBeing):
         event : Event = self.get("Event")
         event.notify("entity_interacting_with_building", reference, info["building"])
 
-    def move_on_board(self, reference=None):
-        print_warning("Pessoa genéria movendo no tabueiro...")
-
-
-    def gui_output(self, text, color=None,end='\n',pause=False):
-        pass
-
-
+    
     def kill_being(self, being_ref, cause=None):
         self.drop_inventory(being_ref)
-
+        person = self.get_concrete_thing_by_ref(being_ref)
+        name = person["name"]
+        categ = being_ref["category"]
+        log : Logger = self.get("Logger")
+        log.add(f"[{categ}] {name} morreu! Removendo do jogo", color=bcolors.FAIL)
         super().kill_being(being_ref, cause)
 
 

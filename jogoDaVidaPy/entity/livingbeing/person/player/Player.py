@@ -60,7 +60,7 @@ class Player(Person):
         print_normal(f"   vida {hp} [{hearts}]", end='')
         print_normal(f"    Dinheiro {money} {money_notes}{money_bags}{money_dims}")
         print_normal(f"   Energia: {energy}/{max_energy}", end='')
-        print_normal(f"    Comida: {foods_img}")
+        print_normal(f"                    Comida: {foods_img}")
 
     def has_food(self):
         pass

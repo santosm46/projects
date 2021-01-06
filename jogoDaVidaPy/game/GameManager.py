@@ -90,7 +90,7 @@ class GameManager(Game):
         player_categ = player_ref["category"]
         if(not self.is_player(player_categ)):
             return
-        self.valid_spots_buffer = additional["spots"]
+        self.valid_spots_buffer = additional["valid_spots"]
         # player_class : Player = self.factory.gi(player_categ)
         # player_id = player_ref["id"]
         # player_concr = player_class.get_concrete_thing(player_id)
@@ -123,6 +123,7 @@ class GameManager(Game):
             self.pass_turn()
             if(self.turn_of() == self.player_im.get_players_id_list()[0]):
                 self.get("Event").notify("new_round")
+
 
     def on_new_round(self, interested, event_causer):
         ubi = 50

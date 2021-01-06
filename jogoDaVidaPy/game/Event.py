@@ -21,6 +21,7 @@ all_events = [
     "new_turn",
     "entity_choosing_spot",
     "entity_interacting_with_building",
+    "entity_interacting_with_entity",
 ]
 
 """
