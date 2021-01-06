@@ -16,10 +16,10 @@ class Logger(Game):
     def set_factory(self, factory):
         super().set_factory(factory)
         e : Event = self.get("Event")
-        e.subscribe("building_board_print", self.reference(MOCK_ID), "dump")
+        # e.subscribe("building_board_print", self.reference(MOCK_ID), "dump")
     
 
-    def dump(self, interested, event_causer, additional=None):
+    def dump(self, interested=None, event_causer=None, additional=None):
         for m in self.messages_buffer:
             print(m)
         self.messages_buffer.clear()

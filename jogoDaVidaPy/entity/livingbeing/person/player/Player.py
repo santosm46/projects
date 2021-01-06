@@ -18,6 +18,8 @@ class Player(Person):
     def get_game(self):
         return self.get("GameManager")
 
+    def category_nick(self):
+        return "Jogador/a"
     
     def print_player(self, player_id):
         # print_debug(f"\n\nplayer_id={player_id}", fline=get_linenumber(),fname=__name__, pause=True)

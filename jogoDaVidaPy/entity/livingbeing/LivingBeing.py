@@ -26,7 +26,7 @@ class LivingBeing(Entity):
         self.mode_attaking = "attaking"
         self.mode_on_building = "on_building"
 
-        self.first_interaction = 'Interagir com'
+        self.first_interaction = f"{self.category_nick()}"
 
     def on_new_round(self, target_ref, event_maker_ref, a=None):
         self.reduce_energy(target_ref)
@@ -42,7 +42,7 @@ class LivingBeing(Entity):
     def new_concrete_thing(self):
         being = super().new_concrete_thing()
         self.update_concrete(being)
-
+        self.update_subscriber(self.reference(being["id"]))
         return being
     
     def update_subscriber(self, reference: dict):
@@ -50,6 +50,10 @@ class LivingBeing(Entity):
         e : Event = self.get("Event")
         e.subscribe("new_round", reference, "on_new_round")
     
+    def unsubscribe_entity(self, reference: dict):
+        super().unsubscribe_entity(reference)
+        e : Event = self.get("Event")
+        e.unsubscribe("new_round", reference)
 
     def update_concrete(self, being: dict):
         super().update_concrete(being)
@@ -86,6 +90,7 @@ class LivingBeing(Entity):
     def kill_being(self, being_ref, cause=None):
         data : DataStructure = self.get("DataStructure")
         # put being on cemitery later instead of deleting it
+        self.unsubscribe_entity(being_ref)
         data.delete_concrete_thing(being_ref)
 
     def move_on_board(self, reference=None):
@@ -142,7 +147,7 @@ class LivingBeing(Entity):
         event : Event = self.get("Event")
         event.notify("entity_choosing_spot", self.reference(player["id"]), params)
         spot = None
-        # self.get("GameManager").print_game()
+        if(self.get_category() == "PlayerIM"): self.get("GameManager").print_game()
         self.gui_output(f"Resultado do dado: {range_}",color=bcolors.OKGREEN)
         self.gui_output("\nPara interagir: ",color=bcolors.HEADER)
         # parse entities ref to it's names, spots and interaction name

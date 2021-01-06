@@ -117,8 +117,14 @@ class GameManager(Game):
         self.get("Event").notify("game_is_starting")
 
         while self.game_ruinning:
+            if(self.has_no_players_in_game()):
+                # log_error(f"No players in game",__name__,line())
+                print_error("Todos os jogadores morreram")
+                a = input("ENTER para voltar")
+                break
+
             self.print_game()
-            self.player_im.print_player(self.turn_of())
+            
             self.player_im.player_move(self.turn_of())
             self.pass_turn()
             if(self.turn_of() == self.player_im.get_players_id_list()[0]):
@@ -145,7 +151,9 @@ class GameManager(Game):
     
     def print_game(self):
         clear()
+        self.get("Logger").dump()
         self.board.print_board()
+        self.player_im.print_player(self.turn_of())
 
     def save(self):
         self.save_manager.save_to_file(self.get_state())

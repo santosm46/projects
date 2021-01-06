@@ -65,6 +65,14 @@ class Entity(Thing):
         event.subscribe("entity_choosing_spot", reference, "on_entity_choosing_spot")
         event.subscribe("entity_interacting_with_entity", reference, "on_entity_interacting_with_entity")
 
+    def unsubscribe_entity(self, reference: dict):
+        # from game.Event import Event
+        super().unsubscribe_entity(reference)
+        event : Event = self.get("Event")
+        event.unsubscribe("entity_choosing_spot", reference)
+        event.unsubscribe("entity_interacting_with_entity", reference)
+
+
     def roll_dice(self, _id, max_val=6):
         entity = self.get_concrete_thing(_id)
         dice = self.get(entity[self.attr_dice_method])
@@ -100,7 +108,13 @@ class Entity(Thing):
         entities_to_interact : list = additional["entities_to_interact"]
         range_ : int = additional["range"]
 
+        # print_debug(f"interested_ref = {interested_ref} person_ref = {person_ref}",__name__,line())
+        
         entity_conc = self.get_concrete_thing(interested_ref["id"])
+        if(not entity_conc):
+            log_error(f"entity {interested_ref} isn't in the game, subscribers need to be cleaned",__name__,line())
+            return
+        
         board = self.get("Board")
         my_valid_spots = board.get_valid_spots_for_range(entity_conc["coord"], range_)
         person = self.get_concrete_thing_by_ref(person_ref)
@@ -133,7 +147,10 @@ class Entity(Thing):
 
     # this is for some entities_to_interact with special restrictions
     # they will overwrite this function
-    def custom_requirement_to_interact(self, building_data, person_ref, additional):
+    def custom_requirement_to_interact(self, interested_ref, person_ref, additional):
+        # can't interact with it self
+        if(interested_ref == person_ref):
+            return False
         return True
     
     

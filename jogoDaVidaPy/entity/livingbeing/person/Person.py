@@ -18,8 +18,10 @@ class Person(LivingBeing):
         self.attr_name = "name"
         self.attr_money = "money"
 
+    def category_nick(self):
+        return "Pessoa"
     
-
+    
     def new_concrete_thing(self):
         person = super().new_concrete_thing()
         self.update_concrete(person)

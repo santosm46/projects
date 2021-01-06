@@ -93,7 +93,7 @@ class SaveManager(Game):
 
         # creating beings
         beings = {
-            "Robber": 5,
+            "Robber": 10,
         }
 
         for being_categ, number in beings.items():

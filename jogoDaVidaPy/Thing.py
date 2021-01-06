@@ -33,7 +33,9 @@ class Thing:
         },
         # "Money": '💵💴💶💷'
     }
-        
+    
+    def category_nick(self):
+        return self.get_category()
     
     def get_category(self) -> str:
         return type(self).__name__
@@ -108,6 +110,9 @@ class Thing:
 
     # to be overwritten
     def update_subscriber(self, reference: dict):
+        pass
+
+    def unsubscribe_entity(self, reference: dict):
         pass
     
     def update_subscribers(self):
