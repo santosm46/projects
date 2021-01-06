@@ -14,11 +14,12 @@ class Robber(Criminal):
     def __init__(self) -> None:
         super().__init__()
     
-    prob_to_rob = {
-        "PlayerIM": 60,
-        "Robber": 20,
-        # "Nobody": 100,
-    }
+    
+
+    def commit_crime(self, criminal_ref, person_ref):
+        if(self.make_crime_or_not(person_ref["category"])):
+            self.rob_person(criminal_ref, person_ref)
+    
     
     def gui_input(self, _id=None, function=None, question_id=None, params=None):
         # super().gui_input()
@@ -31,9 +32,8 @@ class Robber(Criminal):
                 to_return = str(idx+1)
                 categ = entities[idx]["ref"]["category"]
 
-                if(categ in self.prob_to_rob.keys()):
-                    if(random.randrange(0,100) < self.prob_to_rob[categ]):
-                        return to_return
+                if(self.make_crime_or_not(categ)):
+                    return to_return
                 # elif(categ_mg.inside_of_category(categ, "Criminal")):
                 #     return to_return
             go_to = random.choice(params["valid_spots"])
@@ -55,11 +55,15 @@ class Robber(Criminal):
         # e.notify("entity_interacting_with_entity", me_ref, other_ref)
         me_name = me["name"]
         other_name = other["name"]
-        money = random.randrange(10, 300, 10)
-        if(bank.transfer_money_or_the_rest(other_ref, me_ref, money)):
-            log.add(f"{me_name} roubou {money} de {other_name}")
-        else:
-            log.add(f"{me_name} tentou roubar {money} de {other_name}, não tinha o valor e roubou tudo")
+        money = random.randrange(50, 300, 10)
+        if(other[self.attr_money] <= 0):
+            return
+        
+        if(not bank.transfer_money_or_the_rest(other_ref, me_ref, money)):
+            money = other[self.attr_money]
+        log.add(f"{me_name} roubou {money} de {other_name}")
+        # else:
+        #     log.add(f"{me_name} tentou roubar {money} de {other_name}, não tinha o valor e roubou tudo")
     
     
 

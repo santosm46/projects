@@ -64,6 +64,8 @@ class Entity(Thing):
         event : Event = self.get("Event")
         event.subscribe("entity_choosing_spot", reference, "on_entity_choosing_spot")
         event.subscribe("entity_interacting_with_entity", reference, "on_entity_interacting_with_entity")
+        event.subscribe("entity_moved_to_coord", reference, "on_entity_moved_to_coord")
+
 
     def unsubscribe_entity(self, reference: dict):
         # from game.Event import Event
@@ -96,8 +98,19 @@ class Entity(Thing):
             log_error(f"Can't get mode {mode} of {reference}",__name__, line())
             return None
 
+    def on_entity_moved_to_coord(self, interested_ref, entity_ref, additional=None):
+        me = self.get_concrete_thing_by_ref(interested_ref)
+        other = self.get_concrete_thing_by_ref(entity_ref)
+        if(interested_ref == entity_ref): return
+        
+        if(me["coord"] == other["coord"]):
+            self.entity_entered_my_spot(interested_ref, entity_ref)
+    
+    def entity_entered_my_spot(self, myself_ref, entity_ref):
+        # this is to be overwritten
+        pass
 
-    def on_entity_choosing_spot(self, interested_ref, person_ref, additional):
+    def on_entity_choosing_spot(self, interested_ref, person_ref, additional=None):
         # if Person can reach some building, it is gonna put it's reference for the
         # entity to interact with it
 
