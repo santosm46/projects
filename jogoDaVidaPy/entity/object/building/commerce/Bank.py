@@ -1,5 +1,5 @@
 
-from utils.beauty_print import debug_error, print_debug
+from utils.beauty_print import debug_error, print_beauty_json, print_debug
 from game.DataStructure import DataStructure
 from entity.livingbeing import person
 from game.Logger import Logger
@@ -140,6 +140,8 @@ class MoneyBag(Object):
         self.update_concrete(bag)
         self.update_subscriber(self.reference(bag["id"]))
         # bag[self.mon]
+        # print_debug(f"esse foi o saco de $ criado...",__name__,line())
+        # print_beauty_json(bag)
         return bag
     
     def get_image(self, _id=None):

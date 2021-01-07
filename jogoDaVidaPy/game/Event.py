@@ -1,4 +1,4 @@
-from utils.common import DEBUG_ENABLED
+from utils.common import DEBUG_ENABLED, line
 from game.Game import Game
 # from Instanciator import Instanciator
 from utils.beauty_print import debug_error, print_debug, print_error, print_beauty_json
@@ -110,8 +110,10 @@ class Event(Game):
             # print_debug(f"interesteds {interesteds}")
         interesteds = self.events[event_name][category]
 
+        # debug_error(f"{category} chaves -> {interesteds.keys()} f()->{function_name_list}",__name__,line())
         for _id, function_name_list in interesteds.items():
             self.run_function_list(event_causer, category, function_name_list, _id, additional)
+            # debug_error(f"{category} chaves -> {interesteds.keys()} f()->{function_name_list}",__name__,line())
         return True
 
     def run_function_list(self, event_causer: dict, category: str, function_list: list, _id: str, additional = None):

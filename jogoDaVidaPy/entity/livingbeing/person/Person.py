@@ -18,6 +18,8 @@ class Person(LivingBeing):
         self.attr_name = "name"
         self.attr_money = "money"
 
+        self.interactions["be_robbed"] = "Roubar"
+
     def category_nick(self):
         return "Pessoa"
     
@@ -60,18 +62,36 @@ class Person(LivingBeing):
     
     def kill_being(self, being_ref, cause=None):
         self.drop_inventory(being_ref)
-        person = self.get_concrete_thing_by_ref(being_ref)
-        name = person["name"]
-        categ = being_ref["category"]
-        log : Logger = self.get("Logger")
-        log.add(f"[{categ}] {name} morreu! Removendo do jogo", color=bcolors.FAIL)
+        
+        # categ = being_ref["category"]
+        
         super().kill_being(being_ref, cause)
 
-
+    def get_weapon_attack(self, being_ref):
+        return 8
 
     def drop_inventory(self, being_ref):
         bank : Bank = self.get("Bank")
         bank.put_all_money_on_board(being_ref)
         # put_all_money_on_board
 
+    def be_robbed(self, robber_ref, me_ref):
+        # input(f"oque_isso -> {oque_isso}")
+        e : Event = self.get("Event")
+        bank : Bank = self.get("Bank")
+        log : Logger = self.get("Logger")
+
+        robber = self.get_concrete_thing_by_ref(robber_ref)
+
+        me = self.get_concrete_thing_by_ref(me_ref)
+        # e.notify("entity_interacting_with_entity", robber_ref, me_ref)
+        rob_name = robber["name"]
+        other_name = me["name"]
+        money = random.randrange(50, 300, 10)
+        if(me[self.attr_money] <= 0):
+            return
+        
+        if(not bank.transfer_money_or_the_rest(me_ref, robber_ref, money)):
+            money = me[self.attr_money]
+        log.add(f"{rob_name} roubou {money} de {other_name}")
         

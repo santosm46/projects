@@ -92,6 +92,7 @@ class Thing:
     
     def get_concrete_thing_by_ref(self, reference: dict):
         data = self.get("DataStructure")
+        # debug_error(f"reference = {reference}",__name__,line())
         r = data.get_concrete_thing(reference["id"], reference["category"])
         return r
 
@@ -145,6 +146,7 @@ class Thing:
         # print_debug(f"chegou na escola -> {entity}",__name__)
 
         for entity_id, entity in entities.items():
+            # debug_error(f"{self.get_category()} entity = {entity}",__name__,line())
             additional[category].append({
                 "image": self.get_image(entity_id),
                 "coord": entity["coord"]

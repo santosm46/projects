@@ -23,8 +23,9 @@ class Object(Entity):
 
 
     def update_concrete(self, concrete: dict):
+        super().update_concrete(concrete)
         self.add_attr_if_not_exists(concrete, self.attr_owner, None)
         self.add_attr_if_not_exists(concrete, self.attr_price, 5000)
-        self.add_attr_if_not_exists(concrete, self.attr_coord, {"row":0,"column":0})
+        # self.add_attr_if_not_exists(concrete, self.attr_coord, {"row":0,"column":0})
 
 

@@ -142,16 +142,22 @@ class PlayerIM(Player):
     def gui_input(self, _id=None, function=None, question_id=None, params=None):
         return input_question("")
 
-    def kill_being(self, being_ref, cause=None):
+    # def kill_being(self, being_ref, cause=None):
+    #     if not cause:
+    #         cause = ''
         # player = self.get_concrete_thing_by_ref(being_ref)
-        self.drop_inventory(being_ref)
-        person = self.get_concrete_thing_by_ref(being_ref)
-        name = person["name"]
-        categ = being_ref["category"]
-        log : Logger = self.get("Logger")
-        log.add(f"[{categ}] {name} morreu! Removendo do jogo", color=bcolors.FAIL)
+        # self.drop_inventory(being_ref)
+        # person = self.get_concrete_thing_by_ref(being_ref)
+        # name = person["name"]
+        # categ = being_ref["category"]
+        # log : Logger = self.get("Logger")
+        # log.add(f"[{categ}] {name} morreu! {cause}", color=bcolors.FAIL)
         # data : DataStructure = self.get("DataStructure")
-        self.remove_player(being_ref["id"])
+        # self.remove_player(being_ref["id"])
+        # try:
+        # super().kill_being(being_ref, cause)
+        # except:
+
         # data.data["PlayerOOM"][being_ref["id"]] = player
 
 

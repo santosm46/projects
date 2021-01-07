@@ -22,6 +22,7 @@ class Entity(Thing):
         self.mode_on_board = "on_board"
 
         self.first_interaction = 'Interagir com'
+        self.interactions = {}
 
     
     def set_factory(self, factory):
@@ -73,6 +74,7 @@ class Entity(Thing):
         event : Event = self.get("Event")
         event.unsubscribe("entity_choosing_spot", reference)
         event.unsubscribe("entity_interacting_with_entity", reference)
+        event.unsubscribe("entity_moved_to_coord", reference)
 
 
     def roll_dice(self, _id, max_val=6):
@@ -102,7 +104,7 @@ class Entity(Thing):
         me = self.get_concrete_thing_by_ref(interested_ref)
         other = self.get_concrete_thing_by_ref(entity_ref)
         if(interested_ref == entity_ref): return
-        
+
         if(me["coord"] == other["coord"]):
             self.entity_entered_my_spot(interested_ref, entity_ref)
     
@@ -164,6 +166,11 @@ class Entity(Thing):
         # can't interact with it self
         if(interested_ref == person_ref):
             return False
+        # can't interact if has no interactions
+        if(len(self.interactions) == 0):
+            return False
         return True
+
+
     
     

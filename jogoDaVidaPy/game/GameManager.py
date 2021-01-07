@@ -1,6 +1,7 @@
 #file -- game.py --
+import random
 from game.Logger import Logger
-from entity.object.building.commerce.Bank import Bank
+from entity.object.building.commerce.Bank import Bank, MoneyBag
 from entity.livingbeing.person.player.PlayerIM import PlayerIM
 from entity.livingbeing.person.player.PlayerOOM import PlayerOOM
 from game.Game import Game
@@ -134,6 +135,7 @@ class GameManager(Game):
     def on_new_round(self, interested, event_causer):
         ubi = 50
         bank : Bank = self.get("Bank")
+        data : DataStructure = self.get("DataStructure")
         bank_k = list(bank.get_dict_list().keys())[0]
         # print_debug(bank_k)
         bank_crt = bank.get_concrete_thing(bank_k)
@@ -142,6 +144,12 @@ class GameManager(Game):
         log : Logger = self.get("Logger")
         players_list = ", ".join(self.player_im.get_players_list())
         log.add(f"Jogadores {players_list} receberam auxílio de R$ {ubi}")
+
+        money : MoneyBag = self.get("MoneyBag")
+        for i in range(5):
+            m = money.new_concrete_thing()
+            m["money"] = random.randrange(10, 200, 10)
+            data.keep_concrete_thing(m["id"], m, "MoneyBag")
         self.save()
         # print_debug(bank_crt)
 

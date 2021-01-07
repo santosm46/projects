@@ -1,8 +1,8 @@
 from entity.Entity import Entity
 from game.DataStructure import DataStructure
 from game.Event import Event
-from utils.beauty_print import bcolors, debug_error, get_number_list, input_question, print_debug, print_number_list
-from utils.common import MOCK_ID, emotions, line, stats, valid_number
+from utils.beauty_print import bcolors, debug_error, get_number_list, input_question, print_debug, print_error, print_number_list
+from utils.common import MOCK_ID, emotions, line, log_error, stats, valid_number
 import random
 
 
@@ -28,14 +28,22 @@ class LivingBeing(Entity):
 
         self.first_interaction = f"{self.category_nick()}"
 
+        self.interactions['be_attacked'] = "Atacar"
+
+    # for all entities
     def on_new_round(self, target_ref, event_maker_ref, a=None):
-        self.reduce_energy(target_ref)
-        self.being_move(target_ref["id"])
+        # debug_error(f"{self.get_category()} chaves -> {self.get_dict_list().keys()}",__name__,line())
+        keys_list = list(self.get_dict_list().keys())
+        for key in keys_list:
+            if not self.reduce_energy(self.reference(key)):
+                # if being died when reduced energy, skip this iteraction
+                continue
+            self.being_move(key)
+            # debug_error(f"{self.get_category()} chaves -> {self.get_dict_list().keys()}",__name__,line())
 
     def being_move(self, being_id):
         # being = self.get_beings()[being_id]
         being = self.get_concrete_thing(being_id)
-        
         # execute a function according to the mode of the being
         self.modes_func[being[self.attr_mode]](self.reference(being_id))
 
@@ -45,15 +53,18 @@ class LivingBeing(Entity):
         self.update_subscriber(self.reference(being["id"]))
         return being
     
-    def update_subscriber(self, reference: dict):
-        super().update_subscriber(reference)
+    def update_subscribers(self):
+        super().update_subscribers()
         e : Event = self.get("Event")
-        e.subscribe("new_round", reference, "on_new_round")
+        e.subscribe("new_round", self.reference(MOCK_ID), "on_new_round")
+    
+    # def update_subscriber(self, reference: dict):
+    #     super().update_subscriber(reference)
     
     def unsubscribe_entity(self, reference: dict):
         super().unsubscribe_entity(reference)
         e : Event = self.get("Event")
-        e.unsubscribe("new_round", reference)
+        # e.unsubscribe("new_round", reference)
 
     def update_concrete(self, being: dict):
         super().update_concrete(being)
@@ -70,24 +81,38 @@ class LivingBeing(Entity):
         # print_debug(f"being_ref = {being_ref}", __name__)
         being = self.get_concrete_thing_by_ref(being_ref)
         if not being:
-            return
+            return False
         
         # fix descomenar
         being[self.attr_energy] -= decrease
 
         if(being[self.attr_energy] <= 0):
             being[self.attr_energy] = 0
-            self.reduce_hp(being_ref, decrease)
+            return self.reduce_hp(being_ref, decrease, 'de fome')
+        return True
     
-    def reduce_hp(self, being_ref, hp):
+    def reduce_hp(self, being_ref, hp, cause=None):
         being = self.get_concrete_thing_by_ref(being_ref)
         being[self.attr_hp] -= hp
 
         if(being[self.attr_hp] <= 0):
             being[self.attr_hp] = 0
-            self.kill_being(being_ref, "no hp")
+            self.kill_being(being_ref, cause)
+            return False
+        return True
+
+    def name(self, concr=None, ref=None):
+        if  ref:
+            concr = self.get_concrete_thing_by_ref(ref)
+        if "name" not in concr: return ""
+        return concr["name"]
 
     def kill_being(self, being_ref, cause=None):
+        log : Logger = self.get("Logger")
+        if cause is None:
+            cause = ''
+        log.add(f"[{self.category_nick()}] {self.name(ref=being_ref)} morreu {cause}", color=bcolors.FAIL)
+
         data : DataStructure = self.get("DataStructure")
         # put being on cemitery later instead of deleting it
         self.unsubscribe_entity(being_ref)
@@ -111,7 +136,8 @@ class LivingBeing(Entity):
     def gui_input(self, _id=None, function=None, question_id=None, params=None):
         if function == "choose_spot_to_move":
             return random.choice(params["valid_spots"])
-
+        if function == "interact_with":
+            return random.choice(params["interactions"])
         return None
 
     """
@@ -180,7 +206,6 @@ class LivingBeing(Entity):
             self.gui_output(f"Movendo {name} para {spot}... ")
             board.move_entity_to(reference=self.reference(player["id"]), alphanum=spot)
         else:
-            self.gui_output(f"Movendo {name} para interagir com {entity_ref}... ")
             self.move_to_and_interact_with(self.reference(_id), entity_ref)
         
         # if(_id == '13'):
@@ -193,8 +218,76 @@ class LivingBeing(Entity):
         board : Board = self.get("Board")
         other = self.get_concrete_thing_by_ref(other_ref)
         board.move_entity_to(reference=self.reference(me_ref["id"]), coord=other["coord"])
-        e.notify("entity_interacting_with_entity", me_ref, other_ref)
+        # hey, I'm gonna interact!
+        self.interact_with(me_ref, other_ref)
+        # e.notify("entity_interacting_with_entity", me_ref, other_ref)
 
+
+    def interact_with(self, me_ref, other_ref):
+        target : LivingBeing = self.get(other_ref["category"])
+        myself : LivingBeing = self.get(me_ref["category"])
+        # get what ways it can interact
+        interactions = target.interactions
+        if(len(interactions) == 0): return
+
+        params = {"interactions":interactions, "other_ref":other_ref}
+        target_concr = self.get_concrete_thing_by_ref(other_ref)
+        target_name = target_concr["name"]
+
+
+        myself.gui_output(f"")
+        interac_nicks = list(interactions.values())
+        interac_keys = list(interactions.keys())
+        myself.gui_output(get_number_list(interac_nicks, title="Escolha uma opção para interagir com {target_name} (ENTER p/ cancelar)\n"))
+        while True:
+            myself.gui_output("Opção: ",end='')
+            option = myself.gui_input(me_ref["id"], "interact_with", 1, params)
+            if(len(option) == 0):
+                return
+            if(option in interac_keys):
+                break
+            if(valid_number(option, 1, len(interac_nicks))):
+                option = interac_keys[int(option)-1]
+                break
+        
+        myself.run_func(option, me_ref, other_ref)
+    
+    def get_weapon_attack(self, being_ref):
+        return 0
+
+    def get_attack(self, being_ref):
+        being_class : LivingBeing = self.get(being_ref["category"])
+        being_class.gui_output("Jogue o dado para calcular o aumento de dano [1 a 3]: ")
+        while True:
+            attack = being_class.roll_dice(being_ref["id"], 3)
+            # fix validade attack
+            break
+
+        return int(attack) + self.get_weapon_attack(being_ref)
+
+    def is_dead(self, ref=None):
+        concr = self.get_concrete_thing_by_ref(ref)
+        if(not concr):
+            # fix remove this log?
+            log_error(f"{ref} isn't in the game to check if it is dead",__name__,line())
+            return True
+        # debug_error(f"achei? concr= {concr}",__name__)
+        return concr[self.attr_hp] == 0
+
+    def be_attacked(self, attacker_ref, me_ref):
+        total_damage = self.get_attack(attacker_ref)
+        atk_nick = 'Soco'
+        attacker = self.get_concrete_thing_by_ref(attacker_ref)
+        me = self.get_concrete_thing_by_ref(me_ref)
+        atk_name = attacker["name"]
+        me_name = me["name"]
+        dmg_info = f"com um/a {atk_nick} e dano " + "💜" * total_damage
+        self.reduce_hp(me_ref, total_damage, f"assasinado por {atk_name} {dmg_info}")
+        print_error(f"me_ref = {me_ref}")
+        if not self.is_dead(ref=me_ref):
+            self.get("Logger").add(f"{atk_name} atacou {me_name} {dmg_info}")
+
+    
 
         """
         the keys of an inventory is the class that will handle the
