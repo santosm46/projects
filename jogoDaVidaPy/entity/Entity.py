@@ -67,6 +67,11 @@ class Entity(Thing):
         event.subscribe("entity_interacting_with_entity", reference, "on_entity_interacting_with_entity")
         event.subscribe("entity_moved_to_coord", reference, "on_entity_moved_to_coord")
 
+    def delete_myself(self, myself_ref):
+        self.unsubscribe_entity(myself_ref)
+        data = self.get("DataStructure")
+        data.delete_concrete_thing(myself_ref)
+
 
     def unsubscribe_entity(self, reference: dict):
         # from game.Event import Event

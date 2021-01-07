@@ -145,11 +145,13 @@ class GameManager(Game):
         players_list = ", ".join(self.player_im.get_players_list())
         log.add(f"Jogadores {players_list} receberam auxílio de R$ {ubi}")
 
+        # add money on the board
         money : MoneyBag = self.get("MoneyBag")
-        for i in range(5):
+        if len(money.get_dict_list()) < 4:
             m = money.new_concrete_thing()
-            m["money"] = random.randrange(10, 200, 10)
+            m["money"] = random.randrange(10, 75, 5)
             data.keep_concrete_thing(m["id"], m, "MoneyBag")
+        
         self.save()
         # print_debug(bank_crt)
 

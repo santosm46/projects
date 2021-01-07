@@ -151,14 +151,16 @@ class MoneyBag(Object):
     def update_subscriber(self, reference: dict):
         super().update_subscriber(reference)
         e : Event = self.get("Event")
-        e.subscribe("entity_moved_to_coord", reference, "entity_stepped_on_money")
 
 
     def update_concrete(self, concrete: dict):
         super().update_concrete(concrete)
         self.add_attr_if_not_exists(concrete, self.attr_money, 0)
 
+    def entity_entered_my_spot(self, myself_ref, entity_ref):
+        self.entity_stepped_on_money(myself_ref, entity_ref)
 
+    
     def entity_stepped_on_money(self, interested, event_causer, additional=None):
         # print_debug(f"{event_causer} pisou no dinheiro {interested} ",__name__,line())
         log : Logger = self.get("Logger")
@@ -172,11 +174,5 @@ class MoneyBag(Object):
         name = person["name"]
         log.add(f"[{person_categ}]: {name} achou um saco de dinheiro com R$ {money}")
 
-        e : Event = self.get("Event")
-        # print_debug(f"1 removiodo entity_moved_to_coord de MoneyBag {interested}",__name__,line())
-        e.unsubscribe("entity_moved_to_coord", interested)
-        # print_debug(f"2 removiodo entity_moved_to_coord de MoneyBag {interested}",__name__,line())
-        # super()
-        data : DataStructure = self.get("DataStructure")
-        data.delete_concrete_thing(interested)
+        self.delete_myself(interested)
 
