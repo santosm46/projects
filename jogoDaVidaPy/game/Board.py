@@ -5,6 +5,7 @@ from utils.beauty_print import debug_error, print_debug, print_header, print_nor
 from game.Event import Event
 from game.Category import Category
 from game.Game import Game
+# from game.GameManager import GameManager
 # from PlayerIM import PlayerIM
 import math
 
@@ -197,7 +198,9 @@ class Board(Game):
                 # print_debug(f"rc={row},{col} out={out}", fname=__name__)
                 copy[row] = replacer(copy[row], entity["image"], col)
 
-        print_header("\n       Tabuleiro\n")
+        game = self.get("GameManager")
+
+        print_header(f"\n\tPartida: {game.get_save_name()}\t   ano: {game.get_year()}\n")
         self.print_column_numbers()
         for i in range(len(copy)):
             print_normal(f"  {self.num_to_letter(i)} {copy[i]}")

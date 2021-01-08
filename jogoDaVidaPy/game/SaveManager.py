@@ -75,8 +75,7 @@ class SaveManager(Game):
         
 
         # dados do save (seria criado por new_concrete_thing)
-        game = self.get("GameManager")
-        save_metadata = game.new_concrete_thing(game_name)
+        save_metadata = self.new_concrete_thing(game_name)
         save.keep_concrete_thing(MOCK_ID, save_metadata, self.get_category())
         # salvando save_metadata na estrutura de dados
         # save.data[self.get_category()]["concrete_things"][MOCK_ID] = save_metadata
@@ -204,5 +203,22 @@ class SaveManager(Game):
                     return
             else:
                 print_normal("Deleção cancelada!\n")
+
+
+    def new_concrete_thing(self, game_name):
+        current_datetime = date_now()
+
+        return {
+            "id": MOCK_ID,
+            "save_name": game_name,
+            "save_filename": str_to_file_format(game_name),
+            "last_id": 1,
+            "year": STARTING_YEAR,
+            "turn_of": None,
+            "last_save_date": current_datetime,
+            "creation_date": current_datetime,
+            "game_version": GAME_VERSION,
+        }
+    
 
 

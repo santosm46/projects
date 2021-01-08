@@ -2,7 +2,7 @@ from entity.Entity import Entity
 from game.DataStructure import DataStructure
 from game.Event import Event
 from utils.beauty_print import bcolors, debug_error, get_number_list, input_question, print_debug, print_error, print_number_list
-from utils.common import MOCK_ID, emotions, line, log_error, stats, valid_number
+from utils.common import MOCK_ID, emotions, line, log_error, scale, stats, valid_number
 import random
 
 
@@ -18,6 +18,8 @@ class LivingBeing(Entity):
         self.attr_inventory = "inventory"
         self.attr_energy = "energy"
         self.attr_max_energy = "max_energy"
+        self.attr_age = "age"
+        self.attr_birth_year = "birth_year"
 
         self.modes_func[self.mode_on_board] = self.move_on_board
 
@@ -33,11 +35,19 @@ class LivingBeing(Entity):
     # for all entities
     def on_new_round(self, target_ref, event_maker_ref, a=None):
         # debug_error(f"{self.get_category()} chaves -> {self.get_dict_list().keys()}",__name__,line())
-        keys_list = list(self.get_dict_list().keys())
+        beings = self.get_dict_list()
+        keys_list = list(beings.keys())
         for key in keys_list:
-            if not self.reduce_energy(self.reference(key)):
+            # advance age
+            beings[key][self.attr_age] += 1
+
+            ref = self.reference(key)
+            if not self.reduce_energy(ref):
                 # if being died when reduced energy, skip this iteraction
                 continue
+            if random.randrange(0,100) < self.risk_of_death(being_ref=ref):
+                if not self.reduce_hp(ref, 8, 'de ataque cardíaco'):
+                    continue
             self.being_move(key)
             # debug_error(f"{self.get_category()} chaves -> {self.get_dict_list().keys()}",__name__,line())
 
@@ -76,6 +86,9 @@ class LivingBeing(Entity):
         self.add_attr_if_not_exists(being, self.attr_inventory, {})
         self.add_attr_if_not_exists(being, self.attr_energy, 1000)
         self.add_attr_if_not_exists(being, self.attr_max_energy, 1000)
+        self.add_attr_if_not_exists(being, self.attr_age, random.randrange(16, 21))
+        birth_year = self.get("GameManager").get_year() - being[self.attr_age]
+        self.add_attr_if_not_exists(being, self.attr_birth_year, birth_year)
 
     def reduce_energy(self, being_ref, decrease=1):
         # print_debug(f"being_ref = {being_ref}", __name__)
@@ -108,15 +121,15 @@ class LivingBeing(Entity):
         return concr["name"]
 
     def kill_being(self, being_ref, cause=None):
-        log : Logger = self.get("Logger")
+        log = self.get("Logger")
         if cause is None:
             cause = ''
         log.add(f"[{self.category_nick()}] {self.name(ref=being_ref)} morreu {cause}", color=bcolors.FAIL)
-
-        data : DataStructure = self.get("DataStructure")
-        # put being on cemitery later instead of deleting it
+        being = self.get_concrete_thing_by_ref(being_ref)
+        being["death_year"] = self.get("GameManager").get_year()
+        being["death_cause"] = cause
         self.unsubscribe_entity(being_ref)
-        data.delete_concrete_thing(being_ref)
+        self.get("Cemetery").bury_being(being_ref)
 
     def move_on_board(self, reference=None):
         being_id = reference["id"]
@@ -281,12 +294,33 @@ class LivingBeing(Entity):
         me = self.get_concrete_thing_by_ref(me_ref)
         atk_name = attacker["name"]
         me_name = me["name"]
-        dmg_info = f"com um/a {atk_nick} e dano " + "💜" * total_damage
+        dmg_info = f"com um/a {atk_nick} e dano {total_damage}💜"
         self.reduce_hp(me_ref, total_damage, f"assasinado por {atk_name} {dmg_info}")
         print_error(f"me_ref = {me_ref}")
         if not self.is_dead(ref=me_ref):
             self.get("Logger").add(f"{atk_name} atacou {me_name} {dmg_info}")
 
+    def risk_of_death(self, being_concr=None, being_ref=None) -> int:
+        if being_ref is not None:
+            being_concr = self.get_concrete_thing_by_ref(being_ref)
+        if self.attr_age not in being_concr: return 0
+        age = being_concr[self.attr_age]
+
+        risks = [
+            {"age_range": (0, 60), "risk": (1, 7)},
+            {"age_range": (60, 120), "risk": (7, 60)},
+            {"age_range": (120, 130), "risk": (60, 99)},
+        ]
+
+        for risk in risks:
+            i = risk["age_range"][0]
+            f = risk["age_range"][1]
+            if age in range(i, f):
+                r = scale(age, risk["age_range"], risk["risk"])
+                return int(r)
+
+        return 99
+            # {'range':range(0, )}
     
 
         """

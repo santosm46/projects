@@ -48,22 +48,24 @@ class GameManager(Game):
         try:
             return self.meta_data()["save_name"]
         except:
-            return "Save name not loaded"
+            return "Game of life py"
     
     def meta_data(self):
         data : DataStructure = self.get("DataStructure")
         try:
             # print_debug(data.data["SaveManager"]["concrete_things"], __name__)
-            return data.data["SaveManager"]["concrete_things"]["1"]
+            return data.data["SaveManager"]["concrete_things"][MOCK_ID]
         except:
+            log_error(f"Can't get meta data (SaveManager)",__name__,line())
+            return None
             # It gives exception when testing because data strucure wasn't assigned
             # to game manager, so for testing porposes it creates a temporary data
             # print_debug(f"deu expeption",__name__)
-            concrete = self.new_concrete_thing("game_mock_for_test")
+            # concrete = self.new_concrete_thing("game_mock_for_test")
             # print_debug(concrete, __name__)
-            data.data["SaveManager"]["concrete_things"]["1"] = concrete
+            # data.data["SaveManager"]["concrete_things"]["1"] = concrete
             # data.keep_concrete_thing("1", concrete, self.get_category())
-            return data.data["SaveManager"]["concrete_things"]["1"]
+            # return data.data["SaveManager"]["concrete_things"]["1"]
 
     def set_factory(self, factory):
         super().set_factory(factory)
@@ -133,6 +135,9 @@ class GameManager(Game):
 
 
     def on_new_round(self, interested, event_causer):
+        save_mg = self.get_concrete_thing_by_ref(self.reference(MOCK_ID, "SaveManager"))
+        save_mg['year'] += 1
+
         ubi = 50
         bank : Bank = self.get("Bank")
         data : DataStructure = self.get("DataStructure")
@@ -155,7 +160,13 @@ class GameManager(Game):
         self.save()
         # print_debug(bank_crt)
 
-
+    def get_year(self):
+        try:
+            save_mg = self.get_concrete_thing_by_ref(self.reference(MOCK_ID, "SaveManager"))
+            return save_mg['year']
+        except:
+            return STARTING_YEAR
+        
     def stop(self):
         self.game_ruinning = False
     
@@ -218,16 +229,9 @@ class GameManager(Game):
     def turn_of(self) -> str:
         return self.meta_data()["turn_of"]
     
-    def new_concrete_thing(self, game_name):
-        current_datetime = date_now()
+    # def update_concrete(self, concrete: dict):
+    #     self.add_attr_if_not_exists(concrete, 'year', STARTING_YEAR)
 
-        return {
-            "save_name": game_name,
-            "save_filename": str_to_file_format(game_name),
-            "last_id": 1,
-            "turn_of": None,
-            "last_save_date": current_datetime,
-            "creation_date": current_datetime,
-            "game_version": GAME_VERSION,
-        }
+    
+    
 

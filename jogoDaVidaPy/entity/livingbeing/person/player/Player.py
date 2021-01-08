@@ -53,10 +53,10 @@ class Player(Person):
             for food_name, food_qtd in foods_list.items():
                 foods_img += food_info[food_name][food_cls.i_image] * food_qtd
             # for k, v in food_cls.food_info.items():
-        
+        age = player[self.attr_age]
 
 
-        print_header(f"Jogador/a: {image} {name}    Posição: {alphanum}")
+        print_header(f"Jogador/a: {image} {name}    Posição: {alphanum}  Idade: {age}")
 
         
         print_normal(f"   vida {hp} [{hearts}]", end='')

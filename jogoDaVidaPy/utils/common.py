@@ -16,7 +16,7 @@ ERRORS_PATH = 'errors/'
 ERRORS_FILE = '_errors.txt'
 GOVERNMENT = "government"
 MOCK_ID = "mock_id"
-
+STARTING_YEAR = 1990
 
 class prim_opt:
     PASS_TURN = 'P'
@@ -162,6 +162,9 @@ def random_name():
 
     return name.capitalize()
 
+def scale(val, src, dst):
+    # Scale the given value from the scale of src to the scale of dst.
+    return ((val - src[0]) / (src[1]-src[0])) * (dst[1]-dst[0]) + dst[0]
 
 def prepare_data(fac, file_name):
     save = fac.get_instance("SaveManager")

@@ -30,6 +30,7 @@ tree = {
                     "Jail": {},
                     "Church": {},
                     "House": {},
+                    "Cemetery": {},
                     "Education": {
                         "School": {},
                         "College": {
