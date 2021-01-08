@@ -32,7 +32,7 @@ class Building(Object):
         "Castle": '🏰',
         "SuperMarket": '🛒',
         "Casino": '🎰',
-        "Cemitery": 'C'
+        "Cemetery": 'Ce'
     }
 
     def update_subscriber(self, reference: dict):

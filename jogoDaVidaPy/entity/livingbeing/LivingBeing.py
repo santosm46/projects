@@ -32,6 +32,12 @@ class LivingBeing(Entity):
 
         self.interactions['be_attacked'] = "Atacar"
 
+        self.death_causes = {
+            'heart_attack': 'de ataque cardíaco',
+            'starved': 'de fome',
+            'killed': 'assassinado',
+        }
+
     # for all entities
     def on_new_round(self, target_ref, event_maker_ref, a=None):
         # debug_error(f"{self.get_category()} chaves -> {self.get_dict_list().keys()}",__name__,line())
@@ -46,8 +52,11 @@ class LivingBeing(Entity):
                 # if being died when reduced energy, skip this iteraction
                 continue
             if random.randrange(0,100) < self.risk_of_death(being_ref=ref):
-                if not self.reduce_hp(ref, 8, 'de ataque cardíaco'):
+                if not self.reduce_hp(ref, 8, {'type':'heart_attack', 'info':'de ataque cardíaco'}):
                     continue
+                else:
+                    name = beings[key]['name']
+                    self.get("Logger").add(f"{name} sofreu um ataque cardícado", color=bcolors.WARNING)
             self.being_move(key)
             # debug_error(f"{self.get_category()} chaves -> {self.get_dict_list().keys()}",__name__,line())
 
@@ -101,7 +110,7 @@ class LivingBeing(Entity):
 
         if(being[self.attr_energy] <= 0):
             being[self.attr_energy] = 0
-            return self.reduce_hp(being_ref, decrease, 'de fome')
+            return self.reduce_hp(being_ref, decrease, {'type':'starved', 'info':'de fome'})
         return True
     
     def reduce_hp(self, being_ref, hp, cause=None):
@@ -123,11 +132,13 @@ class LivingBeing(Entity):
     def kill_being(self, being_ref, cause=None):
         log = self.get("Logger")
         if cause is None:
-            cause = ''
-        log.add(f"[{self.category_nick()}] {self.name(ref=being_ref)} morreu {cause}", color=bcolors.FAIL)
+            cause = {'type':'unknown', 'info': ''}
+        death_descrp = cause['info']
+        log.add(f"[{self.category_nick()}] {self.name(ref=being_ref)} morreu {death_descrp}", color=bcolors.FAIL)
         being = self.get_concrete_thing_by_ref(being_ref)
         being["death_year"] = self.get("GameManager").get_year()
-        being["death_cause"] = cause
+        being["death_cause"] = cause['info']
+        being["death_type"] = cause['type']
         self.unsubscribe_entity(being_ref)
         self.get("Cemetery").bury_being(being_ref)
 
@@ -295,7 +306,8 @@ class LivingBeing(Entity):
         atk_name = attacker["name"]
         me_name = me["name"]
         dmg_info = f"com um/a {atk_nick} e dano {total_damage}💜"
-        self.reduce_hp(me_ref, total_damage, f"assasinado por {atk_name} {dmg_info}")
+        death_info = {'type':'killed', 'info':f"assasinado por {atk_name} {dmg_info}"}
+        self.reduce_hp(me_ref, total_damage, death_info)
         print_error(f"me_ref = {me_ref}")
         if not self.is_dead(ref=me_ref):
             self.get("Logger").add(f"{atk_name} atacou {me_name} {dmg_info}")
@@ -307,6 +319,7 @@ class LivingBeing(Entity):
         age = being_concr[self.attr_age]
 
         risks = [
+            # {"age_range": (0, 60), "risk": (50, 100)},
             {"age_range": (0, 60), "risk": (1, 7)},
             {"age_range": (60, 120), "risk": (7, 60)},
             {"age_range": (120, 130), "risk": (60, 99)},
@@ -321,6 +334,7 @@ class LivingBeing(Entity):
 
         return 99
             # {'range':range(0, )}
+    
     
 
         """

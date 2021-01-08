@@ -23,7 +23,7 @@ class Player(Person):
     
     def print_player(self, player_id):
         # print_debug(f"\n\nplayer_id={player_id}", fline=get_linenumber(),fname=__name__, pause=True)
-        player = self.get_players()[str(player_id)]
+        player = self.get_concrete_thing(player_id, "PlayerIM")
         if not player:
             log_error(f"Couldn't find player of id {player_id} to print",__name__, line())
             return

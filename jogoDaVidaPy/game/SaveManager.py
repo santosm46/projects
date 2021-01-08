@@ -83,7 +83,7 @@ class SaveManager(Game):
         # criando construções no jogo
         self.factory.gi("Event").setup()
         college_courses = list(Medicine().course_nicks.keys())
-        buildings_to_insert = ["School", "Bank", "SuperMarket"] + college_courses
+        buildings_to_insert = ["School", "Bank", "SuperMarket", "Cemetery"] + college_courses
 
         for building in buildings_to_insert:
             buildingClass = self.get(building)
@@ -92,7 +92,7 @@ class SaveManager(Game):
 
         # creating beings
         beings = {
-            "Robber": 3,
+            "Robber": 5,
         }
 
         for being_categ, number in beings.items():

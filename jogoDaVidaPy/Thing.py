@@ -1,7 +1,7 @@
 
 
 from utils.common import MOCK_ID, line, log_error
-from utils.beauty_print import debug_error, print_debug
+from utils.beauty_print import debug_error, print_beauty_json, print_debug
 
 
 class Thing:
@@ -146,7 +146,9 @@ class Thing:
         # print_debug(f"chegou na escola -> {entity}",__name__)
 
         for entity_id, entity in entities.items():
-            # debug_error(f"{self.get_category()} entity = {entity}",__name__,line())
+            # if(category == 'Cemetery'):
+            #     debug_error(f"{category} entity ...",__name__,line())
+            #     print_beauty_json(entity)
             additional[category].append({
                 "image": self.get_image(entity_id),
                 "coord": entity["coord"]
