@@ -181,9 +181,9 @@ class Player(Person):
 
     def create_players_mock(self):
         players_im = self.get("PlayerIM")
-        players_im.create_player('Anny Beatriz')
+        # players_im.create_player('Anny Beatriz')
         players_im.create_player('Marcelo')
-        players_im.create_player('Andréia')
+        players_im.create_player('Pedro')
         self.get("GameManager").save()
     
     def number_of_players(self) -> int:

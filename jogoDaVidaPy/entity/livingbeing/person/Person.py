@@ -1,3 +1,4 @@
+from entity.object.Food import Food
 from game.Logger import Logger
 from game.DataStructure import DataStructure
 from entity.object.building.commerce.Bank import Bank
@@ -47,12 +48,12 @@ class Person(LivingBeing):
 
 
         
-    def on_school_move(self, params=None):
-        person = self.get_concrete_thing(params["id"])
-        # name = person["name"]
-        # print_warning(f"Pessoa {name} está na escola")
-        event : Event = self.get("Event")
-        event.notify("interact_with_building", self.reference(params["id"]))
+    # def on_school_move(self, params=None):
+    #     person = self.get_concrete_thing(params["id"])
+    #     # name = person["name"]
+    #     # print_warning(f"Pessoa {name} está na escola")
+    #     event : Event = self.get("Event")
+    #     event.notify("interact_with_building", self.reference(params["id"]))
     
     def interact_with_building(self, reference=None):
         info = self.get_mode_info_of(reference, self.mode_on_building)
@@ -68,7 +69,7 @@ class Person(LivingBeing):
         super().kill_being(being_ref, cause)
 
     def get_weapon_attack(self, being_ref):
-        return 8
+        return 0
 
     def drop_inventory(self, being_ref):
         bank : Bank = self.get("Bank")
@@ -94,4 +95,10 @@ class Person(LivingBeing):
         if(not bank.transfer_money_or_the_rest(me_ref, robber_ref, money)):
             money = me[self.attr_money]
         log.add(f"{rob_name} roubou {money} de {other_name}")
-        
+    
+    def eat_food(self):
+
+        self.gui_output("Escolha ")
+
+        food : Food 
+

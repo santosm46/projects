@@ -13,9 +13,11 @@ class SuperMarket(Commerce):
 
 
     def __init__(self) -> None:
+        # self.interactions['buy_food'] = 'comprar comida'
         super().__init__()
     
-
+    # def get_interactions_for(self, me_ref):
+    #     return self.interactions
 
 
     def new_concrete_thing(self):
@@ -31,17 +33,18 @@ class SuperMarket(Commerce):
 
         return market
 
-
-    def on_building_interact(self, building_ref, person_ref, additional=None):
+    def food_categs_to_options(self, food_categ_list):
         options = []
         food_dict = []
         food_names = []
 
         food : Food = self.get("Food")
-        bank : Bank = self.get("Bank")
 
-        for name, info in food.food_info.items():
+        # food_values = food.food_info.values()
+
+        for name in food_categ_list:
             food_names.append(name)
+            info = food.food_info[name]
             imgage = info[food.i_image]
             energy = info[food.i_energy]
             price = info[food.i_price]
@@ -49,6 +52,15 @@ class SuperMarket(Commerce):
             opt = f"{imgage}: {energy}⚡ {price}💲 {health}💜"
             food_dict.append(info)
             options.append(opt)
+        
+        return options, food_dict, food_names
+
+    def on_building_interact(self, building_ref, person_ref, additional=None):
+        
+        bank : Bank = self.get("Bank")
+        food : Food = self.get("Food")
+
+        options, food_dict, food_names = self.food_categs_to_options(list(food.food_info.keys()))
         
         while True:
 

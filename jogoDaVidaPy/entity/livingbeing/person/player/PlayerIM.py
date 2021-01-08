@@ -86,6 +86,9 @@ class PlayerIM(Player):
             elif(option == prim_opt.ROLL_DICE):
                 self.roll_dice_to_move(player_id)
                 break
+            elif(option == prim_opt.EAT_FOOD):
+                self.eat_food(player_id)
+                break
             elif(option == prim_opt.SAVE_EXIT):
                 print_sucess("Salvando e saindo...")
                 self.get("GameManager").stop()

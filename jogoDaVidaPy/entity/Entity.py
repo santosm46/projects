@@ -153,6 +153,9 @@ class Entity(Thing):
 
     def on_entity_interacting_with_entity(self, target_ref, causer_ref, additional=None):
         # checks if it's target is this category
+        # if(self.get_category() == 'SuperMarket'):
+        print_debug(f"Vamos ver se vai entrar no {self.get_category()}.   ({__name__}:{line()})")
+
         if(target_ref["category"] != self.get_category()):
             return
         self.entity_interaction(target_ref, causer_ref, additional)
@@ -176,6 +179,7 @@ class Entity(Thing):
             return False
         return True
 
-
+    def get_interactions_for(self, me_ref):
+        return self.interactions
     
     

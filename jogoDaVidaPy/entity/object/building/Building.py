@@ -14,6 +14,8 @@ class Building(Object):
         self.attr_name = 'name'
 
         self.first_interaction = 'Entrar no/na'
+
+        self.interactions['put_person_on_building'] = 'Entrar aqui'
     
     images = {
         "Medicine": '💉',
@@ -32,8 +34,11 @@ class Building(Object):
         "Castle": '🏰',
         "SuperMarket": '🛒',
         "Casino": '🎰',
-        "Cemetery": 'Ce'
+        "Cemetery": f'⚰️{bcolors.FAIL}✝{bcolors.ENDC}'
     }
+
+    # def custom_requirement_to_interact(self, building_data, person_ref, additional):
+    #     return self.is_person(person_ref["category"])
 
     def update_subscriber(self, reference: dict):
         super().update_subscriber(reference)
@@ -43,8 +48,13 @@ class Building(Object):
         event.subscribe("entity_interacting_with_building", reference, "on_building_interact")
 
     def on_building_interact(self, building_ref, person_ref, additional=None):
-        log_error(f"This funcion [on_building_interact] needs to be overwritten",__name__,line())
+        log_error(f"This funcion [on_building_interact] needs to be overwritten for {building_ref}",__name__,line())
 
+
+    def entity_interaction(self, me_ref, other_ref, additional):
+        input(f"Botei a pessoa na {me_ref}.   ({__name__}:{line()})")
+        self.put_person_on_building(me_ref, other_ref, additional)
+    
 
     def get_image(self, _id=None):
         categ = self.get_category()
@@ -88,16 +98,18 @@ class Building(Object):
         return categ_mg.is_category_or_inside(person_categ, "Person")
 
 
-    def entity_interaction(self, me_ref, other_ref, additional):
-        self.put_person_on_building(me_ref, other_ref, additional)
 
+    # def enter_building(self, me_ref, other_ref, a=None):
+    #     self.put_person_on_building(me_ref, other_ref)
+    #     pass
 
-    def put_person_on_building(self, building_ref, person_ref, additional=None):
+    def put_person_on_building(self, person_ref, building_ref, additional=None):
+        print_debug("tentando colocar pessoa em building",__name__,line())
         person_categ = person_ref["category"]
         if(not self.is_person(person_categ)):
+            print_debug(f"não é pessoa {person_ref}, mas esse é -> {building_ref}",__name__,line())
             # only people can enter building
             return
-        # print_debug("tentando colocar pessoa na escola 2")
         person_class = self.get(person_categ)
         mode_name = person_class.mode_on_building
 
@@ -107,13 +119,17 @@ class Building(Object):
         # can only put person if stepping at building
         if(person["coord"] != building["coord"]):
             return
+        print_debug("está na mesma coordenada",__name__,line())
+        
         # print_debug("tentando colocar pessoa na escola 3")
         mode_info = person_class.get_mode_info_of(person_ref,mode_name)
+        print_debug("peguei mode info",__name__,line())
+        
         # print_beauty_json(mode_info)
         mode_info["building"] = self.reference(building_id)
 
         person_class.change_mode(person["id"], mode_name, self.reference(building_id))
-
+        print_debug("coloquei pessoa em building",__name__,line())
 
 
     

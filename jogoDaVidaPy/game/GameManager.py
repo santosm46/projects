@@ -84,7 +84,6 @@ class GameManager(Game):
         for i in self.valid_spots_buffer:
             additional[category].append({
                 "image": '📗',
-                # "image": '🔲',
                 "coord": self.board.alphanum_to_coord(i)
             })
         self.valid_spots_buffer = []
@@ -222,7 +221,7 @@ class GameManager(Game):
         next_player_idx = (int(player_idx)+1) % num_players
         next_player = self.player_im.get_player_by_idx(next_player_idx)
 
-        self.meta_data()["turn_of"] = next_player["id"]
+        self.set_turn(next_player["id"])
         e : Event = self.get("Event")
         e.notify("new_turn", additional=self.turn_of())
     

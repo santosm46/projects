@@ -52,11 +52,12 @@ class LivingBeing(Entity):
                 # if being died when reduced energy, skip this iteraction
                 continue
             if random.randrange(0,100) < self.risk_of_death(being_ref=ref):
-                if not self.reduce_hp(ref, 8, {'type':'heart_attack', 'info':'de ataque cardíaco'}):
+                damage = random.randrange(6, 9)
+                if not self.reduce_hp(ref, damage, {'type':'heart_attack', 'info':'de ataque cardíaco'}):
                     continue
                 else:
                     name = beings[key]['name']
-                    self.get("Logger").add(f"{name} sofreu um ataque cardícado", color=bcolors.WARNING)
+                    self.get("Logger").add(f"{name} sofreu um ataque cardícado perdendo {damage}💜", color=bcolors.WARNING)
             self.being_move(key)
             # debug_error(f"{self.get_category()} chaves -> {self.get_dict_list().keys()}",__name__,line())
 
@@ -230,6 +231,7 @@ class LivingBeing(Entity):
             self.gui_output(f"Movendo {name} para {spot}... ")
             board.move_entity_to(reference=self.reference(player["id"]), alphanum=spot)
         else:
+            self.gui_output(f"Movendo {name} para {spot} p/ interagir com {entity_ref}... ")
             self.move_to_and_interact_with(self.reference(_id), entity_ref)
         
         # if(_id == '13'):
@@ -246,35 +248,46 @@ class LivingBeing(Entity):
         self.interact_with(me_ref, other_ref)
         # e.notify("entity_interacting_with_entity", me_ref, other_ref)
 
+    
 
     def interact_with(self, me_ref, other_ref):
-        target : LivingBeing = self.get(other_ref["category"])
-        myself : LivingBeing = self.get(me_ref["category"])
+        # print_debug(f"indo interagir com {other_ref}",__name__,line())
+        target : Entity = self.get(other_ref["category"])
+        myself : Entity = self.get(me_ref["category"])
         # get what ways it can interact
-        interactions = target.interactions
-        if(len(interactions) == 0): return
+        interactions = target.get_interactions_for(me_ref)
+        if(len(interactions) == 0): 
+            # print_debug(f":( não dá para interagir com {other_ref}",__name__,line())
+            
+            return
 
         params = {"interactions":interactions, "other_ref":other_ref}
         target_concr = self.get_concrete_thing_by_ref(other_ref)
         target_name = target_concr["name"]
 
 
-        myself.gui_output(f"")
         interac_nicks = list(interactions.values())
         interac_keys = list(interactions.keys())
-        myself.gui_output(get_number_list(interac_nicks, title="Escolha uma opção para interagir com {target_name} (ENTER p/ cancelar)\n"))
-        while True:
-            myself.gui_output("Opção: ",end='')
-            option = myself.gui_input(me_ref["id"], "interact_with", 1, params)
-            if(len(option) == 0):
-                return
-            if(option in interac_keys):
-                break
-            if(valid_number(option, 1, len(interac_nicks))):
-                option = interac_keys[int(option)-1]
-                break
+
+        if(len(interactions) > 1): 
+            myself.gui_output(f"")
+            myself.gui_output(get_number_list(interac_nicks, title=f"Escolha uma opção para interagir com {target_name} (ENTER p/ cancelar)\n"))
+            while True:
+                myself.gui_output("Opção: ",end='')
+                option = myself.gui_input(me_ref["id"], "interact_with", 1, params)
+                if(len(option) == 0):
+                    return
+                if(option in interac_keys):
+                    break
+                if(valid_number(option, 1, len(interac_nicks))):
+                    option = interac_keys[int(option)-1]
+                    break
+        else:
+            option = interac_keys[0]
         
-        myself.run_func(option, me_ref, other_ref)
+        print_debug(f"indo interagir com {other_ref} rodando sua função {option}",__name__,line())
+        
+        target.run_func(option, me_ref, other_ref)
     
     def get_weapon_attack(self, being_ref):
         return 0
@@ -335,7 +348,7 @@ class LivingBeing(Entity):
         return 99
             # {'range':range(0, )}
     
-    
+    # def eat_food
 
         """
         the keys of an inventory is the class that will handle the
