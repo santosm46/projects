@@ -14,6 +14,7 @@ class Education(Building):
     def __init__(self) -> None:
         super().__init__()
         self.attr_price_per_round = 'price_per_round'
+        self.work_nick = 'professor/a'
 
         # to be overwitten
         self.grades = ['A','B','C','D','E','F']
@@ -28,9 +29,6 @@ class Education(Building):
             'medium': "Ensino Fundamental",
             'high': "Ensino Médio"
         }
-
-        # self.interactions['study'] = 'Estudar'
-
 
 
     def new_concrete_thing(self):
@@ -47,9 +45,6 @@ class Education(Building):
 
     def update_subscriber(self, educ_build_ref):
         super().update_subscriber(educ_build_ref)
-        
-    
-
 
 # "inventory": {
 #     "School": {
@@ -93,7 +88,6 @@ class Education(Building):
         hightest = self.diploms[max_idx]
         return hightest
     
-    # overwrite this to get diplom by course
     def get_person_diploms(self, person_ref):
         person = self.get_concrete_thing_by_ref(person_ref)
         # acess person inventory to take the highest school diplom
@@ -116,7 +110,6 @@ class Education(Building):
     def can_pass_with(self, note: int, level: str):
         return note <= self.passing_grades[level]
 
-
     def next_level_of_person(self, person_ref):
         if self.person_has_highest_level(person_ref):
             return None
@@ -137,37 +130,25 @@ class Education(Building):
         self.get_person_highest_diplom(person_ref)
         this_categ = self.get_category()
         person["inventory"][this_categ]["Diploms"][new_level] = education_id
-
     
 
-    def on_building_interact(self, school_data, person_ref, additional=None):
+    def on_building_interact(self, school_data, person_ref, a=None):
         # building has to be school
-        category = additional["category"]
+        category = school_data["category"]
         if(category != self.get_category()):
             return
         if(not self.is_person(person_ref["category"])):
             return
         person_class : Person = self.get(person_ref["category"])
         person_id = person_ref["id"]
-        school = self.get_concrete_thing_by_ref(additional)
+        school = self.get_concrete_thing_by_ref(school_data)
         name = school["name"]
-
 
         mode_info = person_class.get_mode_info_of(person_ref, person_class.mode_on_building)
 
-
         if(self.person_has_highest_level(person_ref)):
-            teacher = self.get("Pedagogy")
-            teacher_dip = teacher.get_person_highest_diplom(person_ref)
-            high = teacher.person_has_highest_level(person_ref)
-
-            # print_debug(f"teacher_dip = {teacher_dip}. high = {high}",__name__)
-            if(high):
-                opt = self.work(person_class, person_id)
-                if(str(opt) == prim_opt.CONTINUE):
-                    return
-            else:
-                person_class.gui_output(f"Você já tem todos os diplomas. Será removido da {name}",color=bcolors.WARNING,pause=True)
+            
+            person_class.gui_output(f"Você já tem todos os diplomas. Será removido da {name}",color=bcolors.WARNING,pause=True)
             # person_class.change_mode(person_id,person_class.mode_on_board)
             self.remove_from_building(self.reference(school["id"]), person_ref)
             return
@@ -199,7 +180,7 @@ class Education(Building):
         text = f"\nVocê tirou {grade} ({result}) "
         if(self.can_pass_with(result, level)):
             new_level = self.next_level_of_person(person_ref)
-            self.advance_period(person_ref, new_level, additional["id"])
+            self.advance_period(person_ref, new_level, school_data["id"])
             next_level_nick = self.next_level_nick_of(person_ref)
             if(self.person_has_highest_level(person_ref)):
                 text += f"e se formou na {name}! Parabéns!"
@@ -211,34 +192,12 @@ class Education(Building):
             text += "e reprovou. Tente na próxima!"
             color = bcolors.FAIL
         
-        bank.transfer_money_from_to(person_ref, additional, price_per_round)
+        bank.transfer_money_from_to(person_ref, school_data, price_per_round)
         text += f"\nFoi descontado {price_per_round} da sua conta (ENTER para continuar) "
         person_class.gui_output(text, color=color, pause=True)
     
+    
 
-    def work(self, person_class: Person, person_id):
-        person_class.gui_output(f"\nVocê é professor/a. escolha uma opção")
-        options = ["trabalhar", "trabalhar e sair", "sair"]
-        print_number_list(options)
-        option = input_question("Opção: ")
-        if(str(option) == "3"):
-            return prim_opt.LEAVE
-        person_class.gui_output("Role o dado e veja quanto ganhará")
-        dice_num = person_class.roll_dice(person_id)
-        dice_num -= 2    
-        earned_money = 50 * dice_num
-        log : Logger = self.get("Logger")
-        if(dice_num == -1):
-            log.add.gui_output(f"A escola atrasou o salário, você teve que arcar com as despesas, gastou {earned_money}", color=bcolors.FAIL)
-        elif(dice_num == 0):
-            log.add.gui_output(f"A escola atrasou o salário, ganhou nada", color=bcolors.FAIL)
-        else:
-            log.add.gui_output(f"A escola te pagou {earned_money}", color=bcolors.OKGREEN)
-
-        if(str(option) == "2"):
-            return prim_opt.LEAVE
-
-        return prim_opt.CONTINUE
 
 
 

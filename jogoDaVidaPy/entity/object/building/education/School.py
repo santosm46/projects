@@ -50,7 +50,10 @@ class School(Education):
         school[self.attr_price] = 800
         
     
-
+    def can_work_here(self, person_ref):
+        if(not self.person_has_highest_level(person_ref)): return False
+        teacher = self.get("Pedagogy")
+        return teacher.person_has_highest_level(person_ref)
 
 
 

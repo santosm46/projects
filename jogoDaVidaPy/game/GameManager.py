@@ -269,7 +269,7 @@ class GameManager(Game):
             if _id not in turns:
                 turns.append(_id)
         
-        # if self.empty(turns): return None
+        # if self.empty(turns): return None 
         
         if turns[0] not in players_id:
             # player id is not in match, so delete it

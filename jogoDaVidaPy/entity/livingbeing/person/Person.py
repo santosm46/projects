@@ -1,3 +1,4 @@
+from entity.object.building.Building import Building
 from math import trunc
 from utils.common import valid_number
 from entity.object.Food import Food
@@ -14,12 +15,15 @@ class Person(LivingBeing):
     def __init__(self):
         super().__init__()
         self.MAX_HP = 10
+        self.mode_working_on_building = 'working_on_building'
         
         self.modes_func[self.mode_on_building] = self.interact_with_building
+        self.modes_func[self.mode_working_on_building] = self.work_on_building
 
         self.attr_genre = "genre"
         self.attr_name = "name"
         self.attr_money = "money"
+
 
         self.interactions["be_robbed"] = "Roubar"
 
@@ -32,7 +36,6 @@ class Person(LivingBeing):
         self.update_concrete(person)
         person[self.attr_hp] = self.MAX_HP
         person[self.attr_max_hp] = self.MAX_HP
-        person[self.attr_mode_info] = {self.mode_on_board: None, self.mode_on_building: {"building":None}}
         return person
 
 
@@ -46,7 +49,12 @@ class Person(LivingBeing):
         self.add_attr_if_not_exists(person, self.attr_money, random.randrange(30,70)*5)
         self.add_attr_if_not_exists(person, self.attr_hp, self.MAX_HP)
         self.add_attr_if_not_exists(person, self.attr_max_hp, self.MAX_HP)
-        self.add_attr_if_not_exists(person, self.attr_mode_info, {self.mode_on_board: None, self.mode_on_building: {"building":None}})
+        self.add_attr_if_not_exists(person, self.attr_mode_info, {})
+
+        self.add_attr_if_not_exists(person[self.attr_mode_info], self.mode_on_board, None)
+        self.add_attr_if_not_exists(person[self.attr_mode_info], self.mode_on_building, {"building":None})
+        self.add_attr_if_not_exists(person[self.attr_mode_info], self.mode_working_on_building, {"building":None})
+
 
 
         
@@ -57,11 +65,20 @@ class Person(LivingBeing):
     #     event : Event = self.get("Event")
     #     event.notify("interact_with_building", self.reference(params["id"]))
     
-    def interact_with_building(self, reference=None):
+    def interact_with_building(self, reference):
         info = self.get_mode_info_of(reference, self.mode_on_building)
-        event : Event = self.get("Event")
-        event.notify("entity_interacting_with_building", reference, info["building"])
+        build_categ = info["building"]["category"]
+        buildmg : Building = self.get(build_categ)
+        buildmg.on_building_interact(info["building"], reference)
 
+    def work_on_building(self, reference):
+        info = self.get_mode_info_of(reference, self.mode_working_on_building)
+        build_categ = info["building"]["category"]
+        buildmg : Building = self.get(build_categ)
+        buildmg.on_person_working(info["building"], reference)
+
+        # event : Event = self.get("Event")
+        # event.notify("entity_interacting_with_building", reference, info["building"])
     
     def kill_being(self, being_ref, cause=None):
         self.drop_inventory(being_ref)

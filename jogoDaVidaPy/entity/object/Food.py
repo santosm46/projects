@@ -81,8 +81,8 @@ class Food(Object):
             price_info = f"{price}💲 " if show_price else ''
             qtd = food_qtd[name] if food_qtd else None
             if qtd == 0: continue
-            qtd_out = f"Qtd: {qtd} " if qtd else ''
-            opt = f"{imgage}: {qtd_out}{energy}⚡ {price_info}{health}💜"
+            qtd_out = f"{qtd}" if qtd else ''
+            opt = f"{qtd_out}{imgage}: {energy}⚡ {price_info}{health}💜"
             food_dict.append(info)
             options.append(opt)
         

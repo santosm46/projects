@@ -338,9 +338,9 @@ class LivingBeing(Entity):
 
         risks = [
             # {"age_range": (0, 60), "risk": (50, 100)},
-            {"age_range": (0, 60), "risk": (1, 7)},
-            {"age_range": (60, 120), "risk": (7, 60)},
-            {"age_range": (120, 130), "risk": (60, 99)},
+            {"age_range": (0, 60), "risk": (1, 5)},
+            {"age_range": (60, 120), "risk": (5, 20)},
+            {"age_range": (120, 130), "risk": (20, 99)},
         ]
 
         for risk in risks:

@@ -15,10 +15,15 @@ class SuperMarket(Commerce):
     def __init__(self) -> None:
         # self.interactions['buy_food'] = 'comprar comida'
         super().__init__()
+
+        self.work_nick = 'Caixa de supermercado'
+
+        self.wage_multipl = 30
     
     # def get_interactions_for(self, me_ref):
     #     return self.interactions
-
+    def can_work_here(self, person_ref):
+        return self.get('School').person_has_highest_level(person_ref)
 
     def new_concrete_thing(self):
         market = super().new_concrete_thing()
@@ -49,7 +54,7 @@ class SuperMarket(Commerce):
             while True:
                 opt = input_question("Opção: ")
                 if(len(opt) == 0):
-                    self.remove_from_building(additional, person_ref)
+                    self.remove_from_building(building_ref, person_ref)
                     return
                 if(valid_number(opt, 1, len(options))):
                     break
@@ -63,7 +68,7 @@ class SuperMarket(Commerce):
             while True:
                 qtd = input_question("Quantidade [ENTER para sair]: ")
                 if(len(qtd) == 0):
-                    self.remove_from_building(additional, person_ref)
+                    self.remove_from_building(building_ref, person_ref)
                     return
                 if(not valid_number(opt, 0, 1000)):
                     continue
@@ -79,12 +84,12 @@ class SuperMarket(Commerce):
                 out += f"Aperte enter para continuar compra, {prim_opt.LEAVE} para sair do mercado, ou outra coisa para ver outras comidas\n"
                 cont = input_question(out)
                 if(cont == prim_opt.LEAVE):
-                    self.remove_from_building(additional, person_ref)
+                    self.remove_from_building(building_ref, person_ref)
                     return
                 if(len(cont) > 0):
                     break
 
-                bank.transfer_money_from_to(person_ref, additional, price)
+                bank.transfer_money_from_to(person_ref, building_ref, price)
                 food.add_to_inventory(person_ref, food_names[opt], qtd)
                 food_name = food_names[opt]
                 print_sucess(f"você comprou {qtd} unidades de {food_name}.")

@@ -100,6 +100,7 @@ class Entity(Thing):
         being = self.get_concrete_thing_by_ref(reference)
         # print_debug(f"being = ...",__name__)
         try:
+            print_debug(f"being-ref = {reference}, mode= {mode}",__name__)
             return being[self.attr_mode_info][mode]
         except:
             log_error(f"Can't get mode {mode} of {reference}",__name__, line())
@@ -154,7 +155,7 @@ class Entity(Thing):
     def on_entity_interacting_with_entity(self, target_ref, causer_ref, additional=None):
         # checks if it's target is this category
         # if(self.get_category() == 'SuperMarket'):
-        print_debug(f"Vamos ver se vai entrar no {self.get_category()}.   ({__name__}:{line()})")
+        # print_debug(f"Vamos ver se vai entrar no {self.get_category()}.   ({__name__}:{line()})")
 
         if(target_ref["category"] != self.get_category()):
             return
@@ -163,23 +164,24 @@ class Entity(Thing):
 
     # this is to be overwritten, 
     def entity_interaction(self, me_ref, other_ref, additional=None):
-        log : Logger = self.get("Logger")
-        categ = self.get_category()
-        log.add(f"sou do tipo {categ} e estou interagindo com -> {other_ref}")
+        pass
+        # log : Logger = self.get("Logger")
+        # categ = self.get_category()
+        # log.add(f"sou do tipo {categ} e estou interagindo com -> {other_ref}")
 
 
     # this is for some entities_to_interact with special restrictions
     # they will overwrite this function
-    def custom_requirement_to_interact(self, interested_ref, person_ref, additional):
+    def custom_requirement_to_interact(self, interested_ref, person_ref, additional=None):
         # can't interact with it self
         if(interested_ref == person_ref):
             return False
         # can't interact if has no interactions
-        if(len(self.interactions) == 0):
+        if(len(self.get_interactions_for(person_ref)) == 0):
             return False
         return True
 
-    def get_interactions_for(self, me_ref):
+    def get_interactions_for(self, entity_ref):
         return self.interactions
     
     

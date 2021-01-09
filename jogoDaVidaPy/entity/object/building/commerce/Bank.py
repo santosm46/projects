@@ -47,6 +47,7 @@ class Bank(Commerce):
             return False
 
     def transfer_money_from_to(self, sender_ref, receiver_ref, amount):
+        if amount <= 0: return False
         
         sender = self.get_concrete_thing_by_ref(sender_ref)
         receiver = self.get_concrete_thing_by_ref(receiver_ref)
@@ -72,6 +73,8 @@ class Bank(Commerce):
             return False
         return True
 
+    def decrease_person_money(self, person_ref, amount):
+        return self.transfer_money_or_the_rest(person_ref, self.reference(MOCK_ID), amount)
 
     def entity_can_pay(self, entity_concr: dict, amount: int):
         if self.not_has_attr_money(entity_concr):
