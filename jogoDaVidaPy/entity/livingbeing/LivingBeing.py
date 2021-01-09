@@ -302,7 +302,11 @@ class LivingBeing(Entity):
         being_class : LivingBeing = self.get(being_ref["category"])
         being_class.gui_output("Jogue o dado para calcular o aumento de dano [1 a 3]: ")
         while True:
-            attack = being_class.roll_dice(being_ref["id"], 3)
+            try:
+                attack = being_class.roll_dice(being_ref["id"], 3)
+            except:
+                log_error(f'cant roll dice for {being_ref}')
+                return None
             # fix validade attack
             break
 
@@ -317,18 +321,24 @@ class LivingBeing(Entity):
         # debug_error(f"achei? concr= {concr}",__name__)
         return concr[self.attr_hp] == 0
 
-    def be_attacked(self, attacker_ref, me_ref):
+    def be_attacked(self, attacker_ref, me_ref, add_info='atacou'):
         total_damage = self.get_attack(attacker_ref)
+        if total_damage is None: return False
         atk_nick = 'Soco'
         attacker = self.get_concrete_thing_by_ref(attacker_ref)
         me = self.get_concrete_thing_by_ref(me_ref)
+        if not attacker: return False
+        if not me: return False
         atk_name = attacker["name"]
         me_name = me["name"]
         dmg_info = f"com um/a {atk_nick} e dano {total_damage}💜"
         death_info = {'type':'killed', 'info':f"assasinado por {atk_name} {dmg_info}"}
         self.reduce_hp(me_ref, total_damage, death_info)
         if not self.is_dead(ref=me_ref):
-            self.get("Logger").add(f"{atk_name} atacou {me_name} {dmg_info}")
+            self.get("Logger").add(f"{atk_name} {add_info} {me_name} {dmg_info}")
+        else:
+            return False
+        return True
 
     def risk_of_death(self, being_concr=None, being_ref=None) -> int:
         if being_ref is not None:

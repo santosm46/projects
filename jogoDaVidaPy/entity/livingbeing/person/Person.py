@@ -102,8 +102,11 @@ class Person(LivingBeing):
         log : Logger = self.get("Logger")
 
         robber = self.get_concrete_thing_by_ref(robber_ref)
+        if not robber:
+            return False
 
         me = self.get_concrete_thing_by_ref(me_ref)
+        if not me: return False
         # e.notify("entity_interacting_with_entity", robber_ref, me_ref)
         rob_name = robber["name"]
         other_name = me["name"]
@@ -114,6 +117,7 @@ class Person(LivingBeing):
         if(not bank.transfer_money_or_the_rest(me_ref, robber_ref, money)):
             money = me[self.attr_money]
         log.add(f"{rob_name} roubou {money} de {other_name}")
+        return True
     
     def eat_food(self, being_id):
 

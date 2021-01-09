@@ -1,6 +1,8 @@
 
 
 import random
+from utils.common import line
+from utils.beauty_print import debug_error
 from game.Category import Category
 from entity.livingbeing.person.npc.Npc import Npc
 
@@ -22,10 +24,33 @@ class Criminal(Npc):
                 return True
         return False
     
+    def be_attacked(self, attacker_ref, me_ref, add_info='atacou'):
+        if not super().be_attacked(attacker_ref, me_ref):
+            return False
+        if random.randrange(0, 100) > 80: return False
+        attacker_class = self.get(attacker_ref['category'])
+        
+        attacker_class.be_attacked(me_ref, attacker_ref, add_info='revidou ataque de')
+        # return True
     # def update_subscriber(self, reference: dict):
     #     super().update_subscriber(reference)
     #     e = self.get("Event")
     #     e.subscribe("entity_moved_to_coord", reference, "commit_crime_on_person")
+
+    def be_robbed(self, robber_ref, me_ref):
+        if random.randrange(0, 100) < 50:
+            add_indo = 'foi roubado e atacou'
+            if not super().be_robbed(robber_ref, me_ref): return False
+        else:
+            add_indo = 'sofreu tentativa de roubo e atacou'
+        attacker_class = self.get(robber_ref['category'])
+        return attacker_class.be_attacked(me_ref, robber_ref, add_info=add_indo)
+        # robber = self.get_concrete_thing_by_ref(robber_ref)
+        # me = self.get_concrete_thing_by_ref(me_ref)
+        # rob_name = robber["name"]
+        # other_name = me["name"]
+        # self.get('Logger').add('foi roubado e atacou')
+
 
     def entity_entered_my_spot(self, myself_ref, entity_ref):
         # return super().entity_entered_my_spot(myself_ref, entity_ref)
