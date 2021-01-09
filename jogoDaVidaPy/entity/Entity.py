@@ -100,7 +100,7 @@ class Entity(Thing):
         being = self.get_concrete_thing_by_ref(reference)
         # print_debug(f"being = ...",__name__)
         try:
-            print_debug(f"being-ref = {reference}, mode= {mode}",__name__)
+            # print_debug(f"being-ref = {reference}, mode= {mode}",__name__)
             return being[self.attr_mode_info][mode]
         except:
             log_error(f"Can't get mode {mode} of {reference}",__name__, line())

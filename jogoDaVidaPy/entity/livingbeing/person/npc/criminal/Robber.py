@@ -57,7 +57,7 @@ class Robber(Criminal):
         # e.notify("entity_interacting_with_entity", me_ref, other_ref)
         me_name = me["name"]
         other_name = other["name"]
-        money = random.randrange(50, 300, 10)
+        money = random.randrange(50, 250, 10)
         if(other[self.attr_money] <= 0):
             return
         

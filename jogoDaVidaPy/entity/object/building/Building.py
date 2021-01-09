@@ -40,6 +40,7 @@ class Building(Object):
         "Castle": '🏰',
         "SuperMarket": '🛒',
         "Casino": '🎰',
+        "GunShop": '🔫',
         "Cemetery": f'⚰️{bcolors.FAIL}✝{bcolors.ENDC}'
     }
 
@@ -126,7 +127,7 @@ class Building(Object):
 
 
     def put_person_on_building(self, person_ref, building_ref, additional=None, mode_name=None):
-        print_debug(f"tentando colocar {person_ref} em b {building_ref}",__name__,line())
+        # print_debug(f"tentando colocar {person_ref} em b {building_ref}",__name__,line())
         person_categ = person_ref["category"]
         if(not self.is_person(person_categ)):
             # print_debug(f"não é pessoa {person_ref}, mas esse é -> {building_ref}",__name__,line())
@@ -146,7 +147,7 @@ class Building(Object):
         
         # print_debug("tentando colocar pessoa na escola 3")
         mode_info = person_class.get_mode_info_of(person_ref,mode_name)
-        print_debug(f"peguei mode info {mode_info} de {mode_name}",__name__,line())
+        # print_debug(f"peguei mode info {mode_info} de {mode_name}",__name__,line())
         
         # print_beauty_json(mode_info)
         mode_info["building"] = self.reference(building_id)

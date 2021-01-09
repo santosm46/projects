@@ -46,7 +46,7 @@ class Player(Person):
         foods_img = ''
         foods_list = None
         food_cls : Food = self.get("Food")
-        food_info = food_cls.food_info
+        food_info = food_cls.items_info
         # because player may not have food
         if("Food" in player[self.attr_inventory]):
             foods_list = player[self.attr_inventory]["Food"]

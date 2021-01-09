@@ -7,13 +7,12 @@ class Food(Object):
 
     def __init__(self):
         super().__init__()
-        self.i_image = "image"
+        
         self.i_energy = "energy"
-        self.i_price = "price"
         self.i_health = "health"
 
 
-    food_info = {
+    items_info = {
         "Hamburger": {
             "image": '🍔',
             "energy": 20,
@@ -65,35 +64,31 @@ class Food(Object):
         },
     }
 
-    def food_categs_to_options(self, food_categ_list, show_price=True, food_qtd=None):
-        options = []
-        food_dict = []
-        food_names = []
+    def get_gui_item(self, name, show_price=True, item_qtd=None):
+        info = self.items_info[name]
+
+        imgage = info[self.i_image]
+        energy = info[self.i_energy]
+        health = info[self.i_health]
+        price = info[self.i_price]
+        price_info = f"{price}💲 " if show_price else ''
+        qtd = item_qtd[name] if item_qtd else ''
+        qtd = f"{qtd:>2}" if qtd !='' else ''
+        # if qtd == 0: return None
+        # qtd_out = f"{qtd}" if qtd else ''
+        # qtd_out = f"{qtd}"
+        gui_out = f"{qtd}{imgage}: {energy:>2}⚡ {price_info:>3}{health:>2}💜"
+
+        return gui_out
 
 
-        for name in food_categ_list:
-            food_names.append(name)
-            info = self.food_info[name]
-            imgage = info[self.i_image]
-            energy = info[self.i_energy]
-            price = info[self.i_price]
-            health = info[self.i_health]
-            price_info = f"{price}💲 " if show_price else ''
-            qtd = food_qtd[name] if food_qtd else None
-            if qtd == 0: continue
-            qtd_out = f"{qtd}" if qtd else ''
-            opt = f"{qtd_out}{imgage}: {energy}⚡ {price_info}{health}💜"
-            food_dict.append(info)
-            options.append(opt)
-        
-        return options, food_dict, food_names
+    
 
-    def apply_food_properties_to(self, being_ref, food, qtd=1):
-        from entity.livingbeing.LivingBeing import LivingBeing
+    def apply_item_properties_to(self, being_ref, food, qtd=1):
+        # from entity.livingbeing.LivingBeing import LivingBeing
+        # being = self.get_concrete_thing_by_ref(being_ref)
 
-        being = self.get_concrete_thing_by_ref(being_ref)
-
-        info = self.food_info[food]
+        info = self.items_info[food]
         energy = info[self.i_energy]
         image = info[self.i_image]
         health = info[self.i_health]
@@ -108,32 +103,7 @@ class Food(Object):
         
         return self.remove_from_inventory(being_ref, food, qtd)
 
-    def get_food_inventory_of(self, being_ref):
-        being = self.get_concrete_thing_by_ref(being_ref)
-        inventory = being["inventory"]
-        if("Food" not in inventory):
-            inventory["Food"] = {}
-        return inventory["Food"]
-
-    def add_to_inventory(self, being_ref, food_to_add, quantity):
-        food_inventory = self.get_food_inventory_of(being_ref)
-        if(food_to_add not in food_inventory):
-            food_inventory[food_to_add] = 0
-        
-        food_inventory[food_to_add] += quantity
     
-    def remove_from_inventory(self, being_ref, food_to_add, quantity):
-        food_inventory = self.get_food_inventory_of(being_ref)
-
-        if(food_inventory == {}):
-            return False
-        if(food_to_add not in food_inventory):
-            return False
-
-        new_qtd = max(0, food_inventory[food_to_add] - quantity)
-        food_inventory[food_to_add] = new_qtd
-
-        return True
 
 
 

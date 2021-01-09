@@ -47,6 +47,7 @@ tree = {
                         "SuperMarket": {},
                         "Bank": {},
                         "Casino": {},
+                        "GunShop": {},
                     }
                 },
                 "Food":{

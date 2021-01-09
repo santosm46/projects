@@ -1,3 +1,4 @@
+from entity.object.weapon.Weapon import Weapon
 from entity.object.building.Building import Building
 from math import trunc
 from utils.common import valid_number
@@ -88,7 +89,16 @@ class Person(LivingBeing):
         super().kill_being(being_ref, cause)
 
     def get_weapon_attack(self, being_ref):
-        return 0
+        weapon_cls : Weapon = self.get('Weapon')
+        weapons : dict = weapon_cls.get_item_inventory_of(being_ref)
+        if len(weapons)==0: return 0
+        greater = 0
+        for weap, qtd in weapons.items():
+            if qtd == 0: continue
+            atk = weapon_cls.item_attack(weap)
+            if atk > greater: greater = atk
+
+        return greater
 
     def drop_inventory(self, being_ref):
         bank : Bank = self.get("Bank")
@@ -128,7 +138,7 @@ class Person(LivingBeing):
 
         while True:
 
-            food_inv : dict = food.get_food_inventory_of(being_ref)
+            food_inv : dict = food.get_item_inventory_of(being_ref)
 
             # will not show food with zero values
             food_not_zero = {}
@@ -155,18 +165,18 @@ class Person(LivingBeing):
             chosen_food = food_names[opt]
 
             while True:
-                max_food_qtd = food_inv[chosen_food]
+                max_item_qtd = food_inv[chosen_food]
                 person_class.gui_output("Quantidade [ENTER para sair]: ", color=bcolors.OKBLUE,end='')
-                qtd = person_class.gui_input(being_id, 'eat_food', 2, max_food_qtd)
+                qtd = person_class.gui_input(being_id, 'eat_food', 2, max_item_qtd)
                 if(len(qtd) == 0): return True
                 
                 # not eat this food, so choose other
                 if(qtd == '0'):
                     break
 
-                if(valid_number(qtd, 1, max_food_qtd)):
+                if(valid_number(qtd, 1, max_item_qtd)):
                     qtd = int(qtd)
-                    survived = food.apply_food_properties_to(being_ref, chosen_food, qtd)
+                    survived = food.apply_item_properties_to(being_ref, chosen_food, qtd)
                     image = food_dict[opt]['image']
                     if not survived:
                         return False
