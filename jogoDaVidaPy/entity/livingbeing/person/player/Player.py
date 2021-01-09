@@ -207,6 +207,7 @@ class Player(Person):
         return self.get_players()[str(key)]
     
     def get_player_idx(self) -> int:
+        # get idx of player turn_of
         player_id = str(self.get_game().turn_of())
         keys = self.get_players().keys()
         keys_list = list(keys)

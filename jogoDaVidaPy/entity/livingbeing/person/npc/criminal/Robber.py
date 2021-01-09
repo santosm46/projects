@@ -40,8 +40,10 @@ class Robber(Criminal):
             # input(f"{self.get_category()} Achei ninguem para roubar, vou andar para {go_to}")
             return go_to
 
-        log_error(f"There is no action made for {function}",__name__,line())
-        return None
+        return super().gui_output(_id, function, question_id, params)
+
+        # log_error(f"There is no action made for {function}",__name__,line())
+        # return None
     
     def rob_person(self, me_ref, other_ref):
         # input(f"oque_isso -> {oque_isso}")

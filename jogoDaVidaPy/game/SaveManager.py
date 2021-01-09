@@ -214,7 +214,7 @@ class SaveManager(Game):
             "save_filename": str_to_file_format(game_name),
             "last_id": 1,
             "year": STARTING_YEAR,
-            "turn_of": None,
+            "turns": [],
             "last_save_date": current_datetime,
             "creation_date": current_datetime,
             "game_version": GAME_VERSION,

@@ -87,8 +87,11 @@ class PlayerIM(Player):
                 self.roll_dice_to_move(player_id)
                 break
             elif(option == prim_opt.EAT_FOOD):
-                self.eat_food(player_id)
-                break
+                if(not self.eat_food(player_id)):
+                    a = self.get_concrete_thing(player_id)
+                    print_debug(f"O jogador {player_id} morreu comendo",__name__,line())
+                    break
+                # break
             elif(option == prim_opt.SAVE_EXIT):
                 print_sucess("Salvando e saindo...")
                 self.get("GameManager").stop()

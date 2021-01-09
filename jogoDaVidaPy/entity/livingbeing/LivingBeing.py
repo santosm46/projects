@@ -163,6 +163,10 @@ class LivingBeing(Entity):
             return random.choice(params["valid_spots"])
         if function == "interact_with":
             return random.choice(params["interactions"])
+        if function == 'eat_food':
+            return random.randrange(1, params)
+        log_error(f"There is no action made for {function}",__name__,line())
+        # return None
         return None
 
     """
@@ -231,7 +235,9 @@ class LivingBeing(Entity):
             self.gui_output(f"Movendo {name} para {spot}... ")
             board.move_entity_to(reference=self.reference(player["id"]), alphanum=spot)
         else:
-            self.gui_output(f"Movendo {name} para {spot} p/ interagir com {entity_ref}... ")
+            entity = self.get_concrete_thing_by_ref(entity_ref)
+            name = entity['name']
+            self.gui_output(f"Movendo {name} para p/ interagir com {name}... ")
             self.move_to_and_interact_with(self.reference(_id), entity_ref)
         
         # if(_id == '13'):
@@ -285,7 +291,7 @@ class LivingBeing(Entity):
         else:
             option = interac_keys[0]
         
-        print_debug(f"indo interagir com {other_ref} rodando sua função {option}",__name__,line())
+        # print_debug(f"indo interagir com {other_ref} rodando sua função {option}",__name__,line())
         
         target.run_func(option, me_ref, other_ref)
     
@@ -321,7 +327,6 @@ class LivingBeing(Entity):
         dmg_info = f"com um/a {atk_nick} e dano {total_damage}💜"
         death_info = {'type':'killed', 'info':f"assasinado por {atk_name} {dmg_info}"}
         self.reduce_hp(me_ref, total_damage, death_info)
-        print_error(f"me_ref = {me_ref}")
         if not self.is_dead(ref=me_ref):
             self.get("Logger").add(f"{atk_name} atacou {me_name} {dmg_info}")
 

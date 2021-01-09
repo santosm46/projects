@@ -33,34 +33,14 @@ class SuperMarket(Commerce):
 
         return market
 
-    def food_categs_to_options(self, food_categ_list):
-        options = []
-        food_dict = []
-        food_names = []
-
-        food : Food = self.get("Food")
-
-        # food_values = food.food_info.values()
-
-        for name in food_categ_list:
-            food_names.append(name)
-            info = food.food_info[name]
-            imgage = info[food.i_image]
-            energy = info[food.i_energy]
-            price = info[food.i_price]
-            health = info[food.i_health]
-            opt = f"{imgage}: {energy}⚡ {price}💲 {health}💜"
-            food_dict.append(info)
-            options.append(opt)
-        
-        return options, food_dict, food_names
+    
 
     def on_building_interact(self, building_ref, person_ref, additional=None):
         
         bank : Bank = self.get("Bank")
         food : Food = self.get("Food")
 
-        options, food_dict, food_names = self.food_categs_to_options(list(food.food_info.keys()))
+        options, food_dict, food_names = food.food_categs_to_options(list(food.food_info.keys()))
         
         while True:
 
@@ -105,7 +85,7 @@ class SuperMarket(Commerce):
                     break
 
                 bank.transfer_money_from_to(person_ref, additional, price)
-                self.add_to_inventory(person_ref, food_names[opt], qtd)
+                food.add_to_inventory(person_ref, food_names[opt], qtd)
                 food_name = food_names[opt]
                 print_sucess(f"você comprou {qtd} unidades de {food_name}.")
                 break
@@ -114,16 +94,6 @@ class SuperMarket(Commerce):
 
 
     
-    def add_to_inventory(self, being_ref, food_to_add, quantity):
-        being = self.get_concrete_thing_by_ref(being_ref)
-        inventory = being["inventory"]
-        if("Food" not in inventory):
-            inventory["Food"] = {}
-        if(food_to_add not in inventory["Food"]):
-            inventory["Food"][food_to_add] = 0
-        inventory["Food"][food_to_add] += quantity
-        
     
-
 
 

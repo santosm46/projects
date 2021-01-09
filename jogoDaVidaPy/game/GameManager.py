@@ -19,6 +19,7 @@ from game.Category import Category
 class GameManager(Game):
     def __init__(self):
         super().__init__()
+        self.player_idx = None
         self.valid_spots_buffer = []
     
     def setup(self, save):
@@ -73,6 +74,7 @@ class GameManager(Game):
         self.board : Board = self.get("Board")
         
         self.save_manager : SaveManager = self.get("SaveManager")
+
         
 
     def on_building_board_print(self, interested, event_causer, additional):
@@ -109,6 +111,9 @@ class GameManager(Game):
             a = input("")
             return
         turn = self.turn_of()
+
+        # self.player_idx = self.get("PlayerIM").get_player_idx()
+
         # self.get_players_id_list() # fix
         # print_debug(f"turn={turn} tipo do turn: {type(turn)}. ids em jogo={self.get_players_id_list()}", fname=__name__, fline=get_linenumber(), pause=True)
         if(turn is None or str(turn) not in self.player_im.get_players_id_list()):
@@ -126,9 +131,11 @@ class GameManager(Game):
                 break
 
             self.print_game()
-            
-            self.player_im.player_move(self.turn_of())
-            self.pass_turn()
+            turn_of = self.turn_of()
+            # print_debug(f"turn_of = {turn_of}",__name__,line())
+            self.player_im.player_move(turn_of)
+            if not self.pass_turn():
+                continue
             if(self.turn_of() == self.player_im.get_players_id_list()[0]):
                 self.get("Event").notify("new_round")
 
@@ -187,7 +194,9 @@ class GameManager(Game):
         return False
     
     def set_turn(self, new_turn: str):
-        self.meta_data()["turn_of"] = new_turn
+        id_list : list = self.player_im.get_players_id_list()
+        idx = id_list.index(new_turn)
+        self.meta_data()["turn_of_idx"] = idx
     
     def get_players_list(self) -> list:
         return self.player_im.get_players_list()
@@ -211,22 +220,66 @@ class GameManager(Game):
         return self.state.data
 
 
-    def pass_turn(self):
-        num_players = self.number_of_players()
-        if(num_players == 0):
-            self.meta_data()["turn_of"] = None
+    
+    def empty(self, lista):
+        if len(lista)==0: 
             self.save()
-            return
-        player_idx = self.player_im.get_player_idx()
-        next_player_idx = (int(player_idx)+1) % num_players
-        next_player = self.player_im.get_player_by_idx(next_player_idx)
+            return True
+        return False
 
-        self.set_turn(next_player["id"])
+    def pass_turn(self):
+        data = self.meta_data()
+        turns : list = data['turns']
+        players_id = self.get("PlayerIM").get_players_id_list()
+
+        if self.empty(players_id): return False
+        if self.empty(turns): return False
+        
+        current = turns.pop(0)
+        if(current in players_id):
+            turns.append(current)
+        
+        data['turns'] = turns
+        if self.empty(turns): return False
+
+        # new_p_idx = self.player_im.get_player_idx()
+        # if new_p_idx is None, player died, so the last idx is the id of the next player
+        # and doesn't need to update
         e : Event = self.get("Event")
-        e.notify("new_turn", additional=self.turn_of())
+        e.notify("new_turn", additional=turns[0])
+
+        return True
+
+
     
     def turn_of(self) -> str:
-        return self.meta_data()["turn_of"]
+        data = self.meta_data()
+        turns = data['turns']
+        
+        player_mg : PlayerIM = self.get("PlayerIM")
+        players_id = player_mg.get_players_id_list()
+        if self.empty(players_id): 
+            # print_debug(f"get_players_id_list vazio -> {players_id}",__name__,line())
+            return None
+        
+        if turns == []:
+            turns = players_id.copy()
+        elif turns[0] not in players_id:
+            # player id is not in match, so delete it
+            del turns[0]
+        
+        data['turns'] = turns
+        if self.empty(turns): return None
+        
+        # turn_id = turns[0]
+
+        return turns[0]
+        # idx = self.meta_data()["turn_of"]
+        # if idx is None:
+        #     self.meta_data()["turn_of"] = 0
+        #     idx = 0
+        # return [idx]
+        # return self.meta_data()["turn_of"]
     
     # def update_concrete(self, concrete: dict):
     #     self.add_attr_if_not_exists(concrete, 'year', STARTING_YEAR)
@@ -234,3 +287,20 @@ class GameManager(Game):
     
     
 
+    # def pass_turn1(self):
+    #     num_players = self.number_of_players()
+    #     if(num_players == 0):
+    #         self.meta_data()["turn_of_idx"] = None
+    #         self.save()
+    #         return
+    #     new_p_idx = self.player_im.get_player_idx()
+    #     # if new_p_idx is None, player died, so the last idx is the id of the next player
+    #     # and doesn't need to update
+
+    #     next_player_idx = (int(self.player_idx)+1) % num_players
+    #     next_player = self.player_im.get_player_by_idx(next_player_idx)
+
+    #     self.set_turn(next_player["id"])
+    #     e : Event = self.get("Event")
+    #     e.notify("new_turn", additional=self.turn_of())
+    

@@ -1,10 +1,12 @@
+from math import trunc
+from utils.common import valid_number
 from entity.object.Food import Food
 from game.Logger import Logger
 from game.DataStructure import DataStructure
 from entity.object.building.commerce.Bank import Bank
 import random
 from game.Event import Event
-from utils.beauty_print import bcolors, print_warning
+from utils.beauty_print import bcolors, get_number_list, input_question, print_number_list, print_warning
 from entity.livingbeing.LivingBeing import LivingBeing
 
 class Person(LivingBeing):
@@ -96,9 +98,59 @@ class Person(LivingBeing):
             money = me[self.attr_money]
         log.add(f"{rob_name} roubou {money} de {other_name}")
     
-    def eat_food(self):
+    def eat_food(self, being_id):
 
-        self.gui_output("Escolha ")
+        being_ref = self.reference(being_id)
+        person_class : Person = self.get(self.get_category())
 
-        food : Food 
+        food : Food = self.get("Food")
+
+        while True:
+
+            food_inv : dict = food.get_food_inventory_of(being_ref)
+
+            # will not show food with zero values
+            food_not_zero = {}
+            for k,v in food_inv.items():
+                if v > 0:
+                    food_not_zero[k]=v
+            food_inv = food_not_zero
+
+            options, food_dict, food_names = food.food_categs_to_options(list(food_inv.keys()), False, food_inv)
+
+            if(len(options) == 0): return True
+
+            person_class.gui_output(get_number_list(options, "\nEscolha algo para comer [ENTER para sair]\n"))
+
+            while True:
+                person_class.gui_output("Opção: ", color=bcolors.OKBLUE)
+                opt = person_class.gui_input(being_id, 'eat_food', 1, options)
+                if(len(opt) == 0): return True
+                if(valid_number(opt, 1, len(options))):
+                    break
+            
+            opt = int(opt)-1
+
+            chosen_food = food_names[opt]
+
+            while True:
+                max_food_qtd = food_inv[chosen_food]
+                person_class.gui_output("Quantidade [ENTER para sair]: ", color=bcolors.OKBLUE)
+                qtd = person_class.gui_input(being_id, 'eat_food', 2, max_food_qtd)
+                if(len(qtd) == 0): return True
+                
+                # not eat this food, so choose other
+                if(qtd == '0'):
+                    break
+
+                if(valid_number(qtd, 1, max_food_qtd)):
+                    qtd = int(qtd)
+                    survived = food.apply_food_properties_to(being_ref, chosen_food, qtd)
+                    image = food_dict[opt]['image']
+                    person_class.gui_output(f"Você comeu {qtd} {image}", color=bcolors.OKGREEN)
+                    if not survived:
+                        return False
+                    break
+                    
+
 

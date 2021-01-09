@@ -221,7 +221,7 @@ def valid_number(value, min_val, max_val):
         
         i = int(value)
         if(i < min_val or i > max_val):
-            print_error(f"Digite um valor entre 1 e {max_val}")
+            print_error(f"Digite um valor entre {min_val} e {max_val}, digitou {i}")
             return False
         
         return True

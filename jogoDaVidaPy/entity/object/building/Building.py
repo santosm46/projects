@@ -104,10 +104,10 @@ class Building(Object):
     #     pass
 
     def put_person_on_building(self, person_ref, building_ref, additional=None):
-        print_debug("tentando colocar pessoa em building",__name__,line())
+        # print_debug("tentando colocar pessoa em building",__name__,line())
         person_categ = person_ref["category"]
         if(not self.is_person(person_categ)):
-            print_debug(f"não é pessoa {person_ref}, mas esse é -> {building_ref}",__name__,line())
+            # print_debug(f"não é pessoa {person_ref}, mas esse é -> {building_ref}",__name__,line())
             # only people can enter building
             return
         person_class = self.get(person_categ)
@@ -119,17 +119,17 @@ class Building(Object):
         # can only put person if stepping at building
         if(person["coord"] != building["coord"]):
             return
-        print_debug("está na mesma coordenada",__name__,line())
+        # print_debug("está na mesma coordenada",__name__,line())
         
         # print_debug("tentando colocar pessoa na escola 3")
         mode_info = person_class.get_mode_info_of(person_ref,mode_name)
-        print_debug("peguei mode info",__name__,line())
+        # print_debug("peguei mode info",__name__,line())
         
         # print_beauty_json(mode_info)
         mode_info["building"] = self.reference(building_id)
 
         person_class.change_mode(person["id"], mode_name, self.reference(building_id))
-        print_debug("coloquei pessoa em building",__name__,line())
+        # print_debug("coloquei pessoa em building",__name__,line())
 
 
     
