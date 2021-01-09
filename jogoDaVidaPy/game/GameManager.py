@@ -110,6 +110,7 @@ class GameManager(Game):
             print_error("Não há jogadores na partida, pressione ENTER para voltar e criar alguns no menu de partida.")
             a = input("")
             return
+        
         turn = self.turn_of()
 
         # self.player_idx = self.get("PlayerIM").get_player_idx()
@@ -258,13 +259,19 @@ class GameManager(Game):
         
         player_mg : PlayerIM = self.get("PlayerIM")
         players_id = player_mg.get_players_id_list()
+
         if self.empty(players_id): 
             # print_debug(f"get_players_id_list vazio -> {players_id}",__name__,line())
             return None
         
-        if turns == []:
-            turns = players_id.copy()
-        elif turns[0] not in players_id:
+        # update players turn
+        for _id in players_id:
+            if _id not in turns:
+                turns.append(_id)
+        
+        # if self.empty(turns): return None
+        
+        if turns[0] not in players_id:
             # player id is not in match, so delete it
             del turns[0]
         

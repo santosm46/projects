@@ -89,7 +89,7 @@ class PlayerIM(Player):
             elif(option == prim_opt.EAT_FOOD):
                 if(not self.eat_food(player_id)):
                     a = self.get_concrete_thing(player_id)
-                    print_debug(f"O jogador {player_id} morreu comendo",__name__,line())
+                    # print_debug(f"O jogador {player_id} morreu comendo",__name__,line())
                     break
                 # break
             elif(option == prim_opt.SAVE_EXIT):

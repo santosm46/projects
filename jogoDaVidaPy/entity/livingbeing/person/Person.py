@@ -123,7 +123,7 @@ class Person(LivingBeing):
             person_class.gui_output(get_number_list(options, "\nEscolha algo para comer [ENTER para sair]\n"))
 
             while True:
-                person_class.gui_output("Opção: ", color=bcolors.OKBLUE)
+                person_class.gui_output("Opção: ", color=bcolors.OKBLUE, end='')
                 opt = person_class.gui_input(being_id, 'eat_food', 1, options)
                 if(len(opt) == 0): return True
                 if(valid_number(opt, 1, len(options))):
@@ -135,7 +135,7 @@ class Person(LivingBeing):
 
             while True:
                 max_food_qtd = food_inv[chosen_food]
-                person_class.gui_output("Quantidade [ENTER para sair]: ", color=bcolors.OKBLUE)
+                person_class.gui_output("Quantidade [ENTER para sair]: ", color=bcolors.OKBLUE,end='')
                 qtd = person_class.gui_input(being_id, 'eat_food', 2, max_food_qtd)
                 if(len(qtd) == 0): return True
                 
@@ -147,9 +147,10 @@ class Person(LivingBeing):
                     qtd = int(qtd)
                     survived = food.apply_food_properties_to(being_ref, chosen_food, qtd)
                     image = food_dict[opt]['image']
-                    person_class.gui_output(f"Você comeu {qtd} {image}", color=bcolors.OKGREEN)
                     if not survived:
                         return False
+                    self.get("GameManager").print_game()
+                    person_class.gui_output(f"\nVocê comeu {qtd} {image}", color=bcolors.OKGREEN)
                     break
                     
 

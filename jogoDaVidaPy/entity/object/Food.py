@@ -100,10 +100,10 @@ class Food(Object):
 
         being_class : LivingBeing = self.get(being_ref["category"])
 
-        if(not being_class.reduce_energy(being_ref, energy * qtd)):
+        if(not being_class.reduce_energy(being_ref, -energy * qtd)):
             return False
         cause = {'type':'ate_junk_food', 'info':f'comendo porcaria: {image}'}
-        if(not being_class.reduce_hp(being_ref, health * qtd, cause)):
+        if(not being_class.reduce_hp(being_ref, -health * qtd, cause)):
             return False
         
         return self.remove_from_inventory(being_ref, food, qtd)
