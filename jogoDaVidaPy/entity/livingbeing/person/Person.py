@@ -25,6 +25,8 @@ class Person(LivingBeing):
         self.attr_name = "name"
         self.attr_money = "money"
 
+        self.categ_color = bcolors.WARNING
+
 
         self.interactions["be_robbed"] = "Roubar"
 
@@ -87,6 +89,12 @@ class Person(LivingBeing):
         # categ = being_ref["category"]
         
         super().kill_being(being_ref, cause)
+    
+    def person_name(self, person_ref):
+        person = self.get_concrete_thing_by_ref(person_ref)
+        name = person["name"]
+
+        return f"{self.categ_color}{name}{bcolors.ENDC}"
 
     def get_weapon_attack(self, being_ref):
         weapon_cls : Weapon = self.get('Weapon')
@@ -103,6 +111,8 @@ class Person(LivingBeing):
     def drop_inventory(self, being_ref):
         bank : Bank = self.get("Bank")
         bank.put_all_money_on_board(being_ref)
+        weap_class : Weapon = self.get('Weapon')
+        weap_class.put_all_weapons_on_board(being_ref)
         # put_all_money_on_board
 
     def be_robbed(self, robber_ref, me_ref):
@@ -147,7 +157,7 @@ class Person(LivingBeing):
                     food_not_zero[k]=v
             food_inv = food_not_zero
 
-            options, food_dict, food_names = food.food_categs_to_options(list(food_inv.keys()), False, food_inv)
+            options, food_dict, food_names = food.item_categs_to_options(list(food_inv.keys()), False, food_inv)
 
             if(len(options) == 0): return True
 

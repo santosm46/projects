@@ -1,4 +1,4 @@
-from entity.object.weapon.Weapon import Weapon
+from entity.object.weapon.Weapon import *
 from entity.object.building.commerce.GunShop import GunShop
 from entity.object.building.Cemetery import Cemetery
 from entity.livingbeing.person.npc.criminal.Robber import Robber
@@ -60,6 +60,10 @@ class Instanciator:
         "Cemetery": Cemetery,
         "GunShop": GunShop,
         "Weapon": Weapon,
+        "Knife":Knife,
+        "Pistol":Pistol,
+        "MachineGun":MachineGun,
+        "Shotgun":Shotgun,
     }
 
 

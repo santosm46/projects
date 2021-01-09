@@ -15,6 +15,8 @@ class Player(Person):
     def __init__(self):
         super().__init__()
 
+        self.categ_color = bcolors.OKCYAN
+
     def get_game(self):
         return self.get("GameManager")
 

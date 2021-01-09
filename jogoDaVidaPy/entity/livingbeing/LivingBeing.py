@@ -305,8 +305,8 @@ class LivingBeing(Entity):
             try:
                 attack = being_class.roll_dice(being_ref["id"], 3)
             except:
-                log_error(f'cant roll dice for {being_ref}')
-                return None
+                log_error(f'cant roll dice for {being_ref}, returning rand 3',__name__,line())
+                return random.randrange(1,3)
             # fix validade attack
             break
 

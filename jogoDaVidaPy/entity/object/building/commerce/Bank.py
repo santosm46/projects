@@ -172,10 +172,8 @@ class MoneyBag(Object):
         bank : Bank = self.get("Bank")
         bank.transfer_all_money(interested, event_causer)
 
-        person = self.get_concrete_thing_by_ref(event_causer)
-        person_categ = event_causer["category"]
-        name = person["name"]
-        log.add(f"[{person_categ}]: {name} achou um saco de dinheiro com R$ {money}")
+        name = self.get(event_causer['category']).person_name(event_causer)
+        log.add(f"{name} achou um saco de dinheiro com R$ {money}")
 
         self.delete_myself(interested)
 

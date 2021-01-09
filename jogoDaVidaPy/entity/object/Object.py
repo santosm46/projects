@@ -40,23 +40,23 @@ class Object(Entity):
             inventory[item_categ] = {}
         return inventory[item_categ]
 
-    def add_to_inventory(self, being_ref, food_to_add, quantity):
-        food_inventory = self.get_item_inventory_of(being_ref)
-        if(food_to_add not in food_inventory):
-            food_inventory[food_to_add] = 0
+    def add_to_inventory(self, being_ref, item_to_add, quantity):
+        item_inventory = self.get_item_inventory_of(being_ref)
+        if(item_to_add not in item_inventory):
+            item_inventory[item_to_add] = 0
         
-        food_inventory[food_to_add] += quantity
+        item_inventory[item_to_add] += quantity
     
-    def remove_from_inventory(self, being_ref, food_to_add, quantity):
-        food_inventory = self.get_item_inventory_of(being_ref)
+    def remove_from_inventory(self, being_ref, item_to_add, quantity):
+        item_inventory = self.get_item_inventory_of(being_ref)
 
-        if(food_inventory == {}):
+        if(item_inventory == {}):
             return False
-        if(food_to_add not in food_inventory):
+        if(item_to_add not in item_inventory):
             return False
 
-        new_qtd = max(0, food_inventory[food_to_add] - quantity)
-        food_inventory[food_to_add] = new_qtd
+        new_qtd = max(0, item_inventory[item_to_add] - quantity)
+        item_inventory[item_to_add] = new_qtd
 
         return True
 

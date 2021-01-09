@@ -127,6 +127,7 @@ class GameManager(Game):
         while self.game_ruinning:
             if(self.has_no_players_in_game()):
                 # log_error(f"No players in game",__name__,line())
+                self.get('Logger').dump()
                 print_error("Todos os jogadores morreram")
                 a = input("ENTER para voltar")
                 break
