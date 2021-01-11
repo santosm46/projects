@@ -1,3 +1,6 @@
+from entity.livingbeing.person.npc.Citizen import Citizen
+from entity.livingbeing.person.npc.criminal.Killer import Killer
+from entity.object.building.Jail import Jail
 from entity.object.weapon.Weapon import *
 from entity.object.building.commerce.GunShop import GunShop
 from entity.object.building.Cemetery import Cemetery
@@ -64,6 +67,9 @@ class Instanciator:
         "Pistol":Pistol,
         "MachineGun":MachineGun,
         "Shotgun":Shotgun,
+        "Jail": Jail,
+        "Killer": Killer,
+        "Citizen": Citizen,
     }
 
 

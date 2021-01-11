@@ -20,25 +20,25 @@ class Weapon(Object):
             "nick": "Faca",
             "attack": 1,
             "image": '🔪',
-            "price": 400,
+            "price": 300,
         },
         "Pistol": {
             "nick": "Pistola",
             "attack": 2,
             "image": '🔫',
-            "price": 40
+            "price": 400
         },
         "MachineGun": {
             "nick": "Metralhadora",
             "attack": 3,
             "image": '🔫',
-            "price": 650,
+            "price": 550,
         },
         "Shotgun": {
             "nick": "Escopeta",
             "attack": 4,
             "image": '🔫',
-            "price": 800,
+            "price": 700,
         }
     }
 

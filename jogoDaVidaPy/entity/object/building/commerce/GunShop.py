@@ -24,7 +24,8 @@ class GunShop(Commerce):
         gunshop[self.attr_name] = "Loja de armas"
         gunshop[self.attr_money] = 1000000
         # gunshop[self.attr_owner] = 10000000
-        gunshop[self.attr_coord] = board.alphanum_to_coord("B3")
+        gunshop[self.attr_coord] = board.alphanum_to_coord("G14")
+        # gunshop[self.attr_coord] = board.alphanum_to_coord("B2")
         self.update_subscriber(self.reference(gunshop["id"]))
 
         return gunshop

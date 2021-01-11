@@ -1,4 +1,6 @@
 
+from utils.common import line
+from utils.beauty_print import print_debug
 from entity.Entity import Entity
 
 class Object(Entity):
@@ -34,6 +36,7 @@ class Object(Entity):
 
     def get_item_inventory_of(self, being_ref):
         being = self.get_concrete_thing_by_ref(being_ref)
+        # print_debug(f"being = {being}",__name__,line())
         item_categ = self.get_category()
         inventory = being["inventory"]
         if(item_categ not in inventory):

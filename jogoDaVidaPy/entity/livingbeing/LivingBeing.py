@@ -2,7 +2,7 @@ from entity.Entity import Entity
 from game.DataStructure import DataStructure
 from game.Event import Event
 from utils.beauty_print import bcolors, debug_error, get_number_list, input_question, print_debug, print_error, print_number_list
-from utils.common import MOCK_ID, emotions, line, log_error, scale, stats, valid_number
+from utils.common import MOCK_ID, emotions, line, log_error, penalty, scale, stats, valid_number
 import random
 
 
@@ -37,6 +37,9 @@ class LivingBeing(Entity):
             'starved': 'de fome',
             'killed': 'assassinado',
         }
+
+        self.categ_color = bcolors.WARNING
+
 
     # for all entities
     def on_new_round(self, target_ref, event_maker_ref, a=None):
@@ -122,20 +125,19 @@ class LivingBeing(Entity):
             being[self.attr_hp] = 0
             self.kill_being(being_ref, cause)
             return False
+        if being[self.attr_hp] > 15:
+            being[self.attr_hp] = 15
         return True
 
-    def name(self, concr=None, ref=None):
-        if  ref:
-            concr = self.get_concrete_thing_by_ref(ref)
-        if "name" not in concr: return ""
-        return concr["name"]
+
 
     def kill_being(self, being_ref, cause=None):
         log = self.get("Logger")
         if cause is None:
             cause = {'type':'unknown', 'info': ''}
         death_descrp = cause['info']
-        log.add(f"[{self.category_nick()}] {self.name(ref=being_ref)} morreu {death_descrp}", color=bcolors.FAIL)
+        bname = self.person_name(being_ref,last=bcolors.FAIL)
+        log.add(f"[{self.category_nick()}] {bname} morreu {death_descrp}", color=bcolors.FAIL)
         being = self.get_concrete_thing_by_ref(being_ref)
         being["death_year"] = self.get("GameManager").get_year()
         being["death_cause"] = cause['info']
@@ -230,13 +232,14 @@ class LivingBeing(Entity):
         #     place = buildings_list[spot]
         
         
-        name = player["name"]
+        pref = self.reference(player["id"])
+        name = self.person_name(pref)
         if entity_ref is None:
             self.gui_output(f"Movendo {name} para {spot}... ")
-            board.move_entity_to(reference=self.reference(player["id"]), alphanum=spot)
+            board.move_entity_to(reference=pref, alphanum=spot)
         else:
             entity = self.get_concrete_thing_by_ref(entity_ref)
-            name = entity['name']
+            name = self.person_name(entity_ref)
             self.gui_output(f"Movendo {name} para p/ interagir com {name}... ")
             self.move_to_and_interact_with(self.reference(_id), entity_ref)
         
@@ -255,6 +258,11 @@ class LivingBeing(Entity):
         # e.notify("entity_interacting_with_entity", me_ref, other_ref)
 
     
+    def person_name(self, person_ref,last=bcolors.ENDC):
+        person = self.get_concrete_thing_by_ref(person_ref)
+        name = person['name']
+
+        return f"{self.categ_color}{name}{last}"
 
     def interact_with(self, me_ref, other_ref):
         # print_debug(f"indo interagir com {other_ref}",__name__,line())
@@ -269,7 +277,7 @@ class LivingBeing(Entity):
 
         params = {"interactions":interactions, "other_ref":other_ref}
         target_concr = self.get_concrete_thing_by_ref(other_ref)
-        target_name = target_concr["name"]
+        target_name = self.person_name(other_ref)
 
 
         interac_nicks = list(interactions.values())
@@ -322,6 +330,7 @@ class LivingBeing(Entity):
         return concr[self.attr_hp] == 0
 
     def be_attacked(self, attacker_ref, me_ref, add_info='atacou'):
+        e : Event = self.get('Event')
         total_damage = self.get_attack(attacker_ref)
         if total_damage is None: return False
         atk_nick = 'Soco'
@@ -329,15 +338,17 @@ class LivingBeing(Entity):
         me = self.get_concrete_thing_by_ref(me_ref)
         if not attacker: return False
         if not me: return False
-        atk_name = attacker["name"]
-        me_name = me["name"]
+        atk_name = self.person_name(attacker_ref)
+        me_name = self.person_name(me_ref)
         dmg_info = f"com um/a {atk_nick} e dano {total_damage}💜"
         death_info = {'type':'killed', 'info':f"assasinado por {atk_name} {dmg_info}"}
         self.reduce_hp(me_ref, total_damage, death_info)
         if not self.is_dead(ref=me_ref):
             self.get("Logger").add(f"{atk_name} {add_info} {me_name} {dmg_info}")
         else:
+            e.notify('being_killed_being', attacker_ref, {'years_in_prision': penalty.KILL})
             return False
+        e.notify('being_attacked_being', attacker_ref, {'years_in_prision': penalty.ATTACK})
         return True
 
     def risk_of_death(self, being_concr=None, being_ref=None) -> int:

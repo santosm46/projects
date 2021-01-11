@@ -1,4 +1,6 @@
 #file -- game.py --
+from entity.livingbeing.person.Person import Person
+from entity.object.building.Jail import Jail
 import random
 from game.Logger import Logger
 from entity.object.building.commerce.Bank import Bank, MoneyBag
@@ -44,12 +46,44 @@ class GameManager(Game):
         event.subscribe("building_board_print", self.reference(MOCK_ID), "on_building_board_print")
         event.subscribe("entity_choosing_spot", self.reference(MOCK_ID), "save_valid_spots_on_buffer")
         event.subscribe("new_round", self.reference(MOCK_ID), "on_new_round")
+
+        event.subscribe("being_attacked_being", self.reference(MOCK_ID), "put_person_on_jail")
+        event.subscribe("being_killed_being", self.reference(MOCK_ID), "put_person_on_jail")
+        event.subscribe("person_robbed_entity", self.reference(MOCK_ID), "put_person_on_jail")
     
+    def put_person_on_jail(self, interested, criminal_ref, params):
+        def put_or_not(categ):
+            categs = {
+                'PlayerIM': 50,
+                'Robber': 15,
+                'Killer': 1,
+            }
+            if categ not in categs: return random.randrange(0, 100) > 50
+            return random.randrange(0,100) < categs[categ]
+        
+        if not put_or_not(criminal_ref['category']): return
+
+        years_in_prision = params['years_in_prision']
+        jail : Jail = self.get('Jail')
+        pc : Person = self.get(criminal_ref['category'])
+        person = self.get_concrete_thing_by_ref(criminal_ref)
+        if person['mode'] == pc.mode_on_building:
+            modeinfo = pc.get_mode_info_of(criminal_ref, pc.mode_on_building)
+            if modeinfo['building']['category'] == 'Jail':
+                # it is already on jail
+                return
+        jail.put_person_on_building(criminal_ref, jail.reference(MOCK_ID), years_in_prision)
+        name = pc.person_name(criminal_ref)
+        self.get('Logger').add(f"{name} foi preso e cumprirá {years_in_prision} rodada de cadeia")
+
+
     def get_save_name(self):
         try:
             return self.meta_data()["save_name"]
         except:
             return "Game of life py"
+    
+
     
     def meta_data(self):
         data : DataStructure = self.get("DataStructure")
@@ -146,23 +180,22 @@ class GameManager(Game):
         save_mg = self.get_concrete_thing_by_ref(self.reference(MOCK_ID, "SaveManager"))
         save_mg['year'] += 1
 
-        ubi = 50
         bank : Bank = self.get("Bank")
         data : DataStructure = self.get("DataStructure")
         bank_k = list(bank.get_dict_list().keys())[0]
         # print_debug(bank_k)
         bank_crt = bank.get_concrete_thing(bank_k)
         for player in self.player_im.get_players_id_list():
-            bank.transfer_money_from_to(bank.reference(MOCK_ID), self.player_im.reference(player), ubi)
+            bank.transfer_money_from_to(bank.reference(MOCK_ID), self.player_im.reference(player), UBI)
         log : Logger = self.get("Logger")
         players_list = ", ".join(self.player_im.get_players_list())
-        log.add(f"Jogadores {players_list} receberam auxílio de R$ {ubi}")
+        log.add(f"Jogadores {players_list} receberam auxílio de R$ {UBI}")
 
         # add money on the board
         money : MoneyBag = self.get("MoneyBag")
         if len(money.get_dict_list()) < 4:
             m = money.new_concrete_thing()
-            m["money"] = random.randrange(10, 75, 5)
+            m["money"] = random.randrange(10, 100, 5)
             data.keep_concrete_thing(m["id"], m, "MoneyBag")
         
         self.save()

@@ -35,7 +35,7 @@ class SuperMarket(Commerce):
         market[self.attr_name] = "Super Mercado"
         market[self.attr_money] = 1000000
         # market[self.attr_owner] = 10000000
-        market[self.attr_coord] = board.alphanum_to_coord("C2")
+        market[self.attr_coord] = board.alphanum_to_coord("D8")
         self.update_subscriber(self.reference(market["id"]))
 
         return market

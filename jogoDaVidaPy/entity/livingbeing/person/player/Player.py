@@ -88,7 +88,7 @@ class Player(Person):
             # print_warning(self.get_players())
             aa = self.get_players()[key]["name"]
             # print(aa)
-            players_list.append(aa)
+            players_list.append(f"{bcolors.OKCYAN}{aa}{bcolors.ENDC}")
         return players_list
 
     def add_player_on_match(self, idx):

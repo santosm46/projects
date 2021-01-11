@@ -90,6 +90,7 @@ class Education(Building):
     
     def get_person_diploms(self, person_ref):
         person = self.get_concrete_thing_by_ref(person_ref)
+        if not person: return None
         # acess person inventory to take the highest school diplom
         this_categ = self.get_category()
         inventory = person["inventory"]

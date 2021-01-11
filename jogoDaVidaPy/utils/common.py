@@ -17,6 +17,7 @@ ERRORS_FILE = '_errors.txt'
 GOVERNMENT = "government"
 MOCK_ID = "mock_id"
 STARTING_YEAR = 1990
+UBI = 50
 
 class prim_opt:
     PASS_TURN = 'P'
@@ -54,6 +55,10 @@ class stats:
     QI = 20
     MAX_HP = 5
 
+class penalty:
+    KILL = 3
+    ROB = 2
+    ATTACK = 1
 
 
 def line():

@@ -147,9 +147,16 @@ class Entity(Thing):
 
         building_name = entity_conc["name"]
 
+        addi = ''
+        if interested_ref['category'] == 'PlayerIM':
+            addi = self.first_interaction
+        else:
+            addi = 'Pessoa'
+
         entities_to_interact.append({
             "ref": interested_ref,
-            "interaction": f"{self.first_interaction} {building_name}",
+            "interaction": f"{addi} {building_name}",
+            # "interaction": f"{self.first_interaction} {building_name}",
         })
 
     def on_entity_interacting_with_entity(self, target_ref, causer_ref, additional=None):

@@ -1,7 +1,7 @@
 from entity.object.weapon.Weapon import Weapon
 from entity.object.building.Building import Building
 from math import trunc
-from utils.common import valid_number
+from utils.common import penalty, valid_number
 from entity.object.Food import Food
 from game.Logger import Logger
 from game.DataStructure import DataStructure
@@ -25,7 +25,6 @@ class Person(LivingBeing):
         self.attr_name = "name"
         self.attr_money = "money"
 
-        self.categ_color = bcolors.WARNING
 
 
         self.interactions["be_robbed"] = "Roubar"
@@ -90,11 +89,6 @@ class Person(LivingBeing):
         
         super().kill_being(being_ref, cause)
     
-    def person_name(self, person_ref):
-        person = self.get_concrete_thing_by_ref(person_ref)
-        name = person["name"]
-
-        return f"{self.categ_color}{name}{bcolors.ENDC}"
 
     def get_weapon_attack(self, being_ref):
         weapon_cls : Weapon = self.get('Weapon')
@@ -128,14 +122,16 @@ class Person(LivingBeing):
         me = self.get_concrete_thing_by_ref(me_ref)
         if not me: return False
         # e.notify("entity_interacting_with_entity", robber_ref, me_ref)
-        rob_name = robber["name"]
-        other_name = me["name"]
+        
+        rob_name = self.person_name(robber_ref)
+        other_name = self.person_name(me_ref)
         money = random.randrange(50, 300, 10)
         if(me[self.attr_money] <= 0):
-            return
+            return False
         
         if(not bank.transfer_money_or_the_rest(me_ref, robber_ref, money)):
             money = me[self.attr_money]
+        e.notify('person_robbed_entity', robber_ref, {'years_in_prision': penalty.ROB})
         log.add(f"{rob_name} roubou {money} de {other_name}")
         return True
     

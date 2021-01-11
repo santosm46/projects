@@ -38,6 +38,7 @@ class Building(Object):
         "TownHall": '🏛️',
         "GasStation": '⛽',
         "Castle": '🏰',
+        "Jail": '🏰',
         "SuperMarket": '🛒',
         "Casino": '🎰',
         "GunShop": '🔫',
@@ -141,8 +142,8 @@ class Building(Object):
         building = self.get_concrete_thing(building_id)
         person = person_class.get_concrete_thing(person_ref["id"])
         # can only put person if stepping at building
-        if(person["coord"] != building["coord"]):
-            return False
+        # if(person["coord"] != building["coord"]):
+        #     return False
         # print_debug("está na mesma coordenada",__name__,line())
         
         # print_debug("tentando colocar pessoa na escola 3")
