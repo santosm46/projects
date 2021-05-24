@@ -1,0 +1,8 @@
+ID,Full name,Given names,Surname now,Surname at birth,Gender,Deceased,Mother ID,Mother name,Father ID,Father name,Parents type,Second mother ID,Second mother name,Second father ID,Second father name,Second type,Birth date type,Birth year,Birth month,Birth day,Birth range end,Death date type,Death year,Death month,Death day,Death range end,Partner ID,Partner name,Partner type,Partnership date type,Partnership year,Partnership month,Partnership day,Partnership range end,Ex-partner IDs,Email,Website,Blog,Photo site,Home tel,Work tel,Mobile,Skype,Address,Other contact,Birth place,Death place,Burial place,Burial date type,Burial year,Burial month,Burial day,Burial range end,Profession,Company,Interests,Activities,Bio notes,
+E1JJZ,Magno,Magno,,,Male,,ZO8WA,Maria Araújo dos Santos,GBF46,Manoel dos Santos,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+START,Marcelo Araújo dos Santos,Marcelo,Araújo dos Santos,,Male,,ZO8WA,Maria Araújo dos Santos,GBF46,Manoel dos Santos,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+ZO8WA,Maria Araújo dos Santos,Maria,Araújo dos Santos,,Female,,X1FI1,,NR3BY,,,,,,,,,,,,,,,,,,GBF46,Manoel dos Santos,Partner,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GBF46,Manoel dos Santos,Manoel,dos Santos,,Male,,,,,,,,,,,,,,,,,,,,,,ZO8WA,Maria Araújo dos Santos,Partner,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+I5KHD,Maria Herculânia,Maria,Herculânia,,Female,,ZO8WA,Maria Araújo dos Santos,GBF46,Manoel dos Santos,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+X1FI1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,NR3BY,,,,,,,,,,,,,,,,,,,,,,,,
+NR3BY,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,X1FI1,,,,,,,,,,,,,,,,,,,,,,,,

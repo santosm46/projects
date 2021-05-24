@@ -3,7 +3,7 @@ package cookiegame;
 import decider.*;
 
 public class Main {
-	static int hours = 24 * 20;
+	static int hours = 24 * 30 * 3;
 	static int cookiesInBank = 200;
 	
     public static void main(String[] args) {
