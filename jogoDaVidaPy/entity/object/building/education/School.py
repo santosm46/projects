@@ -14,7 +14,7 @@ from entity.object.building.education.Education import Education
 class School(Education):
 
     class level:
-        ELEMENTARY = "elementary_school"
+        # ELEMENTARY = "elementary_school"
         MIDDLE = "middle_school"
         HIGH = "high_school"
 
@@ -22,13 +22,13 @@ class School(Education):
         super().__init__()
 
         self.passing_grades = {
-            self.level.ELEMENTARY: 5,
+            # self.level.ELEMENTARY: 5,
             self.level.MIDDLE: 4,
             self.level.HIGH: 3,
         }
 
         self.level_nick = {
-            self.level.ELEMENTARY: "Ensino Básico",
+            # self.level.ELEMENTARY: "Ensino Básico",
             self.level.MIDDLE: "Ensino Fundamental",
             self.level.HIGH: "Ensino Médio"
         }

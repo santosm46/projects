@@ -15,8 +15,7 @@ class Jail(Building):
         board : Board = self.get("Board")
         cemetery["id"] = MOCK_ID
         cemetery[self.attr_name] = "Cadeia"
-        # cemetery[self.attr_money] = 100
-        cemetery[self.attr_owner] = 1000000
+        cemetery[self.attr_money] = 1000000
         cemetery[self.attr_coord] = board.alphanum_to_coord("J11")
         self.update_subscriber(self.reference(cemetery["id"]))
 

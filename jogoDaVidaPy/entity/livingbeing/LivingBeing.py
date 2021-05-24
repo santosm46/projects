@@ -48,6 +48,7 @@ class LivingBeing(Entity):
         keys_list = list(beings.keys())
         for key in keys_list:
             # advance age
+            if key not in beings: continue
             beings[key][self.attr_age] += 1
 
             ref = self.reference(key)

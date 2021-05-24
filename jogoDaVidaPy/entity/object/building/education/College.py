@@ -21,9 +21,9 @@ class College(Education):
         super().__init__()
 
         self.passing_grades = {
-            self.level.FIRST_YEAR: 3,
+            self.level.FIRST_YEAR: 4,
             self.level.SECOND_YEAR: 3,
-            self.level.CBT: 2,
+            self.level.CBT: 3,
         }
 
         self.level_nick = {

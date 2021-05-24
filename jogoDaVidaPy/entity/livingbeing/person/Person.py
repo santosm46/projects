@@ -125,7 +125,7 @@ class Person(LivingBeing):
         
         rob_name = self.person_name(robber_ref)
         other_name = self.person_name(me_ref)
-        money = random.randrange(50, 300, 10)
+        money = random.randrange(50, 200, 10)
         if(me[self.attr_money] <= 0):
             return False
         
