@@ -47,7 +47,7 @@ function createActions() {
             cell.y = newPos.y;
             // debugm('moving...');
         },
-        shot: function(command) {
+        shoot: function(command) {
             const movement = createVector(command.movement.x, command.movement.y);
             const cell = game.state.cells[command.cellId];
             movement.setMag();

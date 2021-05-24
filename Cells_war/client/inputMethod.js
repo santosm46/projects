@@ -27,7 +27,7 @@ function keyAndMouseIM() {
         };
 
         if(mouseIsPressed) {
-            command.inputType = 'shot';
+            command.inputType = 'shoot';
         }
         else {
             command.inputType = nicknamesTable[key];
